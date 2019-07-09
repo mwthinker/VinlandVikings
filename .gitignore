@@ -1,3 +1,17 @@
+#################
+#### MW
+#################
+
+*.wav
+*.7z
+*.zip
+*.a
+*~
+*.layout
+*.depend
+/build*
+/data/
+
 # Prerequisites
 *.d
 
