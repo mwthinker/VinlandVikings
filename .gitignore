@@ -11,6 +11,8 @@
 *.depend
 /build*
 /data/
+/.idea/
+/cmake-build-debug/
 
 # Prerequisites
 *.d

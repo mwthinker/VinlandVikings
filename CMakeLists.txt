@@ -39,6 +39,8 @@ source_group(TREE
 		${SOURCES}
 )
 
+set(CppSdl2ImGui TRUE BOOL "Must use ImGui")
+
 include(FetchContent)
 # Load external github projects
 FetchContent_Declare(CppSdl2
@@ -52,11 +54,6 @@ FetchContent_MakeAvailable(CppSdl2)
 set(ExternalDependencies
 	CppSdl2
 )
-
-##set(CppSdl2ImGui ON CACHE INTERNAL "Must use ImGui")
-
-set(CppSdl2ImGui TRUE CACHE BOOL "Must use ImGui")
-
 
 if (CppSdl2Test)
 	set(ExternalDependencieTests "CppSdl2Test")

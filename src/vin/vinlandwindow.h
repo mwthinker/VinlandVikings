@@ -1,5 +1,5 @@
-#ifndef VINLANDVIKINGS_VIN_VINLANDVIKINGS_H
-#define VINLANDVIKINGS_VIN_VINLANDVIKINGS_H
+#ifndef VINLANDVIKINGS_VIN_VINLANDWINDOW_H
+#define VINLANDVIKINGS_VIN_VINLANDWINDOW_H
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
@@ -25,4 +25,4 @@ namespace vin {
 
 } // Namespace vin.
 
-#endif // VINLANDVIKINGS_VIN_VINLANDVIKINGS_H
+#endif // VINLANDVIKINGS_VIN_VINLANDWINDOW_H

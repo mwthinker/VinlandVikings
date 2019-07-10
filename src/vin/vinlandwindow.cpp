@@ -29,15 +29,15 @@ namespace vin {
 	}
 
 	void VinlandWindow::update(double deltaTime) {
-		ImGuiWindow::update(deltaTime);
+        sdl::ImGuiWindow::update(deltaTime);
 	}
 
 	void VinlandWindow::initOpenGl() {
-		ImGuiWindow::initOpenGl();
+        sdl::ImGuiWindow::initOpenGl();
 	}
 
 	void VinlandWindow::initPreLoop() {
-		ImGuiWindow::initPreLoop();
+        sdl::ImGuiWindow::initPreLoop();
 	}
 
-} // Namespace tetris.
+} // Namespace vin.
