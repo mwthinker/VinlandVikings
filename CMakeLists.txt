@@ -21,6 +21,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
+	src/vin/hexagonbatch.cpp
+	src/vin/hexagonbatch.h
 	src/vin/logger.h
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp
