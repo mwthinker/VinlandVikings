@@ -29,6 +29,7 @@ namespace vin {
 
 		Page page_;
 		HexagonBatch hexagonBatch_;
+		sdl::Texture whiteSquare_;
 	};
 
 } // Namespace vin.

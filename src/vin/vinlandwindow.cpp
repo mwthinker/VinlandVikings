@@ -10,7 +10,7 @@ namespace vin {
 
     }
 
-	VinlandWindow::VinlandWindow() {
+	VinlandWindow::VinlandWindow() : whiteSquare_(1, 1, 255, 255, 255, 255) {
 
 	}
 
@@ -40,7 +40,8 @@ namespace vin {
         sdl::ImGuiWindow::update(deltaTime);
         const auto& shader = getImGuiShader();
         shader.setMatrix(glm::mat4x4(1));
-        shader.setTexture(false);
+        shader.setTextureId(0);
+		whiteSquare_.bindTexture();
         hexagonBatch_.draw(getImGuiShader());
 	}
 
@@ -55,9 +56,9 @@ namespace vin {
 	void VinlandWindow::initPreLoop() {
         sdl::ImGuiWindow::initPreLoop();
         //glViewport(0,0, 400, 400);
+		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.5f);
         hexagonBatch_.init(getImGuiShader());
-        hexagonBatch_.addHexagon(100, 100, 30);
-        hexagonBatch_.uploadToGraphicCard();
+
 	}
 
 } // Namespace vin.

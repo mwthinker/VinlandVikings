@@ -27,15 +27,6 @@ namespace vin {
 
     }
 
-    /*
-    struct ImDrawVert
-    {
-        ImVec2  pos;
-        ImVec2  uv;
-        ImU32   col;
-    };
-     */
-
     void HexagonBatch::addHexagon(float x, float y, float size, ImU32 color) {
         auto center = createVertex(x, y, color);
 
@@ -45,6 +36,5 @@ namespace vin {
             batch_.add(createHexCornerVertex(center, size, (i + 1) % 6));
         }
     }
-
 
 } // Namespace vin.

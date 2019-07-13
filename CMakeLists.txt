@@ -53,6 +53,17 @@ FetchContent_Declare(CppSdl2
 )
 FetchContent_MakeAvailable(CppSdl2)
 
+# Load data.
+# FetchContent_Declare(VinlandVikingsData
+	# GIT_REPOSITORY
+		# https://github.com/mwthinker/VinlandVikingsData.git
+# )
+# FetchContent_MakeAvailable(VinlandVikingsData)
+# FetchContent_GetProperties(VinlandVikingsData
+	# SOURCE_DIR
+		# VinlandVikingsData_SOURCE_DIR
+# )
+
 set(ExternalDependencies
 	CppSdl2
 )
@@ -70,6 +81,9 @@ set_target_properties(
 )
 
 # Copy data to build folder.
+#file(COPY ${VinlandVikingsData_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
+#file(COPY ${VinlandVikingsData_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
+#file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
 file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

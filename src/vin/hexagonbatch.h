@@ -27,7 +27,7 @@ namespace vin {
             batch_.uploadToGraphicCard();
         }
 
-        void addHexagon(float x, float y, float size, ImU32 color = ImColor(255, 255, 255));
+        void addHexagon(float x, float y, float size, ImU32 color = ImColor(255, 0, 0));
 
         //void addRectangle(float x, float y, float w, float h, const sdl::Sprite& sprite) {
          //   int textureW = sprite.getTexture().getWidth();
@@ -90,6 +90,7 @@ namespace vin {
         }
 
         void init(const sdl::ImGuiShader& shader) {
+			batch_.uploadToGraphicCard();
             shader.useProgram();
             vao_.create();
             batch_.bindBuffer();
@@ -97,7 +98,7 @@ namespace vin {
         }
 
         void draw(const sdl::ImGuiShader& shader) const {
-            shader.useProgram();
+			shader.useProgram();
             vao_.bind();
             batch_.draw();
         }
