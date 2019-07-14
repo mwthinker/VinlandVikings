@@ -22,12 +22,16 @@ namespace vin {
 		Color(ImColor vec) : value(vec.Value.x, vec.Value.y, vec.Value.z, vec.Value.w) {
 		}
 
-		Color(float red = 0, float green = 0, float blue = 0, float alpha = 0)
+		Color(float red = 1.f, float green = 1.f, float blue = 1.f, float alpha = 1.f)
 			: value(red, green, blue, alpha) {
 		}
 
 		operator glm::vec4() const {
 			return value;
+		}
+
+		operator ImU32() const {
+			return ImGui::ColorConvertFloat4ToU32({value.r, value.b, value.g, value.a});
 		}
 
 		operator ImColor() const {
@@ -37,6 +41,8 @@ namespace vin {
 	private:
 		glm::vec4 value;
 	};
+
+	static const Color WHITE = Color(1.f, 1.f, 1.f, 1.f);
 
 } // Namespace vin.
 
