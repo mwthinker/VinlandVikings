@@ -6,6 +6,7 @@
 #include <sdl/batch.h>
 #include <sdl/imguishader.h>
 #include <sdl/sprite.h>
+#include <sdl/vertexarrayobject.h>
 
 #include <imgui.h>
 

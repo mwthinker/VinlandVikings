@@ -31,7 +31,7 @@ namespace vin {
 		}
 
 		operator ImU32() const {
-			return ImGui::ColorConvertFloat4ToU32({value.r, value.b, value.g, value.a});
+			return ImGui::ColorConvertFloat4ToU32({value.r, value.g, value.b, value.a});
 		}
 
 		operator ImColor() const {

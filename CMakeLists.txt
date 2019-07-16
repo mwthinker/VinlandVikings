@@ -21,16 +21,23 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
+	src/vin/canvas.cpp
+	src/vin/canvas.h
+	src/vin/hexagon.cpp
+	src/vin/hexagon.h
 	src/vin/hexagonbatch.cpp
 	src/vin/hexagonbatch.h
 	src/vin/logger.h
 	src/vin/types.h
+	src/vin/hexdata.cpp
+	src/vin/hexdata.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h
 	src/vin/main.cpp
 )
 
 find_package(Threads REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On) 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VinlandVikings)
@@ -48,8 +55,8 @@ include(FetchContent)
 FetchContent_Declare(CppSdl2
 	GIT_REPOSITORY
 		https://github.com/mwthinker/CppSdl2.git
-	GIT_TAG
-		origin/imgui
+	#GIT_TAG
+	#	origin/imgui
 )
 FetchContent_MakeAvailable(CppSdl2)
 
@@ -99,6 +106,8 @@ endif ()
 
 target_link_libraries(VinlandVikings
 	PRIVATE
+		nlohmann_json
+		nlohmann_json::nlohmann_json
 		Threads::Threads
 		${ExternalDependencies}
 )
