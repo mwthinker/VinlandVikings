@@ -11,29 +11,24 @@ namespace vin {
 
 		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		
-		/*
-		void addImageQuad(ImDrawList* drawList, const sdl::Sprite& sprite,
-			const ImVec2& pos, ImVec2& size, const ImColor& color) {
+		const float INNER_RADIUS = 11.f;
+		const float OUTER_RADIUS = 12.f;
 
-			auto [texW, texH] = sprite.getTexture().getSize();
-
-			ImVec2 a = {pos.x, pos.y};
-			ImVec2 b = {pos.x + size.x, pos.y};
-			ImVec2 c = {pos.x + size.x, pos.y + size.y};
-			ImVec2 d = {pos.x, pos.y + size.y};
-
-			ImVec2 uv_c = {sprite.getX() / texW, sprite.getY() / texH};
-			ImVec2 uv_d = {(sprite.getX() + sprite.getWidth()) / texW, sprite.getY() / texH};
-			ImVec2 uv_a = {(sprite.getX() + sprite.getWidth()) / texW, (sprite.getY() + sprite.getHeight()) / texH};
-			ImVec2 uv_b = {sprite.getX() / texW, (sprite.getY() + sprite.getHeight()) / texH};
-
-			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
+		float createInnerRadius(float zoom = 1) {
+			return INNER_RADIUS * zoom;
 		}
-		*/
+
+		float createOuterRadius(float zoom = 1) {
+			return OUTER_RADIUS * zoom;
+		}
+
+		Layout createFlatLayout(float x, float y, float zoom) {
+			return Layout(layoutPointy, {createInnerRadius(zoom), createOuterRadius(zoom)}, {300.f + x, 300.f + y});
+		}
 	}
 
-	std::vector<Hex> createFlatHexShape(int radiusNbr) {
-		std::vector<Hex> hexes;
+	std::vector<Hexi> createFlatHexShape(int radiusNbr) {
+		std::vector<Hexi> hexes;
 		for (int q = -radiusNbr; q <= radiusNbr; q++) {
 			int r1 = std::max(-radiusNbr, -q - radiusNbr);
 			int r2 = std::min(radiusNbr, -q + radiusNbr);
@@ -44,7 +39,17 @@ namespace vin {
 		return hexes;
 	}
 
-	void grid(float zoom, float x, float y) {
+	std::vector<Hexi> createParallelogramShape(int columns, int rows) {
+		std::vector<Hexi> hexes;
+		for (int i = -10; i < 10; ++i) {
+			for (int j = -10; j < 10; ++j) {
+				hexes.emplace_back(i, j);
+			}
+		}
+		return hexes;
+	}
+	
+	void grid(std::unordered_set<Hexi>& hexes, float zoom, float x, float y) {
 		ImVec2 p = ImGui::GetCursorScreenPos();
 
 		ImVec2 size = ImGui::GetWindowSize();
@@ -56,48 +61,25 @@ namespace vin {
 
 		const ImU32 GRID_COLOR = Color(0.5f, 0.5f, 0.5f);
 
-		const float innerRadius = 11.f * zoom;
-		const float outerRadius = 12.f * zoom;
+		auto layout = createFlatLayout(x, y, zoom);
+		float innerRadius = createInnerRadius(zoom);
+		float outerRadius = createOuterRadius(zoom);
 
-		const Layout layout(layoutPointy, {outerRadius, outerRadius}, {300.f + x, 300.f + y});
-
-		/*
-		for (int i = -10; i < 10; ++i) {
-			for (int j = -10; j < 10; ++j) {
-				auto pos = hex_to_pixel(layout, Hex(i, j, 0));
-				addHexagon(drawList, {pos.x, pos.y}, innerRadius, outerRadius, RED);
+		for (const auto& hex : hexes) {				
+			auto pos = hexToPixel(layout, hex);
+			auto color = GRID_COLOR;
+			
+			if (hex == HEX_Q) {
+				color = RED;
 			}
-		}
-		*/
-
-		int mapRadius = 10;
-		for (int q = -mapRadius; q <= mapRadius; q++) {
-			int r1 = std::max(-mapRadius, -q - mapRadius);
-			int r2 = std::min(mapRadius, -q + mapRadius);
-			for (int r = r1; r <= r2; r++) {
-				Hex hex(q, r);
-				auto pos = hexToPixel(layout, hex);
-				auto color = GRID_COLOR;
-				if (hex.q() == mapRadius || hex.r() == mapRadius || hex.s() == mapRadius) {
-					color = WHITE;
-				} else if (hex.q() + hex.r() == mapRadius || hex.q() + hex.s() == mapRadius || hex.r() + hex.s() == mapRadius) {
-					color = WHITE;
-				} else if (hex == HEX_ZERO) {
-					color = WHITE;
-				}
-
-				if (hex == HEX_Q) {
-					color = RED;
-				}
-				if (hex == HEX_R) {
-					color = GREEN;
-				}
-				if (hex == HEX_S) {
-					color = BLUE;
-				}
-
-				addHexagon(drawList, {pos.x, pos.y}, innerRadius, outerRadius, color);
+			if (hex == HEX_R) {
+				color = GREEN;
 			}
+			if (hex == HEX_S) {
+				color = BLUE;
+			}
+
+			addHexagon(drawList, {pos.x, pos.y}, innerRadius, outerRadius, color);
 		}
 
 	}
@@ -130,6 +112,12 @@ namespace vin {
 		x_ = 0.f;
 		y_ = 0.f;
 		imageAngle_ = PI / 2;
+
+		//auto hexes = createFlatHexShape(10);
+		auto hexes = createParallelogramShape(10, 5);
+		for (auto& hex : hexes) {
+			hexes_.insert(hex);
+		}
 	}
 
 	void Canvas::draw() {
@@ -139,16 +127,13 @@ namespace vin {
 
 		hasFocus_ = ImGui::IsWindowFocused();
 
-		//auto delta = ImGui::GetMouseDragDelta(0);
-		//x_ += delta.x;
-		//y_ += delta.y;
-
-		grid(zoom_, x_, y_);
-		//logger()->info("delta: {},{}", delta.x, delta.y);
+		grid(hexes_, zoom_, x_, y_);
 
 		ImVec2 pos = ImGui::GetMousePos();
-		ImVec2 size(12.f * 2 * zoom_, 12.f * 2 * zoom_);
+		ImVec2 size(createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2);
 		HexagonImage(image_, pos, size, imageAngle_);
+
+
 
 		ImGui::EndChild();
 	}

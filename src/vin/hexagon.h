@@ -13,6 +13,7 @@
 
 namespace vin {
 
+	template <class Type>
 	class Hex {
 	public:
 		constexpr Hex() : q_(0), r_(0) {
@@ -21,45 +22,49 @@ namespace vin {
 		constexpr Hex(int q, int r) : q_(q), r_(r) {
 		}
 
-		constexpr int q() const { return q_; }
-		constexpr int r() const { return r_; }
-		constexpr int s() const { return -q_ - r_; }
+		constexpr Type q() const { return q_; }
+		constexpr Type r() const { return r_; }
+		constexpr Type s() const { return -q_ - r_; }
 
 		constexpr bool operator==(Hex hex) const { return q_ == hex.q_ && r_ == hex.r_; }
 
-		constexpr Hex operator-() const {
-			return Hex(-q_, -r_);
+		constexpr Type operator-() const {
+			return Type(-q_, -r_);
 		}
 
-		constexpr Hex operator*(int nbr) const {
-			return Hex(q_ * nbr, r_ * nbr);
+		constexpr Type operator*(int nbr) const {
+			return Type(q_ * nbr, r_ * nbr);
 		}
 
-		constexpr Hex operator+(Hex hex) const {
-			return Hex(q_ + hex.q_, r_ + hex.r_);
+		constexpr Type operator+(Type hex) const {
+			return Type(q_ + hex.q_, r_ + hex.r_);
 		}
 
-		constexpr Hex operator-(Hex hex) const {
-			return Hex(q_ - hex.q_, r_ - hex.r_);
+		constexpr Type operator-(Type hex) const {
+			return Type(q_ - hex.q_, r_ - hex.r_);
 		}
 
 	private:
 		const int q_, r_;
 	};
 
-	constexpr Hex HEX_ZERO(0, 0);
-	constexpr Hex HEX_Q(1, 0);
-	constexpr Hex HEX_R(0, 1);
-	constexpr Hex HEX_S(-1, 1);
+	using Hexi = Hex<int>;
 
+	constexpr Hexi HEX_ZERO(0, 0);
+	
+	constexpr Hexi HEX_Q(1, 0);
+	
+	constexpr Hexi HEX_R(0, 1);
+	
+	constexpr Hexi HEX_S(-1, 1);
 
-	constexpr std::array<Hex, 6> CUBE_DIRECTIONS = {
-		Hex(1, -1), // s = 0
-		Hex(1, 0), // s = -1
-		Hex(0, 1), // s = -1
-		Hex(-1, 1), // s = 0
-		Hex(-1, 0), // s = 1
-		Hex(0, -1) // s = 1
+	constexpr std::array<Hexi, 6> CUBE_DIRECTIONS = {
+		Hexi(1, -1), // s = 0
+		Hexi(1, 0), // s = -1
+		Hexi(0, 1), // s = -1
+		Hexi(-1, 1), // s = 0
+		Hexi(-1, 0), // s = 1
+		Hexi(0, -1) // s = 1
 	};
 
 	const auto PI = glm::pi<GLfloat>();
@@ -74,7 +79,7 @@ namespace vin {
 		return  {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
 	}
 
-	constexpr Hex cubeDirection(int direction) {
+	constexpr Hexi cubeDirection(int direction) {
 		return CUBE_DIRECTIONS[direction];
 	}
 
@@ -86,7 +91,7 @@ namespace vin {
 		//return cube_add(cube, cube_direction(direction))
 	//}
 
-	constexpr int cubeDistance(Hex a, Hex b) {
+	constexpr int cubeDistance(Hexi a, Hexi b) {
 		return (abs(a.q() - b.q()) + abs(a.r() - b.r()) + abs(a.s() - b.s())) / 2;
 	}
 
@@ -124,7 +129,7 @@ namespace vin {
 			: orientation(orientation_), size(size_), origin(origin_) {}
 	};
 
-	constexpr Vec2 hexToPixel(const Layout& layout, Hex h) {
+	constexpr Vec2 hexToPixel(const Layout& layout, Hexi h) {
 		const Orientation& M = layout.orientation;
 		float x = (M.f0 * h.q() + M.f1 * h.r()) * layout.size.x;
 		float y = (M.f2 * h.q() + M.f3 * h.r()) * layout.size.y;

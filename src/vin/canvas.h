@@ -15,8 +15,8 @@
 #include <unordered_set>
 
 namespace std {
-	template <> struct hash<vin::Hex> {
-		size_t operator()(const vin::Hex& h) const {
+	template <> struct hash<vin::Hexi> {
+		size_t operator()(const vin::Hexi& h) const {
 			hash<int> int_hash;
 			size_t hq = int_hash(h.q());
 			size_t hr = int_hash(h.r());
@@ -30,8 +30,6 @@ namespace vin {
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color);
 
 	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);
-
-	void grid(float zoom, float x, float y);
 
     class Canvas {
     public:
@@ -63,7 +61,7 @@ namespace vin {
 		bool activateHexagon_;
 		sdl::Sprite image_;
 		float imageAngle_;
-		std::unordered_set<Hex> hexes_;
+		std::unordered_set<Hexi> hexes_;
 
     };
 
