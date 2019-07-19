@@ -23,8 +23,8 @@ int main(int, char**) {
 		const sdl::InitSdl SDL;
 		vin::VinlandWindow vinland;
 		vinland.startLoop();
-	} catch (std::exception&) {
-		vin::logger()->error("[Main] Fatal error has occured.");
+	} catch (std::exception& ex) {
+		vin::logger()->error("[Main] Fatal error has occured: {}", ex.what());
 	}
 
 	return 0;

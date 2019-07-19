@@ -1,21 +1,22 @@
 #include "hexdata.h"
+#include "hexagon.h"
+#include "logger.h"
 
 #include <nlohmann/json.hpp>
 
 #include <fstream>
 #include <sstream>
 
-namespace vin {		
+using nlohmann::json;
+
+namespace vin {
+	
+	//void from_json(const json& j, HexImage& hex) {
+	//	hex = HexImage(sdl::Sprite(j.at("blockType").get<std::string>()));
+	//}
 
 	/*
-	void from_json(const json& j, Block& block) {
-		block = Block(j.at("blockType").get<BlockType>(),
-			j.at("leftColumn").get<int>(),
-			j.at("bottomRow").get<int>(),
-			j.at("currentRotation").get<int>());
-	}
-
-	void to_json(json& j, const Block& block) {
+	void to_json(json& j, const HexImage& block) {
 		j = json({
 			{"bottomRow", block.getLowestStartRow()},
 			{"blockType", block.getBlockType()},
@@ -25,14 +26,11 @@ namespace vin {
 	}
 	*/
 
-	HexData::HexData() : textureAtlas_(2048, 2048, []() {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	}) {
+	HexData::HexData() {
 		std::ifstream defaultStream("USE_APPLICATION_JSON");
 		bool applicationJson;
 		defaultStream >> applicationJson;
-		const std::string APPLICATION_JSON = "hexdata.json";
+		const std::string APPLICATION_JSON = "images/hexdata.json";
 		if (applicationJson) {
 			jsonPath_ = APPLICATION_JSON;
 		} else {
@@ -57,8 +55,7 @@ namespace vin {
 		std::string key = file;
 		key += fontSize;
 		sdl::Font& font = fonts_[key];
-
-		// Font not found?
+		
 		if (fonts_.size() > size) {
 			font = sdl::Font(file, fontSize);
 		}
@@ -67,7 +64,34 @@ namespace vin {
 	}
 
 	sdl::Sprite HexData::loadSprite(const std::string& file) {
-		return textureAtlas_.add(file, 1);;
+		size_t size = sprites_.size();
+		auto& sprite = sprites_[file];
+		
+		if (sprites_.size() > size) {
+			sprite = sdl::Sprite("images/" + file);
+		}
+		return sprite;
+	}
+
+	std::vector<HexImage> HexData::loadHexImages() {
+		auto& hexes = jsonObject_["hexes"];
+
+		std::vector<HexImage> hexImages;
+		for (auto& hex : hexes) {
+			sdl::Texture texture("images/" + hex["image"].get<std::string>());
+			float size = hex["size"].get<int>();
+			bool flat = hex["flat"].get<bool>();
+
+			
+			float width = size;
+			float height = std::sqrt(3) / 2.f * size;
+			float x = (texture.getWidth() - width) / 2.f;
+			float y = (texture.getHeight() - height) / 2.f;
+
+			sdl::Sprite sprite(texture, x, y, width, height);
+			hexImages.emplace_back(sprite, flat);
+		}
+		return hexImages;
 	}
 
 	/*
@@ -96,8 +120,8 @@ namespace vin {
 		return loadFont(jsonObject_["window"]["font"].get<std::string>(), size);
 	}
 
-	void HexData::bindTextureFromAtlas() const {
-		textureAtlas_.getTexture().bindTexture();
-	}
+	//void HexData::bindTextureFromAtlas() const {
+	//	textureAtlas_.getTexture().bindTexture();
+	//}
 
 } // Namespace vin.

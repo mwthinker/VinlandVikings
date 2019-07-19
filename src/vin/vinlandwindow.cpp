@@ -1,6 +1,7 @@
 #include "vinlandwindow.h"
 #include "canvas.h"
 #include "logger.h"
+#include "imguiextra.h"
 
 namespace vin {
 
@@ -13,6 +14,7 @@ namespace vin {
     }
 
 	VinlandWindow::VinlandWindow() : page_(Page::START), whiteSquare_(1, 1, 255, 255, 255, 255) {
+		hexImages_ = HexData::getInstance().loadHexImages();
 	}
 
 	VinlandWindow::~VinlandWindow() {
@@ -76,8 +78,25 @@ namespace vin {
 
     void VinlandWindow::updateImGui(double deltaTime) {
 		beginMain();
+
+		//ImGui::ImageBackground(hexImages_[0].getImage());
+
+		ImGui::Button("hej");
+		//ImGui::Image(hexImages_[0].getImage(), ImVec2(100.f, 100.f));
+
+		
+
+		if (ImGui::ImageButton(hexImages_[8].getImage(), ImVec2(200.f, 200.f))) {
+			canvas_.activateHexagon(hexImages_[0].getImage());
+			logger()->warn("ImageButton");
+		} else {
+			//logger()->warn("No ImageButton");
+		}
+
+		//ImGui::Image
+
 		//grid(zoom_, x_, y_);
-		canvas_.draw();
+		canvas_.draw();		
 		endMain();
     }
 

@@ -1,6 +1,7 @@
 #include "canvas.h"
 #include "hexagon.h"
 #include "logger.h"
+#include "imguiextra.h"
 
 namespace vin {
 
@@ -10,6 +11,7 @@ namespace vin {
 
 		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		
+		/*
 		void addImageQuad(ImDrawList* drawList, const sdl::Sprite& sprite,
 			const ImVec2& pos, ImVec2& size, const ImColor& color) {
 
@@ -27,7 +29,19 @@ namespace vin {
 
 			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
 		}
+		*/
+	}
 
+	std::vector<Hex> createFlatHexShape(int radiusNbr) {
+		std::vector<Hex> hexes;
+		for (int q = -radiusNbr; q <= radiusNbr; q++) {
+			int r1 = std::max(-radiusNbr, -q - radiusNbr);
+			int r2 = std::min(radiusNbr, -q + radiusNbr);
+			for (int r = r1; r <= r2; r++) {
+				hexes.emplace_back(q, r);
+			}
+		}
+		return hexes;
 	}
 
 	void grid(float zoom, float x, float y) {
@@ -88,6 +102,15 @@ namespace vin {
 
 	}
 
+	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle) {
+		if (!image.getTexture().isValid()) {
+			return;
+		}
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		ImGui::Image(image, ImVec2(pos.x, pos.y), size, angle, WHITE);
+	}
+
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color) {
 		auto v1 = getHexCorner(center, innerSize, 0);
 		auto v2 = getHexCorner(center, outerSize, 0);
@@ -106,6 +129,7 @@ namespace vin {
 		zoom_ = 1.f;
 		x_ = 0.f;
 		y_ = 0.f;
+		imageAngle_ = PI / 2;
 	}
 
 	void Canvas::draw() {
@@ -115,7 +139,16 @@ namespace vin {
 
 		hasFocus_ = ImGui::IsWindowFocused();
 
+		//auto delta = ImGui::GetMouseDragDelta(0);
+		//x_ += delta.x;
+		//y_ += delta.y;
+
 		grid(zoom_, x_, y_);
+		//logger()->info("delta: {},{}", delta.x, delta.y);
+
+		ImVec2 pos = ImGui::GetMousePos();
+		ImVec2 size(12.f * 2 * zoom_, 12.f * 2 * zoom_);
+		HexagonImage(image_, pos, size, imageAngle_);
 
 		ImGui::EndChild();
 	}
@@ -152,6 +185,13 @@ namespace vin {
 					if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 						x_ += windowEvent.motion.xrel;
 						y_ += windowEvent.motion.yrel;
+					}
+					break;
+				case SDL_MOUSEBUTTONUP:
+					switch (windowEvent.button.button) {
+						case SDL_BUTTON_MIDDLE:
+							imageAngle_ = std::fmod(imageAngle_ + PI / 3, 2 * PI);
+							break;
 					}
 					break;
 			}

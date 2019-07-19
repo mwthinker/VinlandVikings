@@ -10,6 +10,8 @@
 namespace vin {
 
 	using Mat44 = glm::mat4x4;
+	using Mat33 = glm::mat3x3;
+	using Mat22 = glm::mat2x2;
 	using Vec2 = glm::vec2;
 	using Vec3 = glm::vec3;
 	using Vec4 = glm::vec4;	

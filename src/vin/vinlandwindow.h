@@ -3,10 +3,13 @@
 
 #include "hexagonbatch.h"
 #include "canvas.h"
+#include "hexdata.h"
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
 #include <sdl/textureatlas.h>
+
+#include <vector>
 
 namespace vin {
 
@@ -38,6 +41,7 @@ namespace vin {
 		sdl::Texture whiteSquare_;
 		float zoom_;
 		float x_, y_;
+		std::vector<HexImage> hexImages_;
 	};
 
 } // Namespace vin.

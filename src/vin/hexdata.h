@@ -14,6 +14,25 @@
 
 namespace vin {
 
+	class HexImage {
+	public:
+		HexImage() : flat_(true) {
+		}
+
+		HexImage(const HexImage&) = default;
+
+		HexImage(const sdl::Sprite& image, bool flat) : image_(image), flat_(flat) {
+		}
+
+		sdl::Sprite getImage() const {
+			return image_;
+		}
+
+	private:
+		sdl::Sprite image_;
+		bool flat_;
+	};
+
 	class HexData {
 	public:
 		static HexData& getInstance() {
@@ -33,15 +52,17 @@ namespace vin {
 
 		sdl::Font getDefaultFont(int size);
 
-		void bindTextureFromAtlas() const;
+		//void bindTextureFromAtlas() const;
+
+		std::vector<HexImage> loadHexImages();
 
 	private:
 		HexData();
 
 		std::string jsonPath_;
-		sdl::TextureAtlas textureAtlas_;
 		std::map<std::string, sdl::Sound> sounds_;
 		std::map<std::string, sdl::Font> fonts_;
+		std::map<std::string, sdl::Sprite> sprites_;
 		nlohmann::json jsonObject_;
 	};
 
