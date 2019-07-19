@@ -133,7 +133,13 @@ namespace vin {
 		ImVec2 size(createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2);
 		HexagonImage(image_, pos, size, imageAngle_);
 
+		Hexf hexf = pixelToHex(createFlatLayout(x_, y_, zoom_), Vec2(pos.x, pos.y));
+		Hexi hexi = hexRound(hexf);
+		//logger()->info("Pixel: ({}, {})", x_, y_);
+		logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
 
+		auto pixel = hexToPixel(createFlatLayout(x_, y_, zoom_), hexi);
+		addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.7f, 0.f, 0.f, 0.5f));
 
 		ImGui::EndChild();
 	}

@@ -79,7 +79,7 @@ namespace vin {
 		std::vector<HexImage> hexImages;
 		for (auto& hex : hexes) {
 			sdl::Texture texture("images/" + hex["image"].get<std::string>());
-			float size = hex["size"].get<int>();
+			float size = hex["size"].get<float>();
 			bool flat = hex["flat"].get<bool>();
 
 			

@@ -11,6 +11,8 @@
 
 #include <imgui.h>
 
+#include <iostream>
+
 namespace vin {
 
 	template <class Type>
@@ -19,7 +21,7 @@ namespace vin {
 		constexpr Hex() : q_(0), r_(0) {
 		}
 
-		constexpr Hex(int q, int r) : q_(q), r_(r) {
+		constexpr Hex(Type q, Type r) : q_(q), r_(r) {
 		}
 
 		constexpr Type q() const { return q_; }
@@ -32,7 +34,7 @@ namespace vin {
 			return Type(-q_, -r_);
 		}
 
-		constexpr Type operator*(int nbr) const {
+		constexpr Type operator*(Type nbr) const {
 			return Type(q_ * nbr, r_ * nbr);
 		}
 
@@ -45,10 +47,11 @@ namespace vin {
 		}
 
 	private:
-		const int q_, r_;
+		const Type q_, r_;
 	};
 
 	using Hexi = Hex<int>;
+	using Hexf = Hex<float>;
 
 	constexpr Hexi HEX_ZERO(0, 0);
 	
@@ -135,6 +138,49 @@ namespace vin {
 		float y = (M.f2 * h.q() + M.f3 * h.r()) * layout.size.y;
 		return {x + layout.origin.x, y + layout.origin.y};
 	}
+
+	inline Hexf pixelToHex(Layout layout, Vec2 p) {
+		const Orientation& M = layout.orientation;
+		Vec2 pt = Vec2((p.x - layout.origin.x) / layout.size.x,
+			(p.y - layout.origin.y) / layout.size.y);
+		float q = M.b0 * pt.x + M.b1 * pt.y;
+		float r = M.b2 * pt.x + M.b3 * pt.y;
+		return Hexf(q, r);
+	}
+
+	inline Hexi hexRound(Hexf h) {
+		int q = (int) round(h.q());
+		int r = (int) round(h.r());
+		int s = (int) round(h.s());
+		float q_diff = std::abs(q - h.q());
+		float r_diff = std::abs(r - h.r());
+		float s_diff = std::abs(s - h.s());
+		if (q_diff > r_diff && q_diff > s_diff) {
+			q = -r - s;
+		} else if (r_diff > s_diff) {
+			r = -q - s;
+		} else {
+			s = -q - r;
+		}
+		return Hexi(q, r);
+	}
+
+	/*
+	template <class HexType>
+	std::ostream& operator<<(std::ostream& os, Hex<HexType> hex) {
+		return os << "(" << hex.q() << ", " << hex.r() << ", " << hex.s();
+	}
+	*/
+
+	/*
+	std::ostream& operator<<(std::ostream& os, Hexi hex) {
+		return os << "(" << hex.q() << ", " << hex.r() << ", " << hex.s();
+	}
+
+	std::ostream& operator<<(std::ostream& os, Hexf hex) {
+		return os << "(" << hex.q() << ", " << hex.r() << ", " << hex.s();
+	}
+	*/
 
 } // Namespace vin.
 
