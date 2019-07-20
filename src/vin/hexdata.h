@@ -1,6 +1,8 @@
 #ifndef VINLANDVIKINGS_VIN_HEXDATA_H
 #define VINLANDVIKINGS_VIN_HEXDATA_H
 
+#include "hexagon.h"
+
 #include <sdl/sound.h>
 #include <sdl/sprite.h>
 #include <sdl/font.h>
@@ -11,25 +13,43 @@
 
 #include <map>
 #include <vector>
+#include <array>
 
 namespace vin {
 
 	class HexImage {
 	public:
-		HexImage() : flat_(true) {
+		HexImage() : flat_(true), hexSides_{HexSide::NONE} {
 		}
 
 		HexImage(const HexImage&) = default;
 
-		HexImage(const sdl::Sprite& image, bool flat) : image_(image), flat_(flat) {
+		HexImage& operator=(const HexImage&) = default;
+
+		HexImage(const std::string& filename, sdl::Sprite& image, const HexSides& hexSides, bool flat)
+			: filename_(filename), image_(image), hexSides_(hexSides), flat_(flat) {
 		}
 
-		sdl::Sprite getImage() const {
+		const std::string& getFilename() const {
+			return filename_;
+		}
+
+		const sdl::Sprite& getImage() const {
 			return image_;
 		}
 
+		const HexSides& getHexSides() const {
+			return hexSides_;
+		}
+
+		bool isFlat() const {
+			return flat_;
+		}		
+
 	private:
+		std::string filename_;
 		sdl::Sprite image_;
+		HexSides hexSides_;
 		bool flat_;
 	};
 

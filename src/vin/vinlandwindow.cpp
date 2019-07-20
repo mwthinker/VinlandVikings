@@ -11,10 +11,26 @@ namespace vin {
 
         const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
+		void HelpMarker(const char* desc)
+		{
+			//ImGui::TextDisabled("(?)");
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::TextUnformatted(desc);
+				ImGui::PopTextWrapPos();
+				ImGui::EndTooltip();
+			}
+		}
+
     }
 
 	VinlandWindow::VinlandWindow() : page_(Page::START), whiteSquare_(1, 1, 255, 255, 255, 255) {
 		hexImages_ = HexData::getInstance().loadHexImages();
+		for (const auto& hexImage : hexImages_) {
+			hexTypes_[hexImage].hexImages_.push_back(hexImage);
+		}
 	}
 
 	VinlandWindow::~VinlandWindow() {
@@ -84,14 +100,9 @@ namespace vin {
 		ImGui::Button("hej");
 		//ImGui::Image(hexImages_[0].getImage(), ImVec2(100.f, 100.f));
 
-		
 
-		if (ImGui::ImageButton(hexImages_[8].getImage(), ImVec2(200.f, 200.f))) {
-			canvas_.activateHexagon(hexImages_[0].getImage());
-			logger()->warn("ImageButton");
-		} else {
-			//logger()->warn("No ImageButton");
-		}
+		drawHexTypesButtons();
+
 
 		//ImGui::Image
 
@@ -99,6 +110,34 @@ namespace vin {
 		canvas_.draw();		
 		endMain();
     }
+
+	void VinlandWindow::drawHexTypesButtons() {
+		ImGuiStyle& style = ImGui::GetStyle();
+		int buttons_count = hexTypes_.size();
+		float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+		
+		int n = 0;
+		for (auto& pair : hexTypes_) {
+			//ImGui::PushID(n);
+			auto& index = pair.second.index_;
+			auto& hexImages = pair.second.hexImages_;
+			//ImGui::SameLine();
+			ImVec2 buttonSize(50.f, 50.f);
+			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
+				if (hexImages[index].getImage().getTexture() == canvas_.currentHexSprite().getTexture()) {
+					index = (index + 1) % hexImages.size();
+				}
+				canvas_.activateHexagon(hexImages[index].getImage());
+			}
+			HelpMarker(hexImages[index].getFilename().c_str());
+			float last_button_x2 = ImGui::GetItemRectMax().x;
+			float next_button_x2 = last_button_x2 + style.ItemSpacing.x + buttonSize.x; // Expected position if next button was on same line
+			if (n + 1 < buttons_count && next_button_x2 < window_visible_x2)
+				ImGui::SameLine();
+			//ImGui::PopID();
+			++n;
+		}
+	}
 
 	void VinlandWindow::initOpenGl() {
         sdl::ImGuiWindow::initOpenGl();

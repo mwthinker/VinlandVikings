@@ -26,6 +26,10 @@ namespace vin {
 	}
 	*/
 
+	void from_json(const json& j, HexSide& hex) {
+		hex = static_cast<HexSide>(j.get<int>());
+	}
+
 	HexData::HexData() {
 		std::ifstream defaultStream("USE_APPLICATION_JSON");
 		bool applicationJson;
@@ -78,18 +82,29 @@ namespace vin {
 
 		std::vector<HexImage> hexImages;
 		for (auto& hex : hexes) {
-			sdl::Texture texture("images/" + hex["image"].get<std::string>());
+			std::string filename = "images/" + hex["image"].get<std::string>();
+
+			sdl::Texture texture(filename);
+
 			float size = hex["size"].get<float>();
 			bool flat = hex["flat"].get<bool>();
+			auto& hexSidesJson = hex["sides"];
+			if (hexSidesJson.size() != 6) {
+				logger()->warn("Missing sides in {}, nr of sides is {}", filename, hexSidesJson.size());
+				continue;
+			}
 
-			
+			std::array<HexSide, 6> hexSides;
+			for (int i = 0; i < 6; ++i) {
+				hexSides[i] = hexSidesJson[i].get<HexSide>();
+			}
 			float width = size;
-			float height = std::sqrt(3) / 2.f * size;
+			float height = std::sqrt(3.f) / 2.f * size;
 			float x = (texture.getWidth() - width) / 2.f;
 			float y = (texture.getHeight() - height) / 2.f;
 
 			sdl::Sprite sprite(texture, x, y, width, height);
-			hexImages.emplace_back(sprite, flat);
+			hexImages.emplace_back(filename, sprite, hexSides, flat);
 		}
 		return hexImages;
 	}

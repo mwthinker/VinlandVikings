@@ -50,6 +50,10 @@ namespace vin {
 			activateHexagon_ = false;
 		}
 
+		const sdl::Sprite& currentHexSprite() const {
+			return image_;
+		}
+
     private:
         sdl::Batch<ImDrawVert> batch_;
 

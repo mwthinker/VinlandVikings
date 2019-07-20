@@ -188,7 +188,6 @@ namespace ImGui {
 	}
 
 	IMGUI_API void LoadingBar(const ImColor& color1, const ImColor& color2, const ImVec2& size) {
-		
 		ImGui::Dummy(size);
 		auto pos = ImGui::GetCursorPos();
 		ImGui::GetWindowDrawList()->AddRectFilled(pos, { pos.x + size.x, pos.y + size.y }, color1);

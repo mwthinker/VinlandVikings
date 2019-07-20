@@ -122,8 +122,8 @@ namespace vin {
 
 	void Canvas::draw() {
 		ImGui::BeginChild("Canvas");
-		for (int n = 0; n < 50; n++)
-			ImGui::Text("%04d: Some text", n);
+		//for (int n = 0; n < 50; n++)
+			//ImGui::Text("%04d: Some text", n);
 
 		hasFocus_ = ImGui::IsWindowFocused();
 
