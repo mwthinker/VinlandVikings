@@ -11,14 +11,11 @@ namespace vin {
 
         const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
-		void HelpMarker(const char* desc)
-		{
-			//ImGui::TextDisabled("(?)");
-			if (ImGui::IsItemHovered())
-			{
+		void HelpMarker(const std::string& text) {
+			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-				ImGui::TextUnformatted(desc);
+				ImGui::TextUnformatted(text.c_str());
 				ImGui::PopTextWrapPos();
 				ImGui::EndTooltip();
 			}
@@ -96,32 +93,21 @@ namespace vin {
 		beginMain();
 
 		//ImGui::ImageBackground(hexImages_[0].getImage());
-
-		ImGui::Button("hej");
-		//ImGui::Image(hexImages_[0].getImage(), ImVec2(100.f, 100.f));
-
-
 		drawHexTypesButtons();
 
-
-		//ImGui::Image
-
-		//grid(zoom_, x_, y_);
-		canvas_.draw();		
+		canvas_.draw();
 		endMain();
     }
 
 	void VinlandWindow::drawHexTypesButtons() {
 		ImGuiStyle& style = ImGui::GetStyle();
-		int buttons_count = hexTypes_.size();
-		float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+		int buttonsCount = hexTypes_.size();
+		float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 		
 		int n = 0;
 		for (auto& pair : hexTypes_) {
-			//ImGui::PushID(n);
 			auto& index = pair.second.index_;
 			auto& hexImages = pair.second.hexImages_;
-			//ImGui::SameLine();
 			ImVec2 buttonSize(50.f, 50.f);
 			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
 				if (hexImages[index].getImage().getTexture() == canvas_.currentHexSprite().getTexture()) {
@@ -129,12 +115,11 @@ namespace vin {
 				}
 				canvas_.activateHexagon(hexImages[index].getImage());
 			}
-			HelpMarker(hexImages[index].getFilename().c_str());
-			float last_button_x2 = ImGui::GetItemRectMax().x;
-			float next_button_x2 = last_button_x2 + style.ItemSpacing.x + buttonSize.x; // Expected position if next button was on same line
-			if (n + 1 < buttons_count && next_button_x2 < window_visible_x2)
+			HelpMarker(hexImages[index].getFilename());
+			float lastButton_x2 = ImGui::GetItemRectMax().x;
+			float nextButton_x2 = lastButton_x2 + style.ItemSpacing.x + buttonSize.x; // Expected position if next button was on same line
+			if (n + 1 < buttonsCount && nextButton_x2 < windowVisible_x2)
 				ImGui::SameLine();
-			//ImGui::PopID();
 			++n;
 		}
 	}

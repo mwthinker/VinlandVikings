@@ -109,34 +109,8 @@ namespace vin {
 		return hexImages;
 	}
 
-	/*
-	sdl::Sprite TetrisData::getSprite(BlockType blockType) {
-		switch (blockType) {
-			case BlockType::I:
-				return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["squareI"].get<std::string>());
-			case BlockType::J:
-				return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["squareJ"].get<std::string>());
-			case BlockType::L:
-				return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["squareL"].get<std::string>());
-			case BlockType::O:
-				return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["squareO"].get<std::string>());
-			case BlockType::S:
-				return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["squareS"].get<std::string>());
-			case BlockType::T:
-				return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["squareT"].get<std::string>());
-			case BlockType::Z:
-				return loadSprite(jsonObject_["window"]["tetrisBoard"]["sprites"]["squareZ"].get<std::string>());
-		}
-		return sdl::Sprite();
-	}
-	*/
-
 	sdl::Font HexData::getDefaultFont(int size) {
 		return loadFont(jsonObject_["window"]["font"].get<std::string>(), size);
 	}
-
-	//void HexData::bindTextureFromAtlas() const {
-	//	textureAtlas_.getTexture().bindTexture();
-	//}
 
 } // Namespace vin.
