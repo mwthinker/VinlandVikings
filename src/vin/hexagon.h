@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <array>
+#include <type_traits>
 
 namespace vin {
 
@@ -48,15 +49,22 @@ namespace vin {
 		}
 	}
 
-
 	template <class Type>
 	class Hex {
 	public:
 		constexpr Hex() : q_(0), r_(0) {
+			IS_ARITHMETIC<Type>();
 		}
 
 		constexpr Hex(Type q, Type r) : q_(q), r_(r) {
+			IS_ARITHMETIC<Type>();
 		}
+
+		constexpr Hex(const Hex& hex) = default;
+		constexpr Hex(Hex&&) = default;
+
+		Hex& operator=(const Hex& hex) = default;
+		Hex& operator=(Hex&&) = default;
 
 		constexpr Type q() const { return q_; }
 		constexpr Type r() const { return r_; }
@@ -81,7 +89,12 @@ namespace vin {
 		}
 
 	private:
-		const Type q_, r_;
+		template <class AritmeticType>
+		constexpr void IS_ARITHMETIC() {
+			static_assert(std::is_arithmetic<AritmeticType>(), "Hex type must be of arithmetic type");
+		}
+
+		Type q_, r_;
 	};
 
 	using Hexi = Hex<int>;

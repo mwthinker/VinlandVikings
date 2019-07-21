@@ -26,30 +26,8 @@ namespace vin {
 			return Layout(layoutPointy, {createInnerRadius(zoom), createOuterRadius(zoom)}, {300.f + x, 300.f + y});
 		}
 	}
-
-	std::vector<Hexi> createFlatHexShape(int radiusNbr) {
-		std::vector<Hexi> hexes;
-		for (int q = -radiusNbr; q <= radiusNbr; q++) {
-			int r1 = std::max(-radiusNbr, -q - radiusNbr);
-			int r2 = std::min(radiusNbr, -q + radiusNbr);
-			for (int r = r1; r <= r2; r++) {
-				hexes.emplace_back(q, r);
-			}
-		}
-		return hexes;
-	}
-
-	std::vector<Hexi> createParallelogramShape(int columns, int rows) {
-		std::vector<Hexi> hexes;
-		for (int i = -10; i < 10; ++i) {
-			for (int j = -10; j < 10; ++j) {
-				hexes.emplace_back(i, j);
-			}
-		}
-		return hexes;
-	}
 	
-	void grid(std::unordered_set<Hexi>& hexes, float zoom, float x, float y) {
+	void drawGrid(const HexTileMap& hexes, float zoom, float x, float y) {
 		ImVec2 p = ImGui::GetCursorScreenPos();
 
 		ImVec2 size = ImGui::GetWindowSize();
@@ -65,7 +43,7 @@ namespace vin {
 		float innerRadius = createInnerRadius(zoom);
 		float outerRadius = createOuterRadius(zoom);
 
-		for (const auto& hex : hexes) {				
+		for (const auto& [hex, hexTile] : hexes) {
 			auto pos = hexToPixel(layout, hex);
 			auto color = GRID_COLOR;
 			
@@ -113,11 +91,9 @@ namespace vin {
 		y_ = 0.f;
 		imageAngle_ = PI / 2;
 
-		//auto hexes = createFlatHexShape(10);
-		auto hexes = createParallelogramShape(10, 5);
-		for (auto& hex : hexes) {
-			hexes_.insert(hex);
-		}
+		auto hexes = createFlatHexShape(10);
+		//auto hexes = createParallelogramShape(10, 5);
+		hexTileMap_ = HexTileMap(hexes.begin(), hexes.end());
 	}
 
 	void Canvas::draw() {
@@ -127,7 +103,7 @@ namespace vin {
 
 		hasFocus_ = ImGui::IsWindowFocused();
 
-		grid(hexes_, zoom_, x_, y_);
+		drawGrid(hexTileMap_, zoom_, x_, y_);
 
 		ImVec2 pos = ImGui::GetMousePos();
 		ImVec2 size(createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2);
@@ -139,7 +115,11 @@ namespace vin {
 		logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
 
 		auto pixel = hexToPixel(createFlatLayout(x_, y_, zoom_), hexi);
-		addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.7f, 0.f, 0.f, 0.5f));
+		if (hexTileMap_.isEmpty(hexi)) {
+			addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.0f, 7.f, 0.f, 0.5f));
+		} else {
+			addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.7f, 0.f, 0.f, 0.5f));
+		}
 
 		ImGui::EndChild();
 	}

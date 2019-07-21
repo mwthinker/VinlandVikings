@@ -26,7 +26,7 @@ namespace vin {
 	VinlandWindow::VinlandWindow() : page_(Page::START), whiteSquare_(1, 1, 255, 255, 255, 255) {
 		hexImages_ = HexData::getInstance().loadHexImages();
 		for (const auto& hexImage : hexImages_) {
-			hexTypes_[hexImage].hexImages_.push_back(hexImage);
+			hexTypes_[hexImage.getHexSides()].hexImages_.push_back(hexImage);
 		}
 	}
 
@@ -101,7 +101,7 @@ namespace vin {
 
 	void VinlandWindow::drawHexTypesButtons() {
 		ImGuiStyle& style = ImGui::GetStyle();
-		int buttonsCount = hexTypes_.size();
+		const auto buttonsCount = hexTypes_.size();
 		float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 		
 		int n = 0;
@@ -130,8 +130,6 @@ namespace vin {
 
 	void VinlandWindow::initPreLoop() {
         sdl::ImGuiWindow::initPreLoop();
-
-		
         //glViewport(0,0, 400, 400);
 
 		/*

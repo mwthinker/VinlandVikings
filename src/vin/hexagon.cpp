@@ -26,6 +26,6 @@ namespace vin {
 			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
 		}
 
-	}	
+	}
 
 } // Namespace vin.

@@ -4,26 +4,15 @@
 #include "types.h"
 #include "hexagonbatch.h"
 #include "hexagon.h"
+#include "hextilemap.h"
+#include "heximage.h"
 
-#include <sdl/batch.h>
-#include <sdl/imguishader.h>
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 
 #include <imgui.h>
 
 #include <unordered_set>
-
-namespace std {
-	template <> struct hash<vin::Hexi> {
-		size_t operator()(const vin::Hexi& h) const {
-			hash<int> int_hash;
-			size_t hq = int_hash(h.q());
-			size_t hr = int_hash(h.r());
-			return hq ^ (hr + 0x9e3779b9 + (hq << 6) + (hq >> 2));
-		}
-	};
-}
 
 namespace vin {
 
@@ -55,9 +44,6 @@ namespace vin {
 		}
 
     private:
-        sdl::Batch<ImDrawVert> batch_;
-
-		HexagonBatch hexagonBatch_;
 		sdl::Texture whiteSquare_;
 		float zoom_;
 		float x_, y_;
@@ -65,8 +51,8 @@ namespace vin {
 		bool activateHexagon_;
 		sdl::Sprite image_;
 		float imageAngle_;
-		std::unordered_set<Hexi> hexes_;
-
+		HexTileMap hexTileMap_;
+		std::unordered_map<Hexi, HexImage> hexImages_;
     };
 
 } // Namespace vin.

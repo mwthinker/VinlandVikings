@@ -27,6 +27,12 @@ set(SOURCES
 	src/vin/hexagon.h
 	src/vin/hexagonbatch.cpp
 	src/vin/hexagonbatch.h
+	src/vin/hextilemap.cpp
+	src/vin/hextilemap.h
+	src/vin/heximage.cpp
+	src/vin/heximage.h
+	src/vin/hexsideskey.cpp
+	src/vin/hexsideskey.h
 	src/vin/imguiextra.cpp
 	src/vin/imguiextra.h
 	src/vin/logger.h

@@ -4,6 +4,7 @@
 #include "hexagonbatch.h"
 #include "canvas.h"
 #include "hexdata.h"
+#include "hexsideskey.h"
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
@@ -14,39 +15,6 @@
 
 namespace vin {
 	
-	class HexSidesKey {
-	public:
-		HexSidesKey() = default;
-
-		HexSidesKey(const HexSidesKey&) = default;
-
-		HexSidesKey& operator=(const HexSidesKey&) = default;
-
-		// Assumes one side is not bigger than one byte.
-		HexSidesKey(const HexSides& sides)
-			: key_(((int_least64_t)sides[0] << 8)
-			+ ((int_least64_t)sides[1] << 8 * 2)
-			+ ((int_least64_t)sides[2] << 8 * 3)
-			+ ((int_least64_t)sides[3] << 8 * 4)
-			+ ((int_least64_t)sides[4] << 8 * 5)
-			+ ((int_least64_t)sides[5] << 8 * 6)) {
-		}
-
-		HexSidesKey(const HexImage& hexImage) : HexSidesKey(hexImage.getHexSides()) {
-		}
-
-		bool operator==(const HexSidesKey& key) const {
-			return key_ == key.key_;
-		}
-
-		bool operator<(const HexSidesKey& key) const {
-			return key_ < key.key_;
-		}
-		
-	private:
-		int_least64_t key_;
-	};
-
 	class HexImageTypeVector {
 	public:
 		HexImageTypeVector() : index_(0) {
