@@ -54,12 +54,12 @@ namespace vin {
 				{
 					zoom_ *= 1.1f;
 					// Put code for handling "scroll up" here!
-					logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
+					//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
 				} else if (windowEvent.wheel.y < 0) // scroll down
 				{
 					zoom_ *= 1/1.1f;
 					// Put code for handling "scroll down" here!
-					logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
+					//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
 				}
 
 				if (windowEvent.wheel.x > 0) // scroll right
@@ -113,7 +113,7 @@ namespace vin {
 				if (hexImages[index].getImage().getTexture() == canvas_.currentHexSprite().getTexture()) {
 					index = (index + 1) % hexImages.size();
 				}
-				canvas_.activateHexagon(hexImages[index].getImage());
+				canvas_.activateHexagon(hexImages[index]);
 			}
 			HelpMarker(hexImages[index].getFilename());
 			float lastButton_x2 = ImGui::GetItemRectMax().x;

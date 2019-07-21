@@ -17,7 +17,7 @@ namespace vin {
 
 		HexImage& operator=(const HexImage&) = default;
 
-		HexImage(const std::string& filename, sdl::Sprite& image, const HexSides& hexSides, bool flat);
+		HexImage(const std::string& filename, const sdl::Sprite& image, const HexSides& hexSides, bool flat, int rotations = 0);
 
 		const std::string& getFilename() const;
 
@@ -27,11 +27,14 @@ namespace vin {
 
 		bool isFlat() const;
 
+		int getRotations() const;
+
 	private:
 		std::string filename_;
 		sdl::Sprite image_;
 		HexSides hexSides_;
 		bool flat_;
+		int rotations_;
 	};
 
 } // Namespace vin.

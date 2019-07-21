@@ -38,8 +38,9 @@ namespace vin {
 		HexTile(HexTile&&) = default;
 
 		HexTile& operator=(const HexTile& tile) {
-			//hex_ = tile.hex_;
+			hex_ = tile.hex_;
 			sides_ = tile.sides_;
+			return *this;
 		}
 
 		HexTile& operator=(HexTile&&) = default;
@@ -87,9 +88,11 @@ namespace vin {
 			}
 		}
 
-		bool isInside(Hexi hex) const;
+		bool put(const HexTile& tile);
 
-		bool isEmpty(const Hexi& hex);
+		bool isInside(const Hexi& hex) const;
+
+		bool isEmpty(const Hexi& hex) const;
 
 		const_iterator begin() const {
 			return hexes_.begin();
@@ -98,6 +101,10 @@ namespace vin {
 		const_iterator end() const {
 			return hexes_.end();
 		}
+
+		bool isAllowed(HexTile hexTile) const;
+
+		HexTile getHexTile(Hexi hex) const;
 
 	private:
 		std::unordered_map<Hexi, HexTile> hexes_;

@@ -25,6 +25,19 @@ namespace vin {
 		Layout createFlatLayout(float x, float y, float zoom) {
 			return Layout(layoutPointy, {createInnerRadius(zoom), createOuterRadius(zoom)}, {300.f + x, 300.f + y});
 		}
+
+		float getRotationAngle(int rotations) {
+			return std::fmod(rotations * PI / 3.f + PI / 2.f, 2.f * PI);
+		}
+
+		HexSides shiftHexSides(const HexSides& hexSides, int rotations) {
+			HexSides shiftSides;
+			for (int i = 0; i < 6; ++i) {
+				shiftSides[(i + rotations) % 6] = hexSides[i];
+			}
+			return shiftSides;
+		}
+
 	}
 	
 	void drawGrid(const HexTileMap& hexes, float zoom, float x, float y) {
@@ -62,6 +75,20 @@ namespace vin {
 
 	}
 
+	void drawGrid(const std::unordered_map<Hexi, HexImage>& hexes, float zoom, float x, float y) {
+		ImVec2 p = ImGui::GetCursorScreenPos();
+
+		ImVec2 size = ImGui::GetWindowSize();
+		auto layout = createFlatLayout(x, y, zoom);
+		float innerRadius = createInnerRadius(zoom);
+
+		for (const auto& [hex, hexImage] : hexes) {
+			auto pos = hexToPixel(layout, hex);
+			HexagonImage(hexImage.getImage(), {pos.x, pos.y}, {innerRadius * 2.f, innerRadius * 2.f}, getRotationAngle(hexImage.getRotations()));
+		}
+
+	}
+
 	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle) {
 		if (!image.getTexture().isValid()) {
 			return;
@@ -89,7 +116,7 @@ namespace vin {
 		zoom_ = 1.f;
 		x_ = 0.f;
 		y_ = 0.f;
-		imageAngle_ = PI / 2;
+		rotations_ = 0;
 
 		auto hexes = createFlatHexShape(10);
 		//auto hexes = createParallelogramShape(10, 5);
@@ -105,15 +132,16 @@ namespace vin {
 
 		drawGrid(hexTileMap_, zoom_, x_, y_);
 
+		drawGrid(hexImages_, zoom_, x_, y_);
+
 		ImVec2 pos = ImGui::GetMousePos();
 		ImVec2 size(createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2);
-		HexagonImage(image_, pos, size, imageAngle_);
+		HexagonImage(hexImage_.getImage(), pos, size, getRotationAngle(rotations_));
 
-		Hexf hexf = pixelToHex(createFlatLayout(x_, y_, zoom_), Vec2(pos.x, pos.y));
-		Hexi hexi = hexRound(hexf);
+		
 		//logger()->info("Pixel: ({}, {})", x_, y_);
-		logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
-
+		//logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
+		Hexi hexi = getHexFromMouse();
 		auto pixel = hexToPixel(createFlatLayout(x_, y_, zoom_), hexi);
 		if (hexTileMap_.isEmpty(hexi)) {
 			addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.0f, 7.f, 0.f, 0.5f));
@@ -122,6 +150,12 @@ namespace vin {
 		}
 
 		ImGui::EndChild();
+	}
+
+	Hexi Canvas::getHexFromMouse() const {
+		ImVec2 pos = ImGui::GetMousePos();
+		Hexf hexf = pixelToHex(createFlatLayout(x_, y_, zoom_), Vec2(pos.x, pos.y));
+		return hexRound(hexf);
 	}
 
 	void Canvas::update(double deltaTime) {
@@ -160,8 +194,22 @@ namespace vin {
 					break;
 				case SDL_MOUSEBUTTONUP:
 					switch (windowEvent.button.button) {
+						case SDL_BUTTON_LEFT:
+						{
+							if (activateHexagon_) {
+								//logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
+								Hexi hex = getHexFromMouse();
+								HexSides sides = hexImage_.getHexSides();
+								HexTile hexTile(hex, shiftHexSides(sides, rotations_));
+								if (hexTileMap_.put(hexTile)) {
+									hexImages_[hex] = HexImage(hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_);
+								}
+								//hexTileMap_.isAllowed(hexTile);
+							}
+							break;
+						}
 						case SDL_BUTTON_MIDDLE:
-							imageAngle_ = std::fmod(imageAngle_ + PI / 3, 2 * PI);
+							rotations_ = (rotations_ + 1) % 6;
 							break;
 					}
 					break;

@@ -30,29 +30,34 @@ namespace vin {
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
-		void activateHexagon(const sdl::Sprite& sprite) {
-			image_ = sprite;
+		void activateHexagon(const HexImage& hexImage) {
+			hexImage_ = hexImage;
 			activateHexagon_ = true;
+			//rotations_ = rotations;
 		}
 
 		void inactivateHexagon() {
 			activateHexagon_ = false;
+			rotations_ = 0;
 		}
 
 		const sdl::Sprite& currentHexSprite() const {
-			return image_;
+			return hexImage_.getImage();
 		}
 
     private:
+		Hexi getHexFromMouse() const;
+
 		sdl::Texture whiteSquare_;
 		float zoom_;
 		float x_, y_;
 		bool hasFocus_;
 		bool activateHexagon_;
-		sdl::Sprite image_;
-		float imageAngle_;
+		HexImage hexImage_;
+		//float imageAngle_;
 		HexTileMap hexTileMap_;
 		std::unordered_map<Hexi, HexImage> hexImages_;
+		int rotations_;
     };
 
 } // Namespace vin.

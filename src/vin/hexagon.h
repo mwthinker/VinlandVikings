@@ -70,22 +70,36 @@ namespace vin {
 		constexpr Type r() const { return r_; }
 		constexpr Type s() const { return -q_ - r_; }
 
-		constexpr bool operator==(Hex hex) const { return q_ == hex.q_ && r_ == hex.r_; }
-
-		constexpr Type operator-() const {
-			return Type(-q_, -r_);
+		constexpr bool operator==(Hex hex) const {
+			return q_ == hex.q_ && r_ == hex.r_;
 		}
 
-		constexpr Type operator*(Type nbr) const {
-			return Type(q_ * nbr, r_ * nbr);
+		constexpr bool operator!=(Hex hex) const {
+			return q_ != hex.q_ || r_ != hex.r_;
 		}
 
-		constexpr Type operator+(Type hex) const {
-			return Type(q_ + hex.q_, r_ + hex.r_);
+		constexpr Hex operator+(Hex hex) const {
+			return Hex(q_ + hex.q_, r_ + hex.r_);
 		}
 
-		constexpr Type operator-(Type hex) const {
-			return Type(q_ - hex.q_, r_ - hex.r_);
+		constexpr Hex operator-(Hex hex) const {
+			return Hex(q_ - hex.q_, r_ - hex.r_);
+		}
+
+		constexpr Hex operator-() const {
+			return Hex(-q_, -r_);
+		}
+
+		constexpr Hex operator*(Type nbr) const {
+			return Hex(q_ * nbr, r_ * nbr);
+		}
+
+		constexpr Hex operator+(Type hex) const {
+			return Hex(q_ + hex.q_, r_ + hex.r_);
+		}
+
+		constexpr Hex operator-(Type hex) const {
+			return Hex(q_ - hex.q_, r_ - hex.r_);
 		}
 
 	private:

@@ -5,8 +5,8 @@ namespace vin {
 	HexImage::HexImage() :flat_(true), hexSides_{HexSide::NONE} {
 	}
 
-	HexImage::HexImage(const std::string& filename, sdl::Sprite& image, const HexSides& hexSides, bool flat)
-		: filename_(filename), image_(image), hexSides_(hexSides), flat_(flat) {
+	HexImage::HexImage(const std::string& filename, const sdl::Sprite& image, const HexSides& hexSides, bool flat, int rotations)
+		: filename_(filename), image_(image), hexSides_(hexSides), flat_(flat), rotations_(rotations) {
 	}
 
 	const std::string& HexImage::getFilename() const {
@@ -23,6 +23,10 @@ namespace vin {
 
 	bool HexImage::isFlat() const {
 		return flat_;
+	}
+
+	int HexImage::getRotations() const {
+		return rotations_;
 	}
 
 } // Namespace vin.

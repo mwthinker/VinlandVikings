@@ -32,17 +32,66 @@ namespace vin {
 		return hexes;
 	}
 
-	bool HexTileMap::isInside(Hexi hex) const {
+	bool HexTileMap::isInside(const Hexi& hex) const {
 		return hexes_.find(hex) != hexes_.end();
 	}
 
-	bool HexTileMap::isEmpty(const Hexi& hex) {
+	bool HexTileMap::isEmpty(const Hexi& hex) const {
 		auto it = hexes_.find(hex);
 		if (it == hexes_.end()) {
 			return false;
 		}
 
 		return it->second.getHexSides() == NONE_SIDES;
+	}
+
+	bool HexTileMap::isAllowed(HexTile hexTile) const {
+		logger()->info("isAllowed");
+
+		if (!isInside(hexTile.getHexi())) {
+			logger()->info("Not inside");
+			return false;
+		}
+
+		if (!isEmpty(hexTile.getHexi())) {
+			logger()->info("Not empty");
+			return false;
+		}
+
+		HexSides sides = hexTile.getHexSides();
+		for (int i = 0; i < 6; ++i) {
+			Hexi pos = CUBE_DIRECTIONS[i] + hexTile.getHexi();
+			//HexTile hexTile = hexes.
+			HexTile neighbor = getHexTile(pos);
+
+			HexSide neighborSide = neighbor.getHexSides()[i];			
+			logger()->info("neighborSide {}: {}", i, toString(neighborSide));
+			if (neighborSide == HexSide::NONE) {
+				continue;
+			}
+
+			if (sides[i] != neighborSide) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	HexTile HexTileMap::getHexTile(Hexi hex) const {
+		auto it = hexes_.find(hex);
+		if (it == hexes_.end()) {
+			return HexTile(hex, NONE_SIDES);
+		}
+		return it->second;
+	}
+
+	bool HexTileMap::put(const HexTile& tile) {
+		if (!isAllowed(tile)) {
+			return false;
+		}
+		hexes_[tile.getHexi()] = tile;
+		return true;
 	}
 
 } // Namespace vin.
