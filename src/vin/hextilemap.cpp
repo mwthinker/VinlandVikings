@@ -86,6 +86,12 @@ namespace vin {
 		return it->second;
 	}
 
+    void HexTileMap::clear() {
+        for (auto& hexTile : hexes_) {
+            hexTile.second = HexTile(hexTile.first, {HexSide::NONE});
+        }
+	}
+
 	bool HexTileMap::put(const HexTile& tile) {
 		if (!isAllowed(tile)) {
 			return false;

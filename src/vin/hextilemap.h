@@ -88,6 +88,8 @@ namespace vin {
 			}
 		}
 
+		void clear();
+
 		bool put(const HexTile& tile);
 
 		bool isInside(const Hexi& hex) const;

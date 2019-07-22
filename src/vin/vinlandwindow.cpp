@@ -38,14 +38,21 @@ namespace vin {
 		canvas_.eventUpdate(windowEvent);
 
 		switch (windowEvent.type) {
-			case SDL_WINDOWEVENT:
-				switch (windowEvent.window.event) {
-					case SDL_WINDOWEVENT_LEAVE:
-						break;
-					case SDL_WINDOWEVENT_CLOSE:
-						sdl::Window::quit();
-				}
-				break;
+            case SDL_WINDOWEVENT:
+                switch (windowEvent.window.event) {
+                    case SDL_WINDOWEVENT_LEAVE:
+                        break;
+                    case SDL_WINDOWEVENT_CLOSE:
+                        sdl::Window::quit();
+                }
+                break;
+            case SDL_KEYDOWN:
+                switch (windowEvent.key.keysym.sym) {
+                    case SDLK_ESCAPE:
+                        sdl::Window::quit();
+                        break;
+                }
+                break;
 			case SDL_QUIT:
 				sdl::Window::quit();
 				break;

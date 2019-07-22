@@ -186,6 +186,29 @@ namespace vin {
 						// ...
 					}
 					break;
+			    case SDL_KEYDOWN:
+			        if (hasFocus_) {
+			            constexpr float STEP = 10.f;
+                        switch (windowEvent.key.keysym.sym) {
+                            case SDLK_LEFT:
+                                x_ -= STEP;
+                                break;
+                            case SDLK_RIGHT:
+                                x_ += STEP;
+                                break;
+                            case SDLK_UP:
+                                y_ -= STEP;
+                                break;
+                            case SDLK_DOWN:
+                                y_ += STEP;
+                                break;
+                            case SDLK_c:
+                                hexImages_.clear();
+                                hexTileMap_.clear();
+                                break;
+                        }
+                    }
+			        break;
 				case SDL_MOUSEMOTION:
 					if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 						x_ += windowEvent.motion.xrel;

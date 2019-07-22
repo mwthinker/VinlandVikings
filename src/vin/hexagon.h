@@ -31,7 +31,7 @@ namespace vin {
 
 	using HexSides = std::array<HexSide, 6>;
 
-	constexpr char* toString(HexSide side) {
+	constexpr const char* toString(HexSide side) {
 		switch (side) {
 			case HexSide::NONE:
 				return "NONE";
@@ -166,7 +166,7 @@ namespace vin {
 		const float f0, f1, f2, f3;
 		const float b0, b1, b2, b3;
 
-		const float startAngle; // in multiples of 60°
+		const float startAngle; // in multiples of 60ï¿½
 		constexpr Orientation(float f0_, float f1_, float f2_, float f3_,
 			float b0_, float b1_, float b2_, float b3_,
 			float start_angle_)
