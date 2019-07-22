@@ -56,6 +56,9 @@ namespace vin {
 		HexImage hexImage_;
 		//float imageAngle_;
 		HexTileMap hexTileMap_;
+
+		HexTile lastHexTile_;
+		bool lastAllowed_;
 		std::unordered_map<Hexi, HexImage> hexImages_;
 		int rotations_;
     };

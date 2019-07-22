@@ -45,6 +45,14 @@ namespace vin {
 
 		HexTile& operator=(HexTile&&) = default;
 
+        bool operator==(const HexTile& tile) const {
+            return hex_ == tile.hex_ && sides_ == tile.sides_;
+        }
+
+        bool operator!=(const HexTile& tile) const {
+            return hex_ != tile.hex_ || sides_ != tile.sides_;
+        }
+
 		const Hexi& getHexi() const {
 			return hex_;
 		}

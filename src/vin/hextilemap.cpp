@@ -60,21 +60,20 @@ namespace vin {
 
 		HexSides sides = hexTile.getHexSides();
 		for (int i = 0; i < 6; ++i) {
-			Hexi pos = CUBE_DIRECTIONS[i] + hexTile.getHexi();
-			//HexTile hexTile = hexes.
+			Hexi pos = CUBE_DIRECTIONS[(i + 0) % 6] + hexTile.getHexi();
 			HexTile neighbor = getHexTile(pos);
 
-			HexSide neighborSide = neighbor.getHexSides()[i];			
-			logger()->info("neighborSide {}: {}", i, toString(neighborSide));
+			int oppositeSide = (i + 3) % 6;
+			HexSide neighborSide = neighbor.getHexSides()[oppositeSide];
 			if (neighborSide == HexSide::NONE) {
 				continue;
 			}
 
 			if (sides[i] != neighborSide) {
+                logger()->info("Side {} not same as neighbor, {} != {}", i, toString(sides[i]), toString(neighborSide));
 				return false;
 			}
 		}
-
 		return true;
 	}
 

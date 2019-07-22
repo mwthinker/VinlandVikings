@@ -117,6 +117,7 @@ namespace vin {
 		x_ = 0.f;
 		y_ = 0.f;
 		rotations_ = 0;
+        lastAllowed_ = false;
 
 		auto hexes = createFlatHexShape(10);
 		//auto hexes = createParallelogramShape(10, 5);
@@ -143,7 +144,14 @@ namespace vin {
 		//logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
 		Hexi hexi = getHexFromMouse();
 		auto pixel = hexToPixel(createFlatLayout(x_, y_, zoom_), hexi);
-		if (hexTileMap_.isEmpty(hexi)) {
+        HexSides sides = hexImage_.getHexSides();
+        HexTile hexTile(hexi, shiftHexSides(sides, rotations_));
+        if (lastHexTile_ != hexTile) {
+            lastAllowed_ = hexTileMap_.isAllowed(hexTile);
+            lastHexTile_ = hexTile;
+        }
+
+		if (lastAllowed_) {
 			addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.0f, 7.f, 0.f, 0.5f));
 		} else {
 			addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.7f, 0.f, 0.f, 0.5f));
@@ -170,12 +178,12 @@ namespace vin {
 					{
 						zoom_ *= 1.1f;
 						// Put code for handling "scroll up" here!
-						logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
+						//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
 					} else if (windowEvent.wheel.y < 0) // scroll down
 					{
 						zoom_ *= 1 / 1.1f;
 						// Put code for handling "scroll down" here!
-						logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
+						//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
 					}
 
 					if (windowEvent.wheel.x > 0) // scroll right
