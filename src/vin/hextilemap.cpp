@@ -32,6 +32,24 @@ namespace vin {
 		return hexes;
 	}
 
+    HexTileMap::HexTileMap() {
+    }
+
+    HexTileMap::HexTileMap(HexTileMap&& map) noexcept : hexes_(std::move(map.hexes_)) {
+    }
+
+    HexTileMap& HexTileMap::operator=(HexTileMap&& map) noexcept {
+        hexes_ = std::move(map.hexes_);
+        return *this;
+    }
+
+    HexTileMap::HexTileMap(const std::vector<Hexi>& hexes) {
+        for (const auto& hex : hexes) {
+
+            hexes_.insert({hex, HexTile(hex, {HexSide::NONE})});
+        }
+    }
+
 	bool HexTileMap::isInside(const Hexi& hex) const {
 		return hexes_.find(hex) != hexes_.end();
 	}
@@ -58,23 +76,26 @@ namespace vin {
 			return false;
 		}
 
-		HexSides sides = hexTile.getHexSides();
-		for (int i = 0; i < 6; ++i) {
-			Hexi pos = CUBE_DIRECTIONS[(i + 0) % 6] + hexTile.getHexi();
-			HexTile neighbor = getHexTile(pos);
+		return isNeighborsMatching(hexTile);
+	}
 
-			int oppositeSide = (i + 3) % 6;
-			HexSide neighborSide = neighbor.getHexSides()[oppositeSide];
-			if (neighborSide == HexSide::NONE) {
-				continue;
-			}
+    bool HexTileMap::isNeighborsMatching(HexTile hexTile) const {
+        HexSides sides = hexTile.getHexSides();
+        for (int i = 0; i < 6; ++i) {
+            Hexi pos = CUBE_DIRECTIONS[i] + hexTile.getHexi();
+            HexTile neighbor = getHexTile(pos);
 
-			if (sides[i] != neighborSide) {
-                logger()->info("Side {} not same as neighbor, {} != {}", i, toString(sides[i]), toString(neighborSide));
-				return false;
-			}
-		}
-		return true;
+            int oppositeSide = (i + 3) % 6;
+            HexSide neighborSide = neighbor.getHexSides()[oppositeSide];
+            if (neighborSide == HexSide::NONE) {
+                continue;
+            }
+
+            if (sides[i] != neighborSide) {
+                return false;
+            }
+        }
+        return true;
 	}
 
 	HexTile HexTileMap::getHexTile(Hexi hex) const {

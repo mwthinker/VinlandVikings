@@ -70,23 +70,16 @@ namespace vin {
 	public:
 		using const_iterator = std::unordered_map<Hexi, HexTile>::const_iterator;
 
-		HexTileMap() {
-		}
+		HexTileMap();
 
-		HexTileMap(HexTileMap&& map) noexcept : hexes_(std::move(map.hexes_)) {
-		}
+        HexTileMap(const HexTileMap& map) = delete;
+        HexTileMap& operator=(const HexTileMap& map) = delete;
 
-		HexTileMap& operator=(HexTileMap&& map) noexcept {
-			hexes_ = std::move(map.hexes_);
-			return *this;
-		}
+		HexTileMap(HexTileMap&& map) noexcept;
 
-		HexTileMap(const std::vector<Hexi>& hexes) {
-			for (const auto& hex : hexes) {
-				
-				hexes_.insert({hex, HexTile(hex, {HexSide::NONE})});
-			}
-		}
+		HexTileMap& operator=(HexTileMap&& map) noexcept;
+
+		HexTileMap(const std::vector<Hexi>& hexes);
 
 		template <class iterator>
 		HexTileMap(const iterator& begin, const iterator& end) {
@@ -111,6 +104,8 @@ namespace vin {
 		const_iterator end() const {
 			return hexes_.end();
 		}
+
+		bool isNeighborsMatching(HexTile hexTile) const;
 
 		bool isAllowed(HexTile hexTile) const;
 
