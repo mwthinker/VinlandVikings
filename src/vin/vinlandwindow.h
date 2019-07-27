@@ -40,9 +40,9 @@ namespace vin {
 
 		void initOpenGl() override;
 
-		void update(double deltaTime) override;
+		void imGuiPreUpdate(double deltaTime) override;
 
-        void updateImGui(double deltaTime) override;
+        void imGuiUpdate(double deltaTime) override;
 
 		void eventUpdate(const SDL_Event& windowEvent) override;
 

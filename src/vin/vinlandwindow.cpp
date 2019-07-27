@@ -86,17 +86,16 @@ namespace vin {
 		}
 	}
 
-	void VinlandWindow::update(double deltaTime) {
-        sdl::ImGuiWindow::update(deltaTime);
-        const auto& shader = getImGuiShader();
-        shader.setMatrix(glm::mat4x4(1));
-        shader.setTextureId(1);
+	void VinlandWindow::imGuiPreUpdate(double deltaTime) {
+        //const auto& shader = getImGuiShader();
+        //shader.setMatrix(glm::mat4x4(1));
+        //shader.setTextureId(1);
 //		glActiveTexture(GL_TEXTURE1);
 //		whiteSquare_.bindTexture();
 //        hexagonBatch_.draw(getImGuiShader());
 	}
 
-    void VinlandWindow::updateImGui(double deltaTime) {
+    void VinlandWindow::imGuiUpdate(double deltaTime) {
 		beginMain();
 
 		//ImGui::ImageBackground(hexImages_[0].getImage());

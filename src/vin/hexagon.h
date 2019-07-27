@@ -11,6 +11,7 @@
 #include <sdl/vertexarrayobject.h>
 
 #include <imgui.h>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include <iostream>
 #include <array>
@@ -137,6 +138,19 @@ namespace vin {
 		auto angleDeg = 60 * nbr - 30;
 		auto angleRad = PI / 180 * angleDeg;
 		return {center.x + size * std::cos(angleRad), center.y + size * std::sin(angleRad)};
+	}
+
+    inline Vec2 getHexCorner(Vec2 center, float size, int nbr) {
+        auto rad = glm::radians<GLfloat>(60 * nbr - 30);
+        return center + glm::rotate(Vec2(size, 0.f), rad);
+    }
+
+    inline std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius) {
+        std::array<Vec2, 6> corners;
+        for (int i = 0; i < 6; ++i) {
+            auto rad = glm::radians<GLfloat>(60 * i - 30);
+            corners[i] = center + glm::rotate(Vec2(radius, 0.f), rad);
+        }
 	}
 
 	inline ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
