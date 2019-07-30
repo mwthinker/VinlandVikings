@@ -135,20 +135,19 @@ namespace vin {
 	const auto PI = glm::pi<GLfloat>();
 
 	inline ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {
-		auto angleDeg = 60 * nbr - 30;
-		auto angleRad = PI / 180 * angleDeg;
-		return {center.x + size * std::cos(angleRad), center.y + size * std::sin(angleRad)};
+		auto rad = PI / 3 * nbr - PI / 6;
+		return {center.x + size * std::cos(rad), center.y + size * std::sin(rad)};
 	}
 
-    inline Vec2 getHexCorner(Vec2 center, float size, int nbr) {
-        auto rad = glm::radians<GLfloat>(60 * nbr - 30);
+    inline Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr) {
+		auto rad = PI / 3 * nbr -  PI / 6;
         return center + glm::rotate(Vec2(size, 0.f), rad);
     }
 
     inline std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius) {
         std::array<Vec2, 6> corners;
         for (int i = 0; i < 6; ++i) {
-            auto rad = glm::radians<GLfloat>(60 * i - 30);
+			auto rad = PI / 3 * i - PI / 6;
             corners[i] = center + glm::rotate(Vec2(radius, 0.f), rad);
         }
 	}

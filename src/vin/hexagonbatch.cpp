@@ -31,18 +31,15 @@ namespace vin {
 
     }
 
-	HexagonBatch::HexagonBatch() : HexagonBatch(10000) {
-	}
-
-	HexagonBatch::HexagonBatch(int maxVertexes) : batch_(GL_TRIANGLES, GL_DYNAMIC_DRAW, maxVertexes) {
+	HexagonBatch::HexagonBatch() : batch_(GL_TRIANGLES, GL_DYNAMIC_DRAW) {
 		sdl::logger()->info("[BatchTriangles] {} Mib\n", batch_.getVboSizeInMiB());
 	}
 
 	void HexagonBatch::init(const sdl::ImGuiShader& shader) {
 		batch_.uploadToGraphicCard();
 		shader.useProgram();
-		vao_.create();
-		batch_.bindBuffer();
+		vao_.generate();
+		batch_.bind();
 		shader.setVertexAttribPointer();
 	}
 

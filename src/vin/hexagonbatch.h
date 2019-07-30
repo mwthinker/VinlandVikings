@@ -16,8 +16,6 @@ namespace vin {
     public:
 		HexagonBatch();
 
-		HexagonBatch(int maxVertexes);
-
         virtual ~HexagonBatch() = default;
 
 		void init(const sdl::ImGuiShader& shader);
