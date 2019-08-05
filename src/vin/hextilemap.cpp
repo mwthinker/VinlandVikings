@@ -24,9 +24,20 @@ namespace vin {
 
 	std::vector<Hexi> createParallelogramShape(int columns, int rows) {
 		std::vector<Hexi> hexes;
-		for (int i = -10; i < 10; ++i) {
-			for (int j = -10; j < 10; ++j) {
+		for (int i = -columns; i < columns; ++i) {
+			for (int j = -rows; j < rows; ++j) {
 				hexes.emplace_back(i, j);
+			}
+		}
+		return hexes;
+	}
+
+	std::vector<Hexi> createRectangleShape(int columns, int rows) {
+		std::vector<Hexi> hexes;
+		for (int x = -columns; x < columns; ++x) {
+			for (int y = -rows; y < rows; ++y) {
+				auto hex = oddToCube(x, y);
+				hexes.push_back(hex);
 			}
 		}
 		return hexes;

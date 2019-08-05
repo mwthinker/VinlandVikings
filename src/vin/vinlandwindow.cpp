@@ -93,6 +93,8 @@ namespace vin {
 //		glActiveTexture(GL_TEXTURE1);
 //		whiteSquare_.bindTexture();
 //        hexagonBatch_.draw(getImGuiShader());
+		auto [width, height] = sdl::Window::getSize();
+		canvas_.update((float) width, (float) height, getImGuiShader(), deltaTime);
 	}
 
     void VinlandWindow::imGuiUpdate(double deltaTime) {
@@ -101,8 +103,9 @@ namespace vin {
 		//ImGui::ImageBackground(hexImages_[0].getImage());
 		drawHexTypesButtons();
 
-		canvas_.draw();
+		//canvas_.draw();
 		endMain();
+		//ImGui::
     }
 
 	void VinlandWindow::drawHexTypesButtons() {
@@ -136,7 +139,8 @@ namespace vin {
 
 	void VinlandWindow::initPreLoop() {
         sdl::ImGuiWindow::initPreLoop();
-        //glViewport(0,0, 400, 400);
+		auto [w, h] = sdl::ImGuiWindow::getSize();
+        glViewport(0,0, w, h);
 
 		/*
 		const auto& shader = getImGuiShader();
@@ -160,6 +164,7 @@ namespace vin {
 		glActiveTexture(GL_TEXTURE1);
 		whiteSquare_.bindTexture();
 		*/
+		canvas_.init(getImGuiShader());
 	}
 
 	void VinlandWindow::beginMain() {

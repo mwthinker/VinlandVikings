@@ -30,6 +30,10 @@ namespace vin {
 		COUNT_ELEMENTS
 	};
 
+	constexpr int getNumberOfHexTypes() {
+		return static_cast<int>(HexSide::COUNT_ELEMENTS);
+	}
+
 	using HexSides = std::array<HexSide, 6>;
 
 	constexpr const char* toString(HexSide side) {
@@ -53,59 +57,59 @@ namespace vin {
 	template <class Type>
 	class Hex {
 	public:
-		constexpr Hex() : q_(0), r_(0) {
+		constexpr Hex() noexcept : q_(0), r_(0) {
 			IS_ARITHMETIC<Type>();
 		}
 
-		constexpr Hex(Type q, Type r) : q_(q), r_(r) {
+		constexpr Hex(Type q, Type r) noexcept : q_(q), r_(r) {
 			IS_ARITHMETIC<Type>();
 		}
 
-		constexpr Hex(const Hex& hex) = default;
-		constexpr Hex(Hex&&) = default;
+		constexpr Hex(const Hex& hex) noexcept = default;
+		constexpr Hex(Hex&&) noexcept = default;
 
-		Hex& operator=(const Hex& hex) = default;
-		Hex& operator=(Hex&&) = default;
+		Hex& operator=(const Hex& hex) noexcept = default;
+		Hex& operator=(Hex&&) noexcept = default;
 
-		constexpr Type q() const { return q_; }
-		constexpr Type r() const { return r_; }
-		constexpr Type s() const { return -q_ - r_; }
+		constexpr Type q() const noexcept { return q_; }
+		constexpr Type r() const noexcept { return r_; }
+		constexpr Type s() const noexcept { return -q_ - r_; }
 
-		constexpr bool operator==(Hex hex) const {
+		constexpr bool operator==(Hex hex) const noexcept {
 			return q_ == hex.q_ && r_ == hex.r_;
 		}
 
-		constexpr bool operator!=(Hex hex) const {
+		constexpr bool operator!=(Hex hex) const noexcept {
 			return q_ != hex.q_ || r_ != hex.r_;
 		}
 
-		constexpr Hex operator+(Hex hex) const {
+		constexpr Hex operator+(Hex hex) const noexcept {
 			return Hex(q_ + hex.q_, r_ + hex.r_);
 		}
 
-		constexpr Hex operator-(Hex hex) const {
+		constexpr Hex operator-(Hex hex) const noexcept {
 			return Hex(q_ - hex.q_, r_ - hex.r_);
 		}
 
-		constexpr Hex operator-() const {
+		constexpr Hex operator-() const noexcept {
 			return Hex(-q_, -r_);
 		}
 
-		constexpr Hex operator*(Type nbr) const {
+		constexpr Hex operator*(Type nbr) const noexcept {
 			return Hex(q_ * nbr, r_ * nbr);
 		}
 
-		constexpr Hex operator+(Type hex) const {
+		constexpr Hex operator+(Type hex) const noexcept {
 			return Hex(q_ + hex.q_, r_ + hex.r_);
 		}
 
-		constexpr Hex operator-(Type hex) const {
+		constexpr Hex operator-(Type hex) const noexcept {
 			return Hex(q_ - hex.q_, r_ - hex.r_);
 		}
 
 	private:
 		template <class AritmeticType>
-		constexpr void IS_ARITHMETIC() {
+		static constexpr void IS_ARITHMETIC() {
 			static_assert(std::is_arithmetic<AritmeticType>(), "Hex type must be of arithmetic type");
 		}
 
@@ -236,6 +240,20 @@ namespace vin {
 		} else {
 			s = -q - r;
 		}
+		return Hexi(q, r);
+	}
+	
+	/*
+	Hexi cubeto_oddr(cube) :
+		var col = cube.x + (cube.z - (cube.z & 1)) / 2
+		var row = cube.z
+		return OffsetCoord(col, row)
+		*/
+
+	inline Hexi oddToCube(int x, int y) {
+		auto q = x - (y - (y & 1)) / 2;
+		auto s = y;
+		auto r = -q - s;
 		return Hexi(q, r);
 	}
 

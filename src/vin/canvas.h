@@ -20,11 +20,39 @@ namespace vin {
 
 	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);
 
+	class Camera {
+	public:
+		Mat44 getModel() const {
+			Mat44 proj = glm::ortho(-10.f, 10.f, -10.f, 10.f);
+			return glm::ortho(-10.f, 10.f, -10.f, 10.f) * glm::translate(proj, Vec3{0, 0, 0});
+
+			//auto center = cameraPosition;
+			//center.z = 0;
+			//return glm::lookAt(cameraPosition, center, cameraUp);
+		}
+
+		void setPosition(Vec2 pos) {
+
+		}
+
+		void move(Vec2 delta) {
+		}
+
+		void zoom(float value) {
+
+		}
+
+
+		Vec3 cameraPosition = {0, 0, 3};
+		Vec3 cameraFront = {0, 0, -1};
+		Vec3 cameraUp = {0, 1, 0};
+	};
+
     class Canvas {
     public:
 		Canvas();
 
-		void update(double deltaTime);
+		void update(float width, float height, const sdl::ImGuiShader& imGuiShader, double deltaTime);
 
 		void draw();
 
@@ -45,6 +73,8 @@ namespace vin {
 			return hexImage_.getImage();
 		}
 
+		void init(const sdl::ImGuiShader& imGuiShader);
+
     private:
 		Hexi getHexFromMouse() const;
 
@@ -56,11 +86,13 @@ namespace vin {
 		HexImage hexImage_;
 		//float imageAngle_;
 		HexTileMap hexTileMap_;
+		HexagonBatch hexagonBatch_;
 
 		HexTile lastHexTile_;
 		bool lastAllowed_;
 		std::unordered_map<Hexi, HexImage> hexImages_;
 		int rotations_;
+		Camera camera_;
     };
 
 } // Namespace vin.

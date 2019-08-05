@@ -133,8 +133,8 @@ namespace vin {
 
 			addHexagon(drawList, {pos.x, pos.y}, innerRadius, outerRadius, color);
 		}
-
 	}
+
 
 	void drawGrid(const std::unordered_map<Hexi, HexImage>& hexes, float zoom, float x, float y) {
 		ImVec2 p = ImGui::GetCursorScreenPos();
@@ -147,7 +147,6 @@ namespace vin {
 			auto pos = hexToPixel(layout, hex);
 			HexagonImage(hexImage.getImage(), {pos.x, pos.y}, {innerRadius * 2.f, innerRadius * 2.f}, getRotationAngle(hexImage.getRotations()));
 		}
-
 	}
 
 	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle) {
@@ -180,7 +179,8 @@ namespace vin {
 		rotations_ = 0;
         lastAllowed_ = false;
 
-		auto hexes = createFlatHexShape(10);
+		//auto hexes = createFlatHexShape(10);
+		auto hexes = createRectangleShape(10, 10);
 		//auto hexes = createParallelogramShape(10, 5);
 		hexTileMap_ = HexTileMap(hexes.begin(), hexes.end());
 	}
@@ -227,8 +227,42 @@ namespace vin {
 		return hexRound(hexf);
 	}
 
-	void Canvas::update(double deltaTime) {
+	void Canvas::update(float width, float height, const sdl::ImGuiShader& imGuiShader, double deltaTime) {
+		auto proj = glm::ortho(-1.f * width / height, 1.f, -1.f * width / height, 1.f * width / height);
 
+		auto model = Mat44(1);
+
+		//glm::loo
+
+		imGuiShader.setMatrix(proj * model);
+		
+		//imGuiShader.setMatrix(camera_.getModel());
+		imGuiShader.setTextureId(1);
+		glActiveTexture(GL_TEXTURE1);
+		whiteSquare_.bindTexture();
+        hexagonBatch_.draw(imGuiShader);
+	}
+
+	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
+		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.5f);
+
+		const ImU32 RED = Color(1.0f, 0.f, 0.f);
+		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.6f, 0.8f, RED);
+		constexpr float innerRadius = 0.19f;
+		constexpr float outerRadius = 0.2f;
+
+		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
+
+		for (int i = -5; i < 5; ++i) {
+			for (int j = -5; j < 5; ++j) {
+				auto pos = hexToPixel(layout, Hexi(i, j));
+				hexagonBatch_.addHexagon(pos.x, pos.y, innerRadius, outerRadius, RED);
+			}
+		}
+
+		hexagonBatch_.init(imGuiShader);
+		glActiveTexture(GL_TEXTURE1);
+		whiteSquare_.bindTexture();
 	}
 
 	void Canvas::eventUpdate(const SDL_Event& windowEvent) {

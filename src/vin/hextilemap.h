@@ -1,5 +1,5 @@
-#ifndef VINLANDVIKINGS_VIN__HEXTILEMAP_H
-#define VINLANDVIKINGS_VIN__HEXTILEMAP_H
+#ifndef VINLANDVIKINGS_VIN_HEXTILEMAP_H
+#define VINLANDVIKINGS_VIN_HEXTILEMAP_H
 
 #include "hexagon.h"
 #include "types.h"
@@ -24,6 +24,8 @@ namespace vin {
 	std::vector<Hexi> createFlatHexShape(int radiusNbr);
 
 	std::vector<Hexi> createParallelogramShape(int columns, int rows);
+
+	std::vector<Hexi> createRectangleShape(int columns, int rows);
 
 	class HexTile {
 	public:
@@ -117,4 +119,4 @@ namespace vin {
 
 } // Namespace vin.
 
-#endif // VINLANDVIKINGS_VIN__HEXTILEMAP_H
+#endif // VINLANDVIKINGS_VIN_HEXTILEMAP_H

@@ -36,11 +36,12 @@ namespace vin {
 	}
 
 	void HexagonBatch::init(const sdl::ImGuiShader& shader) {
-		batch_.uploadToGraphicCard();
 		shader.useProgram();
 		vao_.generate();
+		vao_.bind();
 		batch_.bind();
 		shader.setVertexAttribPointer();
+		batch_.uploadToGraphicCard();
 	}
 
 	void HexagonBatch::draw(const sdl::ImGuiShader& shader) const {
