@@ -31,12 +31,13 @@ set(SOURCES
 	src/vin/hextilemap.h
 	src/vin/heximage.cpp
 	src/vin/heximage.h
-	src/vin/hexsideskey.cpp
+	src/vin/hexsides.h
 	src/vin/hexsideskey.h
 	src/vin/imguiextra.cpp
 	src/vin/imguiextra.h
 	src/vin/logger.h
 	src/vin/types.h
+	src/vin/hex.h
 	src/vin/hexdata.cpp
 	src/vin/hexdata.h
 	src/vin/vinlandwindow.cpp

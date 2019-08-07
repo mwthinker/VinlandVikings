@@ -1,7 +1,8 @@
 #ifndef VINLANDVIKINGS_VIN_HEXIMAGE_H
 #define VINLANDVIKINGS_VIN_HEXIMAGE_H
 
-#include "hexagon.h"
+#include "heximage.h"
+#include "hexsides.h"
 
 #include <sdl/sprite.h>
 

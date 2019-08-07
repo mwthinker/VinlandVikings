@@ -3,12 +3,15 @@
 
 #include "hexagon.h"
 #include "types.h"
+#include "hexsides.h"
+#include "hexsideskey.h"
 
 #include <vector>
 
 #include <unordered_map>
 
 namespace std {
+	
 	template <> struct hash<vin::Hexi> {
 		size_t operator()(const vin::Hexi& h) const {
 			hash<int> int_hash;
@@ -17,6 +20,7 @@ namespace std {
 			return hq ^ (hr + 0x9e3779b9 + (hq << 6) + (hq >> 2));
 		}
 	};
+
 }
 
 namespace vin {
