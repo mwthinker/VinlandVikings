@@ -24,7 +24,7 @@ namespace vin {
 		Color(ImColor vec) : value(vec.Value.x, vec.Value.y, vec.Value.z, vec.Value.w) {
 		}
 
-		Color(float red = 1.f, float green = 1.f, float blue = 1.f, float alpha = 1.f)
+		Color(float red, float green, float blue, float alpha = 1.f)
 			: value(red, green, blue, alpha) {
 		}
 
@@ -44,7 +44,11 @@ namespace vin {
 		glm::vec4 value;
 	};
 
-	static const Color WHITE = Color(1.f, 1.f, 1.f, 1.f);
+	static const Color WHITE = {1.f, 1.f, 1.f, 1.f};
+	static const Color BLACK = {0.f, 0.f, 0.f, 1.f};
+	static const Color RED = {1.f, 0.f, 0.f, 1.f};
+	static const Color GREEN = {0.f, 1.f, 0.f, 1.f};
+	static const Color BLUE = {0.f, 0.f, 1.f, 1.f};
 
 } // Namespace vin.
 

@@ -107,10 +107,6 @@ namespace vin {
 		ImVec2 size = ImGui::GetWindowSize();
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-		const ImU32 RED = Color(1.0f, 0.f, 0.f);
-		const ImU32 BLUE = Color(0.0f, 0.f, 1.f);
-		const ImU32 GREEN = Color(0.0f, 1.f, 0.f);
-
 		const ImU32 GRID_COLOR = Color(0.5f, 0.5f, 0.5f);
 
 		auto layout = createFlatLayout(x, y, zoom);
@@ -232,6 +228,11 @@ namespace vin {
 
 		auto model = Mat44(1);
 
+
+
+
+		model = glm::scale(model, {zoom_, zoom_, zoom_});
+		model = glm::translate(model, {x_ * 0.01f, -y_ * 0.01f, 0.f});
 		//glm::loo
 
 		imGuiShader.setMatrix(proj * model);
@@ -246,7 +247,6 @@ namespace vin {
 	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
 		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.5f);
 
-		const ImU32 RED = Color(1.0f, 0.f, 0.f);
 		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.6f, 0.8f, RED);
 		constexpr float innerRadius = 0.19f;
 		constexpr float outerRadius = 0.2f;
@@ -266,7 +266,7 @@ namespace vin {
 	}
 
 	void Canvas::eventUpdate(const SDL_Event& windowEvent) {
-		if (hasFocus_) {
+		if (hasFocus_ || true) {
 			switch (windowEvent.type) {
 				case SDL_MOUSEWHEEL:
 					if (windowEvent.wheel.y > 0) // scroll up

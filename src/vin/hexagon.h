@@ -6,6 +6,7 @@
 #include "hexagonbatch.h"
 #include "hex.h"
 #include "hexsides.h"
+#include "orientation.h"
 
 #include <sdl/batch.h>
 #include <sdl/imguishader.h>
@@ -15,24 +16,11 @@
 #include <imgui.h>
 #include <glm/gtx/rotate_vector.hpp>
 
-
-
 #include <iostream>
 #include <array>
 #include <type_traits>
 
 namespace vin {
-
-	using Hexi = Hex<int>;
-	using Hexf = Hex<float>;
-
-	constexpr Hexi HEX_ZERO(0, 0);
-	
-	constexpr Hexi HEX_Q(1, 0);
-	
-	constexpr Hexi HEX_R(0, 1);
-	
-	constexpr Hexi HEX_S(-1, 1);
 
 	constexpr std::array<Hexi, 6> CUBE_DIRECTIONS = {
 		Hexi(1, -1), // s = 0
@@ -82,32 +70,6 @@ namespace vin {
 	constexpr int cubeDistance(Hexi a, Hexi b) {
 		return (abs(a.q() - b.q()) + abs(a.r() - b.r()) + abs(a.s() - b.s())) / 2;
 	}
-
-	constexpr float SQRT_3 = 1.7320508075688772935274463f;
-
-	class Orientation {
-	public:
-		const float f0, f1, f2, f3;
-		const float b0, b1, b2, b3;
-
-		const float startAngle; // in multiples of 60�
-		constexpr Orientation(float f0_, float f1_, float f2_, float f3_,
-			float b0_, float b1_, float b2_, float b3_,
-			float start_angle_)
-			: f0(f0_), f1(f1_), f2(f2_), f3(f3_),
-			b0(b0_), b1(b1_), b2(b2_), b3(b3_),
-			startAngle(start_angle_) {}
-	};
-
-	constexpr Orientation layoutPointy
-		= Orientation(SQRT_3, SQRT_3 / 2.f, 0.f, 3.f / 2.f,
-		SQRT_3 / 3.f, -1.f / 3.f, 0.f, 2.f / 3.f,
-		0.5f);
-
-	constexpr Orientation layoutFlat
-		= Orientation(3.f / 2.f, 0.f, SQRT_3 / 2.f, SQRT_3,
-		2.f / 3.f, 0.f, -1.f / 3.f, SQRT_3 / 3.f,
-		0.f);
 
 	struct Layout {
 		const Orientation orientation;

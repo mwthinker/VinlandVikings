@@ -69,7 +69,7 @@ namespace vin {
 
 	private:
 		Hexi hex_;
-		HexSides sides_;
+		HexSides sides_ = HEXSIDES_NONE;
 	};
 
 	class HexTileMap {

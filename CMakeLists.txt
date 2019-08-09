@@ -23,26 +23,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES
 	src/vin/canvas.cpp
 	src/vin/canvas.h
+	src/vin/hex.h
 	src/vin/hexagon.cpp
 	src/vin/hexagon.h
 	src/vin/hexagonbatch.cpp
 	src/vin/hexagonbatch.h
-	src/vin/hextilemap.cpp
-	src/vin/hextilemap.h
+	src/vin/hexdata.cpp
+	src/vin/hexdata.h
 	src/vin/heximage.cpp
 	src/vin/heximage.h
 	src/vin/hexsides.h
 	src/vin/hexsideskey.h
+	src/vin/hextilemap.cpp
+	src/vin/hextilemap.h
 	src/vin/imguiextra.cpp
 	src/vin/imguiextra.h
 	src/vin/logger.h
+	src/vin/main.cpp
+	src/vin/orientation.h
 	src/vin/types.h
-	src/vin/hex.h
-	src/vin/hexdata.cpp
-	src/vin/hexdata.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h
-	src/vin/main.cpp
 )
 
 find_package(Threads REQUIRED)
