@@ -224,20 +224,16 @@ namespace vin {
 	}
 
 	void Canvas::update(float width, float height, const sdl::ImGuiShader& imGuiShader, double deltaTime) {
-		auto proj = glm::ortho(-1.f * width / height, 1.f, -1.f * width / height, 1.f * width / height);
+		auto proj = glm::ortho(-1.f * width / height * zoom_, 1.f, -1.f * width / height * zoom_, 1.f * width / height, -10.f, 10.f);
 
 		auto model = Mat44(1);
+		camera_.setPosition({x_, y_});
+		camera_.setZoom(zoom_);
+		camera_.setAngle(angle_);
+		auto view = camera_.getView();
+		auto projection = Mat44(1);
 
-
-
-
-		model = glm::scale(model, {zoom_, zoom_, zoom_});
-		model = glm::translate(model, {x_ * 0.01f, -y_ * 0.01f, 0.f});
-		//glm::loo
-
-		imGuiShader.setMatrix(proj * model);
-		
-		//imGuiShader.setMatrix(camera_.getModel());
+		imGuiShader.setMatrix(proj * view * model);
 		imGuiShader.setTextureId(1);
 		glActiveTexture(GL_TEXTURE1);
 		whiteSquare_.bindTexture();
@@ -252,6 +248,8 @@ namespace vin {
 		constexpr float outerRadius = 0.2f;
 
 		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
+
+		//hexagonBatch_.addRectangle(0, 0, 500, 500, whiteSquare_);
 
 		for (int i = -5; i < 5; ++i) {
 			for (int j = -5; j < 5; ++j) {
@@ -290,7 +288,7 @@ namespace vin {
 					}
 					break;
 			    case SDL_KEYDOWN:
-			        if (hasFocus_) {
+			        if (hasFocus_ || true) {
 			            constexpr float STEP = 10.f;
                         switch (windowEvent.key.keysym.sym) {
                             case SDLK_LEFT:
@@ -300,11 +298,17 @@ namespace vin {
                                 x_ += STEP;
                                 break;
                             case SDLK_UP:
-                                y_ -= STEP;
-                                break;
-                            case SDLK_DOWN:
                                 y_ += STEP;
                                 break;
+                            case SDLK_DOWN:
+                                y_ -= STEP;
+                                break;
+							case SDLK_PAGEUP:
+								angle_ -= 0.1f;
+								break;
+							case SDLK_PAGEDOWN:
+								angle_ += 0.1f;
+								break;
                             case SDLK_c:
                                 hexImages_.clear();
                                 hexTileMap_.clear();
@@ -314,7 +318,7 @@ namespace vin {
 			        break;
 				case SDL_MOUSEMOTION:
 					if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-						x_ += windowEvent.motion.xrel;
+						x_ -= windowEvent.motion.xrel;
 						y_ += windowEvent.motion.yrel;
 					}
 					break;

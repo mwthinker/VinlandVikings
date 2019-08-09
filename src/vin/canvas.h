@@ -10,6 +10,8 @@
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 
+#include "logger.h"
+
 #include <imgui.h>
 
 #include <unordered_set>
@@ -22,30 +24,40 @@ namespace vin {
 
 	class Camera {
 	public:
-		Mat44 getModel() const {
-			Mat44 proj = glm::ortho(-10.f, 10.f, -10.f, 10.f);
-			return glm::ortho(-10.f, 10.f, -10.f, 10.f) * glm::translate(proj, Vec3{0, 0, 0});
+		Mat44 getView() const {
+			glm::vec3 eye = lookAtPos_ / 100.f;
+			//eye.z *= zoom_;
+			
+			glm::vec3 center = {lookAtPos_.x / 100.f, lookAtPos_.y / 100.f, 0.f};
+			eye = glm::rotateX(eye, angle_);
 
+			logger()->info("eye: ({},{},{})", eye.x, eye.y, eye.z);
+
+			return glm::lookAt(eye, center, glm::vec3(0.0f, 1.0f, 0.0f));
 			//auto center = cameraPosition;
 			//center.z = 0;
 			//return glm::lookAt(cameraPosition, center, cameraUp);
 		}
 
-		void setPosition(Vec2 pos) {
+		void setZoom(float zoom) {
+			zoom_ = zoom;
+		}
 
+		void setAngle(float angle) {
+			angle_ = angle;
+		}
+
+		void setPosition(Vec2 pos) {
+			lookAtPos_ = {pos.x, pos.y, 1.f};
 		}
 
 		void move(Vec2 delta) {
 		}
 
-		void zoom(float value) {
-
-		}
-
-
-		Vec3 cameraPosition = {0, 0, 3};
-		Vec3 cameraFront = {0, 0, -1};
-		Vec3 cameraUp = {0, 1, 0};
+		Vec3 lookAtPos_ = {0, 0, 0};
+	private:
+		float zoom_ = 1.f;
+		float angle_ = 0.f;
 	};
 
     class Canvas {
@@ -93,6 +105,7 @@ namespace vin {
 		std::unordered_map<Hexi, HexImage> hexImages_;
 		int rotations_;
 		Camera camera_;
+		float angle_ =  0.f;
     };
 
 } // Namespace vin.

@@ -171,6 +171,7 @@ namespace vin {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, {1.f, 1.f, 1.f, 0.f});
 
 		ImGui::SetNextWindowPos({0.f, 0.f});
 		auto [width, height] = sdl::Window::getSize();
@@ -182,6 +183,7 @@ namespace vin {
 	void VinlandWindow::endMain() {
 		ImGui::End();
 
+		ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
