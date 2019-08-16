@@ -12,7 +12,7 @@ namespace vin {
 
 	class HexImage {
 	public:
-		HexImage();
+		HexImage() = default;
 
 		HexImage(const HexImage&) = default;
 
@@ -33,9 +33,9 @@ namespace vin {
 	private:
 		std::string filename_;
 		sdl::Sprite image_;
-		HexSides hexSides_;
-		bool flat_;
-		int rotations_;
+		HexSides hexSides_ = { HexSide::NONE };
+		bool flat_ = true;
+		int rotations_ = 0;
 	};
 
 } // Namespace vin.

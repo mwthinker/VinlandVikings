@@ -12,23 +12,32 @@ namespace vin {
         const auto PI = glm::pi<GLfloat>();
 
 		inline ImDrawVert createVertex(float x, float y, float xTex, float yTex, ImU32 color) {
-			return  {{x, y}, ImVec2(1.f, 1.f), color};
+			return  {{x, y}, ImVec2(xTex, yTex), color};
 		}
 
         inline ImDrawVert createVertex(float x, float y, ImU32 color) {
-           return  {{x, y}, ImVec2(1.f, 1.f), color};
+           return  {{x, y}, ImVec2(0.f, 0.f), color};
         }
 
-        inline ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {
-            auto angleDeg = 60 * nbr - 30;
-            auto angleRad = PI / 180 * angleDeg;
-            return {center.x + size * std::cos(angleRad), center.y + size * std::sin(angleRad)};
+		inline ImVec2 getHexCorner(ImVec2 center, float sizeX, float sizeY, int nbr) {
+			auto angleDeg = 60 * nbr - 30;
+			auto angleRad = PI / 180 * angleDeg;
+			return {center.x + sizeX * std::cos(angleRad), center.y + sizeY * std::sin(angleRad)};
+		}
+
+        inline ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {            
+            return getHexCorner(center, size, size, nbr);
         }
 
         inline ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
             return  {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
         }
 
+		inline ImDrawVert createHexCornerVertexTexture(const ImDrawVert& vertex, float size, float xTexSize, float yTexSize, int nbr) {
+			auto hexCorner = getHexCorner(vertex.pos, size, nbr);
+			auto texCorner = getHexCorner({vertex.uv.x, vertex.uv.y}, xTexSize * 0.5f, yTexSize * 0.5f, nbr);
+			return  {hexCorner, texCorner, vertex.col};
+		}
     }
 
 	HexagonBatch::HexagonBatch() : batch_(GL_TRIANGLES, GL_DYNAMIC_DRAW) {
@@ -54,6 +63,10 @@ namespace vin {
 		batch_.uploadToGraphicCard();
 	}
 
+	void HexagonBatch::clear() {
+		batch_.clear();
+	}
+
 	void HexagonBatch::addRectangle(float x, float y, float w, float h, const sdl::Sprite& sprite, ImU32 color) {
 		int textureW = sprite.getTexture().getWidth();
 		int textureH = sprite.getTexture().getHeight();
@@ -65,6 +78,23 @@ namespace vin {
 		addTriangle(createVertex(x, y + h, sprite.getX() / textureW, (sprite.getY() + sprite.getHeight()) / textureH, color),
 			createVertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH, color),
 			createVertex(x + w, y + h, (sprite.getX() + sprite.getWidth()) / textureW, (sprite.getY() + sprite.getHeight()) / textureH, color));
+	}
+
+	void HexagonBatch::addHexagonImage(float x, float y, float size, const sdl::Sprite& sprite, ImU32 color) {
+		if (sprite.getTexture().isValid()) {
+			int textureW = sprite.getTexture().getWidth();
+			int textureH = sprite.getTexture().getHeight();
+			float xTexSize = sprite.getWidth() / textureW;
+			float yTexSize = sprite.getHeight() / textureH;
+
+			auto center = createVertex(x, y, (sprite.getX() + sprite.getWidth() * 0.5f) / textureW, (sprite.getY() + sprite.getHeight() * 0.5f) / textureH, color);
+
+			for (int i = 0; i < 6; ++i) {
+				batch_.add(center);
+				batch_.add(createHexCornerVertexTexture(center, size, xTexSize, yTexSize, i));
+				batch_.add(createHexCornerVertexTexture(center, size, xTexSize, yTexSize, (i + 1) % 6));
+			}
+		}
 	}
 
     void HexagonBatch::addHexagon(float x, float y, float size, ImU32 color) {

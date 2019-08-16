@@ -89,7 +89,6 @@ namespace vin {
                 //drawList->AddTriangleFilled(v4, v2, v3, color);
                 //v1 = v4;
                 //v2 = v3;
-
             }
         }
 
@@ -181,6 +180,18 @@ namespace vin {
 		hexTileMap_ = HexTileMap(hexes.begin(), hexes.end());
 	}
 
+	void Canvas::drawHexImage(const sdl::ImGuiShader& imGuiShader, Hexi hex, const HexImage& image) {
+		hexagonBatch_.clear();
+		image.getImage().bindTexture();
+		imGuiShader.setTextureId(1);
+		glActiveTexture(GL_TEXTURE1);
+		//hexagonBatch_.addRectangle(0, 0, 1, 1, image.getImage(), WHITE);
+		hexagonBatch_.addHexagonImage(0, 0, 1, image.getImage(), WHITE);
+
+		hexagonBatch_.uploadToGraphicCard();
+		hexagonBatch_.draw(imGuiShader);
+	}
+
 	void Canvas::draw() {
 		ImGui::BeginChild("Canvas");
 		//for (int n = 0; n < 50; n++)
@@ -231,13 +242,27 @@ namespace vin {
 		camera_.setZoom(zoom_);
 		camera_.setAngle(angle_);
 		auto view = camera_.getView();
-		auto projection = Mat44(1);
+			   
+		constexpr float innerRadius = 0.19f;
+		constexpr float outerRadius = 0.2f;
 
 		imGuiShader.setMatrix(proj * view * model);
 		imGuiShader.setTextureId(1);
+		hexagonBatch_.clear();
+
+		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
+		for (const auto& [hex, hexTile] : hexTileMap_) {
+			auto pos = hexToPixel(layout, hex);
+			hexagonBatch_.addHexagon(pos.x, pos.y, outerRadius, GREEN);
+			hexagonBatch_.addHexagon(pos.x, pos.y, innerRadius, outerRadius, RED);
+		}
+		hexagonBatch_.uploadToGraphicCard();
+
 		glActiveTexture(GL_TEXTURE1);
 		whiteSquare_.bindTexture();
         hexagonBatch_.draw(imGuiShader);
+
+		drawHexImage(imGuiShader, Hexi(0,0), hexImage_);
 	}
 
 	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
@@ -251,11 +276,10 @@ namespace vin {
 
 		//hexagonBatch_.addRectangle(0, 0, 500, 500, whiteSquare_);
 
-		for (int i = -5; i < 5; ++i) {
-			for (int j = -5; j < 5; ++j) {
-				auto pos = hexToPixel(layout, Hexi(i, j));
-				hexagonBatch_.addHexagon(pos.x, pos.y, innerRadius, outerRadius, RED);
-			}
+		for (const auto& [hex, hexTile] : hexTileMap_) {
+			auto pos = hexToPixel(layout, hex);
+			hexagonBatch_.addHexagon(pos.x, pos.y, outerRadius, GREEN);
+			hexagonBatch_.addHexagon(pos.x, pos.y, innerRadius, outerRadius, RED);
 		}
 
 		hexagonBatch_.init(imGuiShader);
@@ -267,23 +291,18 @@ namespace vin {
 		if (hasFocus_ || true) {
 			switch (windowEvent.type) {
 				case SDL_MOUSEWHEEL:
-					if (windowEvent.wheel.y > 0) // scroll up
-					{
+					if (windowEvent.wheel.y > 0) { // scroll up
 						zoom_ *= 1.1f;
 						// Put code for handling "scroll up" here!
 						//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
-					} else if (windowEvent.wheel.y < 0) // scroll down
-					{
+					} else if (windowEvent.wheel.y < 0) { // scroll down
 						zoom_ *= 1 / 1.1f;
 						// Put code for handling "scroll down" here!
 						//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
 					}
-
-					if (windowEvent.wheel.x > 0) // scroll right
-					{
+					if (windowEvent.wheel.x > 0) { // scroll right
 						// ...
-					} else if (windowEvent.wheel.x < 0) // scroll left
-					{
+					} else if (windowEvent.wheel.x < 0) { // scroll left
 						// ...
 					}
 					break;

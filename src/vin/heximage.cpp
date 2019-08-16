@@ -2,9 +2,6 @@
 
 namespace vin {
 
-	HexImage::HexImage() :flat_(true), hexSides_{HexSide::NONE} {
-	}
-
 	HexImage::HexImage(const std::string& filename, const sdl::Sprite& image, const HexSides& hexSides, bool flat, int rotations)
 		: filename_(filename), image_(image), hexSides_(hexSides), flat_(flat), rotations_(rotations) {
 	}

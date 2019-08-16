@@ -22,6 +22,10 @@ namespace vin {
 
 	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);
 
+	class ICamera {
+
+	};
+
 	class Camera {
 	public:
 		Mat44 getView() const {
@@ -31,7 +35,7 @@ namespace vin {
 			glm::vec3 center = {lookAtPos_.x / 100.f, lookAtPos_.y / 100.f, 0.f};
 			eye = glm::rotateX(eye, angle_);
 
-			logger()->info("eye: ({},{},{})", eye.x, eye.y, eye.z);
+			//logger()->info("eye: ({},{},{})", eye.x, eye.y, eye.z);
 
 			return glm::lookAt(eye, center, glm::vec3(0.0f, 1.0f, 0.0f));
 			//auto center = cameraPosition;
@@ -86,6 +90,8 @@ namespace vin {
 		}
 
 		void init(const sdl::ImGuiShader& imGuiShader);
+
+		void drawHexImage(const sdl::ImGuiShader& imGuiShader, Hexi hex, const HexImage& image);
 
     private:
 		Hexi getHexFromMouse() const;

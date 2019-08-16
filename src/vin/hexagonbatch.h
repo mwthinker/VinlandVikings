@@ -24,9 +24,13 @@ namespace vin {
 
 		void uploadToGraphicCard();
 
+		void clear();
+
         void addHexagon(float x, float y, float size, ImU32 color = WHITE);
 
 		void addHexagon(float x, float y, float innerSize, float outerSize, ImU32 color = WHITE);
+
+		void addHexagonImage(float x, float y, float size, const sdl::Sprite& sprite, ImU32 color = WHITE);
 
 		void addRectangle(float x, float y, float w, float h, const sdl::Sprite& sprite, ImU32 color = WHITE);
 
