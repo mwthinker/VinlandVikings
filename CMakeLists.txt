@@ -41,9 +41,12 @@ set(SOURCES
 	src/vin/logger.h
 	src/vin/main.cpp
 	src/vin/orientation.h
+	src/vin/shader.cpp
+	src/vin/shader.h
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h
+	src/vin/vertex.h
 )
 
 find_package(Threads REQUIRED)

@@ -6,6 +6,7 @@
 #include "hexagon.h"
 #include "hextilemap.h"
 #include "heximage.h"
+#include "shader.h"
 
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
@@ -105,6 +106,7 @@ namespace vin {
 		//float imageAngle_;
 		HexTileMap hexTileMap_;
 		HexagonBatch hexagonBatch_;
+		Shader shader_;
 
 		HexTile lastHexTile_;
 		bool lastAllowed_;

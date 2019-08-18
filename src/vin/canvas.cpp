@@ -263,6 +263,9 @@ namespace vin {
         hexagonBatch_.draw(imGuiShader);
 
 		drawHexImage(imGuiShader, Hexi(0,0), hexImage_);
+
+		shader_.useProgram();
+		imGuiShader.useProgram();
 	}
 
 	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
