@@ -21,11 +21,7 @@ namespace vin {
 
 		void setVertexAttribPointer() const;
 
-		void setProj(const Mat44& matrix) const;
-
-		void setView(const Mat44& matrix) const;
-
-		void setModel(const Mat44& matrix) const;
+		void setMatrix(const Mat44& matrix) const;
 
 		void setTextureId(GLint textureId) const;
 
@@ -40,10 +36,9 @@ namespace vin {
 		GLuint aColor_ = -1;
 
 		// Vertex buffer uniforms.
-		GLuint uProj = -1;
-		GLuint uView = -1;
-		GLuint uModel = -1;
+		GLuint uMat_ = -1;
 		GLuint uTexture_ = -1;
+		GLuint uUseTexture_ = -1;
 		
 		mutable bool initiated_ = false;
 	};

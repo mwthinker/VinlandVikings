@@ -140,7 +140,7 @@ namespace vin {
 	void VinlandWindow::initPreLoop() {
         sdl::ImGuiWindow::initPreLoop();
 		auto [w, h] = sdl::ImGuiWindow::getSize();
-        glViewport(0,0, w, h);
+        glViewport(0, 0, w, h);
 
 		/*
 		const auto& shader = getImGuiShader();

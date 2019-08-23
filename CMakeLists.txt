@@ -23,6 +23,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES
 	src/vin/canvas.cpp
 	src/vin/canvas.h
+	src/vin/graphic.cpp
+	src/vin/graphic.h
 	src/vin/hex.h
 	src/vin/hexagon.cpp
 	src/vin/hexagon.h

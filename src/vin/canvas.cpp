@@ -246,6 +246,7 @@ namespace vin {
 		constexpr float innerRadius = 0.19f;
 		constexpr float outerRadius = 0.2f;
 
+		/*
 		imGuiShader.setMatrix(proj * view * model);
 		imGuiShader.setTextureId(1);
 		hexagonBatch_.clear();
@@ -263,8 +264,16 @@ namespace vin {
         hexagonBatch_.draw(imGuiShader);
 
 		drawHexImage(imGuiShader, Hexi(0,0), hexImage_);
+		*/
+		//shader_.useProgram();
+		graphic_.clearDraw();
+		//graphic_.pushMatrix(proj * view * model);
+		graphic_.addRectangle({0.f, 0.f}, {1.f, 1.f}, WHITE);
+		//graphic_.popMatrix();
 
-		shader_.useProgram();
+		graphic_.draw();
+
+
 		imGuiShader.useProgram();
 	}
 
