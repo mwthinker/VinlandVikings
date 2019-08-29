@@ -56,33 +56,6 @@ namespace vin {
 			case SDL_QUIT:
 				sdl::Window::quit();
 				break;
-			case SDL_MOUSEWHEEL:
-				if (windowEvent.wheel.y > 0) // scroll up
-				{
-					zoom_ *= 1.1f;
-					// Put code for handling "scroll up" here!
-					//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
-				} else if (windowEvent.wheel.y < 0) // scroll down
-				{
-					zoom_ *= 1/1.1f;
-					// Put code for handling "scroll down" here!
-					//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
-				}
-
-				if (windowEvent.wheel.x > 0) // scroll right
-				{
-					// ...
-				} else if (windowEvent.wheel.x < 0) // scroll left
-				{
-					// ...
-				}
-				break;
-			case SDL_MOUSEMOTION:
-				if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-					x_ += windowEvent.motion.xrel;
-					y_ += windowEvent.motion.yrel;
-				}
-				break;
 		}
 	}
 
@@ -94,6 +67,7 @@ namespace vin {
 //		whiteSquare_.bindTexture();
 //        hexagonBatch_.draw(getImGuiShader());
 		auto [width, height] = sdl::Window::getSize();
+
 		canvas_.update((float) width, (float) height, getImGuiShader(), deltaTime);
 	}
 
@@ -141,29 +115,6 @@ namespace vin {
         sdl::ImGuiWindow::initPreLoop();
 		auto [w, h] = sdl::ImGuiWindow::getSize();
         glViewport(0, 0, w, h);
-
-		/*
-		const auto& shader = getImGuiShader();
-		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.5f);
-
-		const ImU32 RED = Color(1.0f, 0.f, 0.f);
-		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.6f, 0.8f, RED);
-		constexpr float innerRadius = 0.19f;
-		constexpr float outerRadius = 0.2f;
-
-		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
-
-		for (int i = -5; i < 5; ++i) {
-			for (int j = -5; j < 5; ++j) {
-				auto pos = hex_to_pixel(layout, Hex(i, j, 0));
-				hexagonBatch_.addHexagon(pos.x, pos.y, innerRadius, outerRadius, RED);
-			}
-		}
-
-        hexagonBatch_.init(shader);
-		glActiveTexture(GL_TEXTURE1);
-		whiteSquare_.bindTexture();
-		*/
 		canvas_.init(getImGuiShader());
 	}
 

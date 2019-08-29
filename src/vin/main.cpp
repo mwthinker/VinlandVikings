@@ -9,6 +9,8 @@
 
 #include <clara.hpp>
 
+#include <iostream>
+
 struct TerminalConfig {
 	int width = 400;
 	int height = 400;

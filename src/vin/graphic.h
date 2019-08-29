@@ -13,14 +13,35 @@
 
 namespace vin {
 
+	class BatchData {
+	public:
+		BatchData() = default;
+		BatchData(sdl::BatchView<Vertex>&& batchView) : batchView_(batchView) {
+		}
+
+		sdl::Texture texture_;
+		sdl::BatchView<Vertex> batchView_;
+	};
+
     class Graphic {
     public:
 		Graphic();
 
-		void pushMatrix(const Mat44& matrix);
-		void popMatrix();
+		void setMatrix(const Mat44& matrix);
+
+		void addFlatHexagon(Vec2 center, float radius, Color color);
+
+		void addPointyHexagon(Vec2 center, float radius, Color color);
+
+		void addFlatHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite);
+		void addPointyHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite);
+		
+		void addFlatHexagon(Vec2 center, float innerRadius, float outerRadius, Color color);
+		void addPointyHexagon(Vec2 center, float innerRadius, float outerRadius, Color color);
 
 		void addRectangle(Vec2 pos, Vec2 size, Color color);
+
+		void addCircle(Vec2 center, float radius, Color color, const int iterations = 40, float startAngle = 0);
 
 		void draw();
 
@@ -28,33 +49,23 @@ namespace vin {
 
     private:
 		using Batch = sdl::Batch<Vertex>;
+		using BatchView = sdl::BatchView<Vertex>;
 
-		class BatchData {
-		public:
-			BatchData() : matrix_(1), batch_(GL_TRIANGLES, GL_DYNAMIC_DRAW) {
-			}
+		void bind();
 
-			sdl::Texture texture_;
-			Mat44 matrix_;
+		void draw(const BatchData& batchData);
 
-			int matrixNbr_ = 1;
-			
-			Batch batch_;
-			sdl::VertexArrayObject vao_;
-			bool initiated_ = false;
-
-			void bind(const Shader& shader);
-			void draw(const Shader& shader);
-
-			void clearDraw();
-
-			bool operator==(const BatchData& batchData) const;
-		};
+		void addHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite, float startAngle);
+		void addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle);
 
 		Shader shader_;
+		Batch batch_;
+		int lastIndexCounter_ = 0;
+		BatchView lastView_;
 		std::vector<BatchData> batches_;
-		std::stack<Mat44> matrixStack_;
-		int matrixCounter_ = 1;
+		Mat44 matrix_;
+		bool initiated_ = false;
+		sdl::VertexArrayObject vao_;
     };
 
 } // Namespace vin.

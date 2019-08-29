@@ -38,6 +38,9 @@ namespace vin {
 			return shiftSides;
 		}
 
+		constexpr float innerRadius = 0.19f;
+		constexpr float outerRadius = 0.2f;
+
 	}
 
 	template <class Type>
@@ -234,6 +237,29 @@ namespace vin {
 		return hexRound(hexf);
 	}
 
+	void Canvas::addGrid() {
+		constexpr float innerRadius = 0.19f;
+		constexpr float outerRadius = 0.2f;
+
+		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
+		for (const auto& [hex, hexTile] : hexTileMap_) {
+			auto pos = hexToPixel(layout, hex);
+			graphic_.addPointyHexagon(pos, innerRadius, outerRadius, RED);
+		}
+
+	}
+	
+	void Canvas::addGridImages() {
+		constexpr float innerRadius = 0.19f;
+		constexpr float outerRadius = 0.2f;
+
+		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
+		for (const auto& [hex, hexTile] : hexImages_) {
+			auto pos = hexToPixel(layout, hex);
+			graphic_.addPointyHexagon(pos, innerRadius, outerRadius, RED);
+		}
+	}
+
 	void Canvas::update(float width, float height, const sdl::ImGuiShader& imGuiShader, double deltaTime) {
 		auto proj = glm::ortho(-1.f * width / height * zoom_, 1.f, -1.f * width / height * zoom_, 1.f * width / height, -10.f, 10.f);
 
@@ -242,9 +268,7 @@ namespace vin {
 		camera_.setZoom(zoom_);
 		camera_.setAngle(angle_);
 		auto view = camera_.getView();
-			   
-		constexpr float innerRadius = 0.19f;
-		constexpr float outerRadius = 0.2f;
+
 
 		/*
 		imGuiShader.setMatrix(proj * view * model);
@@ -267,9 +291,46 @@ namespace vin {
 		*/
 		//shader_.useProgram();
 		graphic_.clearDraw();
-		//graphic_.pushMatrix(proj * view * model);
-		graphic_.addRectangle({0.f, 0.f}, {1.f, 1.f}, WHITE);
+		graphic_.setMatrix(proj * view * model);
+
+		constexpr float innerRadius = 0.19f;
+		constexpr float outerRadius = 0.2f;
+
+		addGrid();
+		addGridImages();
+
+		auto pos = Vec2{x_, y_};
+		auto size = Vec2{createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2};
+		graphic_.addFlatHexagonImage(pos, createInnerRadius(zoom_), hexImage_.getImage());
+
+		//HexagonImage(hexImage_.getImage(), pos, size, getRotationAngle(rotations_));
+
+		/*
+		graphic_.addRectangle({0.f, 0.f}, {0.3f, 0.3f}, WHITE);
+		graphic_.addRectangle({-0.3f, -0.3f}, {0.3f, 0.3f}, BLUE);
+
+		graphic_.addRectangle({-0.8f, 0.6f}, {0.1f, 0.1f}, RED);
+
+		graphic_.addCircle({0.1f,0.1f}, 0.1f, RED);
+
+		graphic_.addFlatHexagon({-0.3f,0.3f}, 0.1f, BLUE);
+
+
+		graphic_.addPointyHexagon({-0.4f,-0.3f}, 0.05f, BLUE);
+
+		graphic_.addFlatHexagonImage({0.4f, 0.4f}, 0.5f, hexImage_.getImage());
+
+		graphic_.addPointyHexagonImage({-0.4f, 0.4f}, 0.5f, hexImage_.getImage());
+
 		//graphic_.popMatrix();
+		
+		*/
+		/*
+		graphic_.addPointyHexagon({-0.4f,-0.3f}, 0.05f, BLUE);
+		graphic_.addFlatHexagon({0.2f, 0.2f}, 0.2f, 0.3f, RED);
+
+		graphic_.addPointyHexagon({-0.2f, -0.2f}, 0.2f, 0.3f, RED);
+		*/
 
 		graphic_.draw();
 

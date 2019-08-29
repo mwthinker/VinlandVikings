@@ -51,9 +51,7 @@ namespace vin {
 		Canvas canvas_;
 		Page page_;
 		HexagonBatch hexagonBatch_;
-		sdl::Texture whiteSquare_;
-		float zoom_;
-		float x_, y_;
+		sdl::Texture whiteSquare_;		
 		std::vector<HexImage> hexImages_;
 		std::map<HexSidesKey, HexImageTypeVector> hexTypes_;
 	};

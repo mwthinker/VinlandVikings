@@ -111,15 +111,15 @@ namespace vin {
 	void Shader::setVertexAttribPointer() const {
 		if (shaderProgram_.isLinked()) {
 			glEnableVertexAttribArray(aPos_);
-			glVertexAttribPointer(aPos_, sizeof(Vertex::pos) / sizeof(GLfloat) , GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) 0 );
+			glVertexAttribPointer(aPos_, sizeof(Vertex::pos) / sizeof(GLfloat) , GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, pos));
 			sdl::assertGlError();
 
 			glEnableVertexAttribArray(aTex_);
-			glVertexAttribPointer(aTex_, sizeof(Vertex::tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, pos));
+			glVertexAttribPointer(aTex_, sizeof(Vertex::tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, tex));
 			sdl::assertGlError();
 
 			glEnableVertexAttribArray(aColor_);
-			glVertexAttribPointer(aColor_, sizeof(Vertex::color) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, tex));
+			glVertexAttribPointer(aColor_, sizeof(Vertex::color) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, color));
 			sdl::assertGlError();
 		} else {
 			logger()->warn("[VinShader] setVertexAttribPointer failed, shader not linked");

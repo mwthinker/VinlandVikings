@@ -96,6 +96,9 @@ namespace vin {
 		void drawHexImage(const sdl::ImGuiShader& imGuiShader, Hexi hex, const HexImage& image);
 
     private:
+		void addGrid();
+		void addGridImages();
+
 		Hexi getHexFromMouse() const;
 
 		sdl::Texture whiteSquare_;

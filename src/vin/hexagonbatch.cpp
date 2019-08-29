@@ -40,7 +40,7 @@ namespace vin {
 		}
     }
 
-	HexagonBatch::HexagonBatch() : batch_(GL_TRIANGLES, GL_DYNAMIC_DRAW) {
+	HexagonBatch::HexagonBatch() : batch_(GL_DYNAMIC_DRAW) {
 	}
 
 	void HexagonBatch::init(const sdl::ImGuiShader& shader) {
@@ -56,7 +56,7 @@ namespace vin {
 	void HexagonBatch::draw(const sdl::ImGuiShader& shader) const {
 		shader.useProgram();
 		vao_.bind();
-		batch_.draw();
+		batch_.draw(GL_TRIANGLES);
 	}
 
 	void HexagonBatch::uploadToGraphicCard() {

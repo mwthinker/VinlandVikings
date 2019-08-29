@@ -2,23 +2,15 @@
 #define VINLANDVIKINGS_VIN_HEXAGON_H
 
 #include "types.h"
-#include "logger.h"
-#include "hexagonbatch.h"
 #include "hex.h"
 #include "hexsides.h"
 #include "orientation.h"
 
-#include <sdl/batch.h>
-#include <sdl/imguishader.h>
-#include <sdl/sprite.h>
-#include <sdl/vertexarrayobject.h>
-
-#include <imgui.h>
 #include <glm/gtx/rotate_vector.hpp>
 
-#include <iostream>
+#include <sdl/opengl.h>
+
 #include <array>
-#include <type_traits>
 
 namespace vin {
 
@@ -38,17 +30,20 @@ namespace vin {
 		return {center.x + size * std::cos(rad), center.y + size * std::sin(rad)};
 	}
 
-    inline Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr) {
-		auto rad = PI / 3 * nbr -  PI / 6;
-        return center + glm::rotate(Vec2(size, 0.f), rad);
-    }
+	inline Vec2 getHexCorner(int nbr, float startAngle = 0) {
+		return glm::rotate(Vec2{1, 0.f}, PI / 3 * nbr - PI / 6 + startAngle);
+	}
 
-    inline std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius) {
+	inline Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle = 0) {
+		return center + size * getHexCorner(nbr, startAngle);
+	}
+
+    inline std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius, float startAngle = 0) {
         std::array<Vec2, 6> corners;
         for (int i = 0; i < 6; ++i) {
-			auto rad = PI / 3 * i - PI / 6;
-            corners[i] = center + glm::rotate(Vec2(radius, 0.f), rad);
+            corners[i] = getHexCorner(center, radius, i, startAngle);
         }
+		return corners;
 	}
 
 	inline ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
@@ -111,13 +106,6 @@ namespace vin {
 		}
 		return Hexi(q, r);
 	}
-	
-	/*
-	Hexi cubeto_oddr(cube) :
-		var col = cube.x + (cube.z - (cube.z & 1)) / 2
-		var row = cube.z
-		return OffsetCoord(col, row)
-		*/
 
 	inline Hexi oddToCube(int x, int y) {
 		auto q = x - (y - (y & 1)) / 2;
@@ -126,22 +114,6 @@ namespace vin {
 		return Hexi(q, r);
 	}
 
-	/*
-	template <class HexType>
-	std::ostream& operator<<(std::ostream& os, Hex<HexType> hex) {
-		return os << "(" << hex.q() << ", " << hex.r() << ", " << hex.s();
-	}
-	*/
-
-	/*
-	std::ostream& operator<<(std::ostream& os, Hexi hex) {
-		return os << "(" << hex.q() << ", " << hex.r() << ", " << hex.s();
-	}
-
-	std::ostream& operator<<(std::ostream& os, Hexf hex) {
-		return os << "(" << hex.q() << ", " << hex.r() << ", " << hex.s();
-	}
-	*/
 
 } // Namespace vin.
 
