@@ -70,9 +70,9 @@ namespace vin {
     public:
 		Canvas();
 
-		void update(float width, float height, const sdl::ImGuiShader& imGuiShader, double deltaTime);
+		void drawCanvas(double deltaTime);
 
-		void draw();
+		void drawImgui();
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
@@ -98,13 +98,14 @@ namespace vin {
     private:
 		void addGrid();
 		void addGridImages();
+		void updateCanvasSize();
 
 		Hexi getHexFromMouse() const;
 
 		sdl::Texture whiteSquare_;
-		float zoom_;
-		float x_, y_;
-		bool hasFocus_;
+		float zoom_ = 1.f;
+		float x_ = 0, y_ = 0;
+		bool hasFocus_ = false;;
 		bool activateHexagon_;
 		HexImage hexImage_;
 		//float imageAngle_;
@@ -114,11 +115,14 @@ namespace vin {
 		Graphic graphic_;
 
 		HexTile lastHexTile_;
-		bool lastAllowed_;
+		bool lastAllowed_ = false;
 		std::unordered_map<Hexi, HexImage> hexImages_;
-		int rotations_;
+		int rotations_ = 0;
 		Camera camera_;
 		float angle_ =  0.f;
+
+		Vec2 windowSize_ = {0.f ,0.f};
+		Vec2 windowPos_ = {0.f, 0.f};
     };
 
 } // Namespace vin.

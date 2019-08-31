@@ -29,12 +29,14 @@ namespace vin {
 	}
 
 	void Graphic::draw() {
-		shader_.useProgram();
-		bind();
-		batch_.uploadToGraphicCard();
-		shader_.setMatrix(matrix_);
-		for (auto& batchData : batches_) {
-			draw(batchData);
+		if (batch_.getSize() > 0) {
+			shader_.useProgram();
+			bind();
+			batch_.uploadToGraphicCard();
+			shader_.setMatrix(matrix_);
+			for (auto& batchData : batches_) {
+				draw(batchData);
+			}
 		}
 	}
 

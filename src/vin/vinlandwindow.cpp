@@ -60,26 +60,16 @@ namespace vin {
 	}
 
 	void VinlandWindow::imGuiPreUpdate(double deltaTime) {
-        //const auto& shader = getImGuiShader();
-        //shader.setMatrix(glm::mat4x4(1));
-        //shader.setTextureId(1);
-//		glActiveTexture(GL_TEXTURE1);
-//		whiteSquare_.bindTexture();
-//        hexagonBatch_.draw(getImGuiShader());
-		auto [width, height] = sdl::Window::getSize();
-
-		canvas_.update((float) width, (float) height, getImGuiShader(), deltaTime);
+		canvas_.drawCanvas(deltaTime);
 	}
 
     void VinlandWindow::imGuiUpdate(double deltaTime) {
 		beginMain();
 
-		//ImGui::ImageBackground(hexImages_[0].getImage());
 		drawHexTypesButtons();
 
-		//canvas_.draw();
+		canvas_.drawImgui();
 		endMain();
-		//ImGui::
     }
 
 	void VinlandWindow::drawHexTypesButtons() {
@@ -108,6 +98,12 @@ namespace vin {
 	}
 
 	void VinlandWindow::initOpenGl() {
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_MULTISAMPLE);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
         sdl::ImGuiWindow::initOpenGl();
 	}
 

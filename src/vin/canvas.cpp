@@ -43,66 +43,6 @@ namespace vin {
 
 	}
 
-	template <class Type>
-	class Container {
-	public:
-        Container() {
-        }
-
-        Container(size_t size) {
-
-        }
-
-        size_t getSize() const {
-            return vector_.size();
-        }
-
-        Type& pushBack(Type&& type) {
-            vector_[++index_] = type;
-        }
-
-	//private:
-        size_t index_ = 0;
-        std::vector<Type> vector_;
-	};
-
-	class HexagonDraw {
-	public:
-        HexagonDraw() {
-
-        }
-
-        void addHexagon(Vec2 center, GLfloat innerSize, GLfloat outerSize) {
-            std::array<Vec2, 6> innerCorners = getHexCorners(center, innerSize);
-            std::array<Vec2, 6> outerCorners = getHexCorners(center, outerSize);
-
-            auto v1 = getHexCorner(center, innerSize, 0);
-            auto v2 = getHexCorner(center, outerSize, 0);
-
-
-
-            for (int i = 0; i < 6; ++i) {
-                indexes_.push_back(i);
-                indexes_.push_back(i + 6);
-                indexes_.push_back((i + 1) % 6 + 6);
-                indexes_.push_back((i + 1) % 6);
-                //auto v3 = getHexCorner(center, outerSize, (i + 1) % 6);
-                //auto v4 = getHexCorner(center, innerSize, (i + 1) % 6);
-                //drawList->AddTriangleFilled(v1, v2, v4, color);
-                //drawList->AddTriangleFilled(v4, v2, v3, color);
-                //v1 = v4;
-                //v2 = v3;
-            }
-        }
-
-	private:
-        Container<ImDrawVert> vertexes_;
-        std::vector<int> indexes_;
-	    sdl::VertexBufferObject vboVertexes_;
-        sdl::VertexBufferObject vboIndexes_;
-        sdl::VertexArrayObject vao_;
-	};
-	
 	void drawGrid(const HexTileMap& hexes, float zoom, float x, float y) {
 		ImVec2 p = ImGui::GetCursorScreenPos();
 
@@ -170,13 +110,6 @@ namespace vin {
 	}
 
 	Canvas::Canvas() {
-		hasFocus_ = false;
-		zoom_ = 1.f;
-		x_ = 0.f;
-		y_ = 0.f;
-		rotations_ = 0;
-        lastAllowed_ = false;
-
 		//auto hexes = createFlatHexShape(10);
 		auto hexes = createRectangleShape(10, 10);
 		//auto hexes = createParallelogramShape(10, 5);
@@ -195,16 +128,25 @@ namespace vin {
 		hexagonBatch_.draw(imGuiShader);
 	}
 
-	void Canvas::draw() {
+	void Canvas::updateCanvasSize() {
+		auto pos = ImGui::GetWindowPos();
+		windowSize_ = {pos.x, pos.y};
+		auto size = ImGui::GetWindowSize();
+		windowSize_ = {size.x, size.y};
+	}
+
+	void Canvas::drawImgui() {
 		ImGui::BeginChild("Canvas");
+		updateCanvasSize();
 		//for (int n = 0; n < 50; n++)
 			//ImGui::Text("%04d: Some text", n);
 
+
 		hasFocus_ = ImGui::IsWindowFocused();
 
-		drawGrid(hexTileMap_, zoom_, x_, y_);
+		//drawGrid(hexTileMap_, zoom_, x_, y_);
 
-		drawGrid(hexImages_, zoom_, x_, y_);
+		//drawGrid(hexImages_, zoom_, x_, y_);
 
 		ImVec2 pos = ImGui::GetMousePos();
 		ImVec2 size(createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2);
@@ -260,8 +202,14 @@ namespace vin {
 		}
 	}
 
-	void Canvas::update(float width, float height, const sdl::ImGuiShader& imGuiShader, double deltaTime) {
-		auto proj = glm::ortho(-1.f * width / height * zoom_, 1.f, -1.f * width / height * zoom_, 1.f * width / height, -10.f, 10.f);
+	void Canvas::drawCanvas(double deltaTime) {
+		const auto& x = windowPos_.x;
+		const auto& y = windowPos_.y;
+		const auto& w = windowSize_.x;
+		const auto& h = windowSize_.y;
+
+		glViewport((GLint) x, (GLint) y, (GLsizei) w, (GLsizei) h);
+		auto proj = glm::ortho(-1.f * w / h * zoom_, 1.f, -1.f * w / h * zoom_, 1.f * w / h, -10.f, 10.f);
 
 		auto model = Mat44(1);
 		camera_.setPosition({x_, y_});
@@ -269,27 +217,6 @@ namespace vin {
 		camera_.setAngle(angle_);
 		auto view = camera_.getView();
 
-
-		/*
-		imGuiShader.setMatrix(proj * view * model);
-		imGuiShader.setTextureId(1);
-		hexagonBatch_.clear();
-
-		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
-		for (const auto& [hex, hexTile] : hexTileMap_) {
-			auto pos = hexToPixel(layout, hex);
-			hexagonBatch_.addHexagon(pos.x, pos.y, outerRadius, GREEN);
-			hexagonBatch_.addHexagon(pos.x, pos.y, innerRadius, outerRadius, RED);
-		}
-		hexagonBatch_.uploadToGraphicCard();
-
-		glActiveTexture(GL_TEXTURE1);
-		whiteSquare_.bindTexture();
-        hexagonBatch_.draw(imGuiShader);
-
-		drawHexImage(imGuiShader, Hexi(0,0), hexImage_);
-		*/
-		//shader_.useProgram();
 		graphic_.clearDraw();
 		graphic_.setMatrix(proj * view * model);
 
@@ -301,7 +228,7 @@ namespace vin {
 
 		auto pos = Vec2{x_, y_};
 		auto size = Vec2{createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2};
-		graphic_.addFlatHexagonImage(pos, createInnerRadius(zoom_), hexImage_.getImage());
+		//graphic_.addFlatHexagonImage(pos, createInnerRadius(zoom_), hexImage_.getImage());
 
 		//HexagonImage(hexImage_.getImage(), pos, size, getRotationAngle(rotations_));
 
@@ -333,9 +260,6 @@ namespace vin {
 		*/
 
 		graphic_.draw();
-
-
-		imGuiShader.useProgram();
 	}
 
 	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
@@ -358,6 +282,9 @@ namespace vin {
 		hexagonBatch_.init(imGuiShader);
 		glActiveTexture(GL_TEXTURE1);
 		whiteSquare_.bindTexture();
+
+		addGrid();
+		addGridImages();
 	}
 
 	void Canvas::eventUpdate(const SDL_Event& windowEvent) {
