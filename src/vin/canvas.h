@@ -65,7 +65,6 @@ namespace vin {
 
 		sdl::Texture whiteSquare_;
 		float zoom_ = 1.f;
-		float x_ = 0, y_ = 0;
 		bool hasFocus_ = false;;
 		bool activateHexagon_;
 		HexImage hexImage_;
@@ -78,8 +77,8 @@ namespace vin {
 		bool lastAllowed_ = false;
 		std::unordered_map<Hexi, HexImage> hexImages_;
 		int rotations_ = 0;
+		
 		Camera camera_;
-		float angle_ =  0.f;
 
 		Mat2 hexModel_;
 		Vec2 windowSize_ = {0.f ,0.f};

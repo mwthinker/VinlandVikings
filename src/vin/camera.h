@@ -4,6 +4,7 @@
 #include "types.h"
 
 #include <glm/gtx/rotate_vector.hpp>
+#include <algorithm>
 
 namespace vin {
 	
@@ -18,6 +19,7 @@ namespace vin {
 
 		void setAngle(float angle) {
 			angle_ = angle;
+			angle_ = std::clamp(angle_, 0.f, PI / 2);
 		}
 
 		void setPosition(Vec2 pos) {
@@ -29,12 +31,17 @@ namespace vin {
 		}
 
 		void move(Vec2 delta) {
-			lookAtPos_.x = delta.x;
-			lookAtPos_.y = delta.y;
+			lookAtPos_.x += delta.x;
+			lookAtPos_.y += delta.y;
+		}
+
+		void angleDelta(float delta) {
+			angle_ += delta;
+			angle_ = std::clamp(angle_, 0.f, PI / 2);
 		}
 
 	private:
-		Vec3 lookAtPos_ = {0, 0, 0};
+		Vec3 lookAtPos_ = {0, 0, 1.f};
 		float angle_ = 0.f;
 	};
 

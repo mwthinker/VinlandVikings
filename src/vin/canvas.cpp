@@ -71,10 +71,9 @@ namespace vin {
 
 		glViewport((GLint)x, (GLint)y, (GLsizei)w, (GLsizei)h);
 		projection_ = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);		
-		projection_ = glm::scale(projection_, Vec3{zoom_, zoom_, 1});		
+		projection_ = glm::scale(projection_, Vec3{zoom_, zoom_, 1});
 
-		camera_.setPosition({x_, y_});
-		camera_.setAngle(angle_);
+		hasFocus_ = ImGui::IsWindowFocused();
 	}
 
 	void Canvas::drawImgui() {
@@ -82,9 +81,6 @@ namespace vin {
 		updateCanvasSize();
 		//for (int n = 0; n < 50; n++)
 			//ImGui::Text("%04d: Some text", n);
-
-
-		hasFocus_ = ImGui::IsWindowFocused();
 
 		//drawGrid(hexTileMap_, zoom_, x_, y_);
 
@@ -99,7 +95,7 @@ namespace vin {
 		Hexi hexi = getHexFromMouse();
 		//auto pixel = hexToPixel(createFlatLayout(x_, y_, zoom_), hexi);
 
-		auto pixel = createHexToCoordModel() * Vec2(x_, y_);// glm::rotate(Vec2(x_, y_), 0.f)
+		auto pixel = createHexToCoordModel() * camera_.getLookAtPosition();// glm::rotate(Vec2(x_, y_), 0.f)
         HexSides sides = hexImage_.getHexSides();
 		rotate(sides, rotations_);
         HexTile hexTile(hexi, sides);
@@ -187,7 +183,7 @@ namespace vin {
 	}
 
 	void Canvas::eventUpdate(const SDL_Event& windowEvent) {
-		if (hasFocus_ || true) {
+		if (hasFocus_) {
 			switch (windowEvent.type) {
 				case SDL_MOUSEWHEEL:
 					if (windowEvent.wheel.y > 0) { // scroll up
@@ -210,22 +206,22 @@ namespace vin {
 			            constexpr float STEP = 10.f;
                         switch (windowEvent.key.keysym.sym) {
                             case SDLK_LEFT:
-                                x_ -= STEP;
+								camera_.move({-STEP,0});
                                 break;
                             case SDLK_RIGHT:
-                                x_ += STEP;
+								camera_.move({STEP,0});
                                 break;
                             case SDLK_UP:
-                                y_ += STEP;
+								camera_.move({0,STEP});
                                 break;
                             case SDLK_DOWN:
-                                y_ -= STEP;
+								camera_.move({0,-STEP});
                                 break;
 							case SDLK_PAGEUP:
-								angle_ -= 0.1f;
+								camera_.angleDelta(-0.1f);
 								break;
 							case SDLK_PAGEDOWN:
-								angle_ += 0.1f;
+								camera_.angleDelta(0.1f);
 								break;
                             case SDLK_c:
                                 hexImages_.clear();
@@ -240,10 +236,10 @@ namespace vin {
 						const auto& h = windowSize_.y;
 
 						auto result = screenPosToWorld({windowEvent.motion.xrel, windowEvent.motion.yrel * w / h});
-
-						x_ += result.x;
-						y_ += result.y;
-						logger()->info("(x, y): ({}, {})", x_, y_);
+						camera_.move(result);
+						//x_ += result.x;
+						//y_ += result.y;
+						//logger()->info("(x, y): ({}, {})", x_, y_);
 					}
 					break;
 				case SDL_MOUSEBUTTONUP:
