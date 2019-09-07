@@ -21,7 +21,7 @@ namespace vin {
 
 		void setVertexAttribPointer() const;
 
-		void setMatrix(const Mat44& matrix) const;
+		void setMatrix(const Mat4& matrix) const;
 
 		void setTextureId(GLint textureId) const;
 

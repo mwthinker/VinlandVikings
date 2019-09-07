@@ -170,7 +170,7 @@ namespace vin {
 		batches_.clear();
 	}
 
-	void Graphic::setMatrix(const Mat44& model) {
+	void Graphic::setMatrix(const Mat4& model) {
 		matrix_ = model;
 	}
 

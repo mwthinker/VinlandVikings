@@ -17,42 +17,40 @@ namespace vin {
 		constexpr const GLchar* U_USE_TEXTURE = "uUseTexture";
 
 		constexpr const GLchar* getVertexShaderGlsl_330() {
-			return
-				"#version 330 core                                                  \n"
-				"                                                                   \n"
-				"uniform mat4 uMat;                                                 \n"
-				"                                                                   \n"
-				"in vec2 aPos;                                                      \n"
-				"in vec2 aTex;                                                      \n"
-				"in vec4 aColor;                                                    \n"
-				"                                                                   \n"
-				"out vec2 fragTex;                                                  \n"
-				"out vec4 fragColor;                                                \n"
-				"                                                                   \n"
-				"void main()                                                        \n"
-				"{                                                                  \n"
-				"    fragTex = aTex;                                                \n"
-				"    fragColor = aColor;                                            \n"
-				"    gl_Position = uMat * vec4(aPos.xy, 0, 1);                      \n"
-				"}                                                                  \n";
+			return R"(#version 330 core
+
+uniform mat4 uMat;
+
+in vec2 aPos;
+in vec2 aTex;
+in vec4 aColor;
+
+out vec2 fragTex;
+out vec4 fragColor;
+
+void main() {
+    fragTex = aTex;
+    fragColor = aColor;
+    gl_Position = uMat * vec4(aPos.xy, 0, 1);
+}
+)";
 		}
 
 		constexpr const GLchar* getFragmentShaderGlsl_330() {
-			return
-				"#version 330 core                                            \n"
-				"                                                             \n"
-				"uniform sampler2D uTexture;                                  \n"
-				"uniform float uUseTexture;                                   \n"
-				"                                                             \n"
-				"in vec2 fragTex;                                             \n"
-				"in vec4 fragColor;                                           \n"
-				"                                                             \n"
-				"out vec4 Out_Color;                                          \n"
-				"                                                             \n"
-				"void main()                                                  \n"
-				"{                                                            \n"
-				"    Out_Color = fragColor * (texture(uTexture, fragTex.st) * uUseTexture + (1 - uUseTexture));    \n"
-				"}                                                            \n";
+			return R"(#version 330 core
+
+uniform sampler2D uTexture;
+uniform float uUseTexture;
+
+in vec2 fragTex;
+in vec4 fragColor;
+
+out vec4 Out_Color;
+
+void main() {
+    Out_Color = fragColor * (texture(uTexture, fragTex.st) * uUseTexture + (1 - uUseTexture));
+}
+)";
 		}
 
 	}
@@ -126,7 +124,7 @@ namespace vin {
 		}
 	}
 
-	void Shader::setMatrix(const Mat44& matrix) const {
+	void Shader::setMatrix(const Mat4& matrix) const {
 		glUniformMatrix4fv(uMat_, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 

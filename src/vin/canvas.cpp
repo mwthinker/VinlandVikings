@@ -7,84 +7,14 @@ namespace vin {
 
 	namespace {
 
-		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
-
-		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		
-		const float INNER_RADIUS = 11.f;
-		const float OUTER_RADIUS = 12.f;
-
-		float createInnerRadius(float zoom = 1) {
-			return INNER_RADIUS * zoom;
-		}
-
-		float createOuterRadius(float zoom = 1) {
-			return OUTER_RADIUS * zoom;
-		}
-
-		Layout createFlatLayout(float x, float y, float zoom) {
-			return Layout(layoutPointy, {createInnerRadius(zoom), createOuterRadius(zoom)}, {300.f + x, 300.f + y});
-		}
-
 		float getRotationAngle(int rotations) {
 			return std::fmod(rotations * PI / 3.f + PI / 2.f, 2.f * PI);
 		}
 
-		HexSides shiftHexSides(const HexSides& hexSides, int rotations) {
-			HexSides shiftSides;
-			for (int i = 0; i < 6; ++i) {
-				shiftSides[(i + rotations) % 6] = hexSides[i];
-			}
-			return shiftSides;
+		void rotate(HexSides& hexSides, int rotations) {
+			std::rotate(hexSides.begin(), hexSides.begin() + rotations % 6, hexSides.end());
 		}
 
-		constexpr float innerRadius = 0.19f;
-		constexpr float outerRadius = 0.2f;
-
-	}
-
-	void drawGrid(const HexTileMap& hexes, float zoom, float x, float y) {
-		ImVec2 p = ImGui::GetCursorScreenPos();
-
-		ImVec2 size = ImGui::GetWindowSize();
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-		const ImU32 GRID_COLOR = Color(0.5f, 0.5f, 0.5f);
-
-		auto layout = createFlatLayout(x, y, zoom);
-		float innerRadius = createInnerRadius(zoom);
-		float outerRadius = createOuterRadius(zoom);
-
-		for (const auto& [hex, hexTile] : hexes) {
-			auto pos = hexToPixel(layout, hex);
-			auto color = GRID_COLOR;
-			
-			if (hex == HEX_Q) {
-				color = RED;
-			}
-			if (hex == HEX_R) {
-				color = GREEN;
-			}
-			if (hex == HEX_S) {
-				color = BLUE;
-			}
-
-			addHexagon(drawList, {pos.x, pos.y}, innerRadius, outerRadius, color);
-		}
-	}
-
-
-	void drawGrid(const std::unordered_map<Hexi, HexImage>& hexes, float zoom, float x, float y) {
-		ImVec2 p = ImGui::GetCursorScreenPos();
-
-		ImVec2 size = ImGui::GetWindowSize();
-		auto layout = createFlatLayout(x, y, zoom);
-		float innerRadius = createInnerRadius(zoom);
-
-		for (const auto& [hex, hexImage] : hexes) {
-			auto pos = hexToPixel(layout, hex);
-			HexagonImage(hexImage.getImage(), {pos.x, pos.y}, {innerRadius * 2.f, innerRadius * 2.f}, getRotationAngle(hexImage.getRotations()));
-		}
 	}
 
 	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle) {
@@ -133,6 +63,18 @@ namespace vin {
 		windowSize_ = {pos.x, pos.y};
 		auto size = ImGui::GetWindowSize();
 		windowSize_ = {size.x, size.y};
+
+		const auto& x = windowPos_.x;
+		const auto& y = windowPos_.y;
+		const auto& w = windowSize_.x;
+		const auto& h = windowSize_.y;
+
+		glViewport((GLint)x, (GLint)y, (GLsizei)w, (GLsizei)h);
+		projection_ = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);		
+		projection_ = glm::scale(projection_, Vec3{zoom_, zoom_, 1});		
+
+		camera_.setPosition({x_, y_});
+		camera_.setAngle(angle_);
 	}
 
 	void Canvas::drawImgui() {
@@ -148,26 +90,28 @@ namespace vin {
 
 		//drawGrid(hexImages_, zoom_, x_, y_);
 
-		ImVec2 pos = ImGui::GetMousePos();
-		ImVec2 size(createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2);
-		HexagonImage(hexImage_.getImage(), pos, size, getRotationAngle(rotations_));
-
+		//ImVec2 pos = ImGui::GetMousePos();
+		//ImVec2 size(createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2);
+		//HexagonImage(hexImage_.getImage(), pos, size, getRotationAngle(rotations_));
 		
 		//logger()->info("Pixel: ({}, {})", x_, y_);
 		//logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
 		Hexi hexi = getHexFromMouse();
-		auto pixel = hexToPixel(createFlatLayout(x_, y_, zoom_), hexi);
+		//auto pixel = hexToPixel(createFlatLayout(x_, y_, zoom_), hexi);
+
+		auto pixel = createHexToCoordModel() * Vec2(x_, y_);// glm::rotate(Vec2(x_, y_), 0.f)
         HexSides sides = hexImage_.getHexSides();
-        HexTile hexTile(hexi, shiftHexSides(sides, rotations_));
+		rotate(sides, rotations_);
+        HexTile hexTile(hexi, sides);
         if (lastHexTile_ != hexTile) {
             lastAllowed_ = hexTileMap_.isAllowed(hexTile);
             lastHexTile_ = hexTile;
         }
 
 		if (lastAllowed_) {
-			addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.0f, 7.f, 0.f, 0.5f));
+			//addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.0f, 7.f, 0.f, 0.5f));
 		} else {
-			addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.7f, 0.f, 0.f, 0.5f));
+			//addHexagon(ImGui::GetWindowDrawList(), ImVec2(pixel.x, pixel.y), 0, createInnerRadius(zoom_), Color(0.7f, 0.f, 0.f, 0.5f));
 		}
 
 		ImGui::EndChild();
@@ -175,87 +119,62 @@ namespace vin {
 
 	Hexi Canvas::getHexFromMouse() const {
 		ImVec2 pos = ImGui::GetMousePos();
-		Hexf hexf = pixelToHex(createFlatLayout(x_, y_, zoom_), Vec2(pos.x, pos.y));
+		Hexf hexf{0,0}; // = pixelToHex(createFlatLayout(x_, y_, zoom_), Vec2(pos.x, pos.y));
 		return hexRound(hexf);
 	}
 
 	void Canvas::addGrid() {
-		constexpr float innerRadius = 0.19f;
-		constexpr float outerRadius = 0.2f;
+		constexpr float innerRadius = 0.8f;
+		constexpr float outerRadius = 1.f;
 
-		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
+		//constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
 		for (const auto& [hex, hexTile] : hexTileMap_) {
-			auto pos = hexToPixel(layout, hex);
-			graphic_.addPointyHexagon(pos, innerRadius, outerRadius, RED);
+			auto pos = createHexToCoordModel(PI/2) * Vec2{hex.q(), hex.r()};
+			if (hex == Hexi{0,0}) {
+				graphic_.addPointyHexagon(pos, innerRadius, outerRadius, BLUE);
+			} else {
+				graphic_.addPointyHexagon(pos, innerRadius, outerRadius, RED);
+			}
 		}
 
 	}
+
+	Vec2 Canvas::screenPosToWorld(Vec2 pos) {
+		Vec4 rel = {pos.x / -4.f, pos.y / 4.f, 0.f, 1.f};
+		return glm::inverse<>(projection_) * rel;
+	}
 	
 	void Canvas::addGridImages() {
-		constexpr float innerRadius = 0.19f;
-		constexpr float outerRadius = 0.2f;
+		//constexpr float innerRadius = 0.19f;
+		//constexpr float outerRadius = 0.2f;
 
-		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
+		//constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
 		for (const auto& [hex, hexTile] : hexImages_) {
-			auto pos = hexToPixel(layout, hex);
-			graphic_.addPointyHexagon(pos, innerRadius, outerRadius, RED);
+			//auto pos = hexToPixel(layout, hex);
+			auto pos = createHexToCoordModel(0.f) * Vec2{hex.q(), hex.r()};
+			//graphic_.addPointyHexagon(pos, 0.8f, 1.f, RED);
 		}
 	}
 
 	void Canvas::drawCanvas(double deltaTime) {
-		const auto& x = windowPos_.x;
-		const auto& y = windowPos_.y;
-		const auto& w = windowSize_.x;
-		const auto& h = windowSize_.y;
-
-		glViewport((GLint) x, (GLint) y, (GLsizei) w, (GLsizei) h);
-		auto proj = glm::ortho(-1.f * w / h * zoom_, 1.f, -1.f * w / h * zoom_, 1.f * w / h, -10.f, 10.f);
-
-		auto model = Mat44(1);
-		camera_.setPosition({x_, y_});
-		camera_.setZoom(zoom_);
-		camera_.setAngle(angle_);
-		auto view = camera_.getView();
-
+		auto model = Mat4(1);
 		graphic_.clearDraw();
-		graphic_.setMatrix(proj * view * model);
-
-		constexpr float innerRadius = 0.19f;
-		constexpr float outerRadius = 0.2f;
+		graphic_.setMatrix(projection_ * camera_.getView() * model);
 
 		addGrid();
 		addGridImages();
-
-		auto pos = Vec2{x_, y_};
-		auto size = Vec2{createInnerRadius(zoom_) * 2, createInnerRadius(zoom_) * 2};
-		//graphic_.addFlatHexagonImage(pos, createInnerRadius(zoom_), hexImage_.getImage());
-
-		//HexagonImage(hexImage_.getImage(), pos, size, getRotationAngle(rotations_));
-
+		
 		/*
 		graphic_.addRectangle({0.f, 0.f}, {0.3f, 0.3f}, WHITE);
 		graphic_.addRectangle({-0.3f, -0.3f}, {0.3f, 0.3f}, BLUE);
-
 		graphic_.addRectangle({-0.8f, 0.6f}, {0.1f, 0.1f}, RED);
-
 		graphic_.addCircle({0.1f,0.1f}, 0.1f, RED);
-
 		graphic_.addFlatHexagon({-0.3f,0.3f}, 0.1f, BLUE);
-
-
 		graphic_.addPointyHexagon({-0.4f,-0.3f}, 0.05f, BLUE);
-
 		graphic_.addFlatHexagonImage({0.4f, 0.4f}, 0.5f, hexImage_.getImage());
-
-		graphic_.addPointyHexagonImage({-0.4f, 0.4f}, 0.5f, hexImage_.getImage());
-
-		//graphic_.popMatrix();
-		
-		*/
-		/*
+		graphic_.addPointyHexagonImage({-0.4f, 0.4f}, 0.5f, hexImage_.getImage());		
 		graphic_.addPointyHexagon({-0.4f,-0.3f}, 0.05f, BLUE);
 		graphic_.addFlatHexagon({0.2f, 0.2f}, 0.2f, 0.3f, RED);
-
 		graphic_.addPointyHexagon({-0.2f, -0.2f}, 0.2f, 0.3f, RED);
 		*/
 
@@ -263,26 +182,6 @@ namespace vin {
 	}
 
 	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
-		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.5f);
-
-		hexagonBatch_.addHexagon(0.1f, 0.1f, 0.6f, 0.8f, RED);
-		constexpr float innerRadius = 0.19f;
-		constexpr float outerRadius = 0.2f;
-
-		constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
-
-		//hexagonBatch_.addRectangle(0, 0, 500, 500, whiteSquare_);
-
-		for (const auto& [hex, hexTile] : hexTileMap_) {
-			auto pos = hexToPixel(layout, hex);
-			hexagonBatch_.addHexagon(pos.x, pos.y, outerRadius, GREEN);
-			hexagonBatch_.addHexagon(pos.x, pos.y, innerRadius, outerRadius, RED);
-		}
-
-		hexagonBatch_.init(imGuiShader);
-		glActiveTexture(GL_TEXTURE1);
-		whiteSquare_.bindTexture();
-
 		addGrid();
 		addGridImages();
 	}
@@ -337,19 +236,30 @@ namespace vin {
 			        break;
 				case SDL_MOUSEMOTION:
 					if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-						x_ -= windowEvent.motion.xrel;
-						y_ += windowEvent.motion.yrel;
+						const auto& w = windowSize_.x;
+						const auto& h = windowSize_.y;
+
+						auto result = screenPosToWorld({windowEvent.motion.xrel, windowEvent.motion.yrel * w / h});
+
+						x_ += result.x;
+						y_ += result.y;
+						logger()->info("(x, y): ({}, {})", x_, y_);
 					}
 					break;
 				case SDL_MOUSEBUTTONUP:
 					switch (windowEvent.button.button) {
 						case SDL_BUTTON_LEFT:
 						{
+							const auto& w = windowSize_.x;
+							const auto& h = windowSize_.y;
+							auto result = screenPosToWorld({windowEvent.button.x, windowEvent.button.y * w / h});
+							logger()->info("(x, y): ({}, {})", result.x, result.y);
 							if (activateHexagon_) {
 								//logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
 								Hexi hex = getHexFromMouse();
 								HexSides sides = hexImage_.getHexSides();
-								HexTile hexTile(hex, shiftHexSides(sides, rotations_));
+								rotate(sides, rotations_);
+								HexTile hexTile(hex, sides);
 								if (hexTileMap_.put(hexTile)) {
 									hexImages_[hex] = HexImage(hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_);
 								}

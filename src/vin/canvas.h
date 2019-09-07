@@ -8,6 +8,7 @@
 #include "heximage.h"
 #include "shader.h"
 #include "graphic.h"
+#include "camera.h"
 
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
@@ -22,49 +23,7 @@ namespace vin {
 
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color);
 
-	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);
-
-	class ICamera {
-
-	};
-
-	class Camera {
-	public:
-		Mat44 getView() const {
-			glm::vec3 eye = lookAtPos_ / 100.f;
-			//eye.z *= zoom_;
-			
-			glm::vec3 center = {lookAtPos_.x / 100.f, lookAtPos_.y / 100.f, 0.f};
-			eye = glm::rotateX(eye, angle_);
-
-			//logger()->info("eye: ({},{},{})", eye.x, eye.y, eye.z);
-
-			return glm::lookAt(eye, center, glm::vec3(0.0f, 1.0f, 0.0f));
-			//auto center = cameraPosition;
-			//center.z = 0;
-			//return glm::lookAt(cameraPosition, center, cameraUp);
-		}
-
-		void setZoom(float zoom) {
-			zoom_ = zoom;
-		}
-
-		void setAngle(float angle) {
-			angle_ = angle;
-		}
-
-		void setPosition(Vec2 pos) {
-			lookAtPos_ = {pos.x, pos.y, 1.f};
-		}
-
-		void move(Vec2 delta) {
-		}
-
-		Vec3 lookAtPos_ = {0, 0, 0};
-	private:
-		float zoom_ = 1.f;
-		float angle_ = 0.f;
-	};
+	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);	
 
     class Canvas {
     public:
@@ -100,6 +59,8 @@ namespace vin {
 		void addGridImages();
 		void updateCanvasSize();
 
+		Vec2 screenPosToWorld(Vec2 pos);
+
 		Hexi getHexFromMouse() const;
 
 		sdl::Texture whiteSquare_;
@@ -108,7 +69,6 @@ namespace vin {
 		bool hasFocus_ = false;;
 		bool activateHexagon_;
 		HexImage hexImage_;
-		//float imageAngle_;
 		HexTileMap hexTileMap_;
 		HexagonBatch hexagonBatch_;
 		Shader shader_;
@@ -121,8 +81,10 @@ namespace vin {
 		Camera camera_;
 		float angle_ =  0.f;
 
+		Mat2 hexModel_;
 		Vec2 windowSize_ = {0.f ,0.f};
 		Vec2 windowPos_ = {0.f, 0.f};
+		Mat4 projection_;
     };
 
 } // Namespace vin.

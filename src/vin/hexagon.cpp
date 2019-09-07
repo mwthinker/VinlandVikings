@@ -1,4 +1,4 @@
-#include "canvas.h"
+#include "hexagon.h"
 
 namespace vin {
 
@@ -8,6 +8,7 @@ namespace vin {
 
 		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		
+		/*
 		void addImageQuad(ImDrawList* drawList, const sdl::Sprite& sprite,
 			const ImVec2& pos, ImVec2& size, const ImColor& color) {
 
@@ -25,7 +26,66 @@ namespace vin {
 
 			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
 		}
+		*/
 
+	}
+
+	ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {
+		auto rad = PI / 3 * nbr - PI / 6;
+		return {center.x + size * std::cos(rad), center.y + size * std::sin(rad)};
+	}
+
+	Vec2 getHexCorner(int nbr, float startAngle) {
+		return glm::rotate(Vec2{1, 0.f}, PI / 3 * nbr - PI / 6 + startAngle);
+	}
+
+	Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle) {
+		return center + size * getHexCorner(nbr, startAngle);
+	}
+
+	std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius, float startAngle) {
+		std::array<Vec2, 6> corners;
+		for (int i = 0; i < 6; ++i) {
+			corners[i] = getHexCorner(center, radius, i, startAngle);
+		}
+		return corners;
+	}
+
+	ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
+		return  {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
+	}
+
+	/*
+	Hexf pixelToHex(Layout layout, Vec2 p) {
+		const Orientation& M = layout.orientation;
+		Vec2 pt = Vec2((p.x - layout.origin.x) / layout.size.x,
+			(p.y - layout.origin.y) / layout.size.y);
+		float q = M.b0 * pt.x + M.b1 * pt.y;
+		float r = M.b2 * pt.x + M.b3 * pt.y;
+		return Hexf(q, r);
+	}
+	*/
+
+	Hexi hexRound(Hexf h) {
+		auto q = (int)round(h.q());
+		auto r = (int)round(h.r());
+		auto s = (int)round(h.s());
+		auto q_diff = std::abs(q - h.q());
+		auto r_diff = std::abs(r - h.r());
+		auto s_diff = std::abs(s - h.s());
+		if (q_diff > r_diff && q_diff > s_diff) {
+			q = -r - s;
+		} else if (r_diff > s_diff) {
+			r = -q - s;
+		}
+		return Hexi(q, r);
+	}
+
+	Hexi oddToCube(int x, int y) {
+		auto q = x - (y - (y & 1)) / 2;
+		auto s = y;
+		auto r = -q - s;
+		return Hexi(q, r);
 	}
 
 } // Namespace vin.

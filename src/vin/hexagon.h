@@ -25,30 +25,15 @@ namespace vin {
 
 	const auto PI = glm::pi<GLfloat>();
 
-	inline ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {
-		auto rad = PI / 3 * nbr - PI / 6;
-		return {center.x + size * std::cos(rad), center.y + size * std::sin(rad)};
-	}
+	ImVec2 getHexCorner(ImVec2 center, float size, int nbr);
 
-	inline Vec2 getHexCorner(int nbr, float startAngle = 0) {
-		return glm::rotate(Vec2{1, 0.f}, PI / 3 * nbr - PI / 6 + startAngle);
-	}
+	Vec2 getHexCorner(int nbr, float startAngle = 0);
 
-	inline Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle = 0) {
-		return center + size * getHexCorner(nbr, startAngle);
-	}
+	Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle = 0);
 
-    inline std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius, float startAngle = 0) {
-        std::array<Vec2, 6> corners;
-        for (int i = 0; i < 6; ++i) {
-            corners[i] = getHexCorner(center, radius, i, startAngle);
-        }
-		return corners;
-	}
+	std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius, float startAngle = 0);
 
-	inline ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
-		return  {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
-	}
+	ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr);
 
 	constexpr Hexi cubeDirection(int direction) {
 		return CUBE_DIRECTIONS[direction];
@@ -58,14 +43,19 @@ namespace vin {
 		return value > 0 ? value : -value;
 	}
 
-	//constexpr CubeCoord cubeNeighbor(CubeCoord cube, CubeCoord direction) {
-		//return cube_add(cube, cube_direction(direction))
-	//}
-
 	constexpr int cubeDistance(Hexi a, Hexi b) {
 		return (abs(a.q() - b.q()) + abs(a.r() - b.r()) + abs(a.s() - b.s())) / 2;
 	}
 
+	constexpr float SQRT_3 = 1.7320508075688772935274463f;
+
+	inline Mat2 createHexToCoordModel(float angle = 0.f) {
+		float cos = std::cos(angle);
+		float sin = std::sin(angle);
+		return Mat2{cos, sin, -sin, cos} * Mat2{3.f / 2.f, SQRT_3 / 2, 0.f, SQRT_3};
+	}
+
+	/*
 	struct Layout {
 		const Orientation orientation;
 		const Vec2 size;
@@ -80,39 +70,13 @@ namespace vin {
 		float y = (M.f2 * h.q() + M.f3 * h.r()) * layout.size.y;
 		return {x + layout.origin.x, y + layout.origin.y};
 	}
+	*/
 
-	inline Hexf pixelToHex(Layout layout, Vec2 p) {
-		const Orientation& M = layout.orientation;
-		Vec2 pt = Vec2((p.x - layout.origin.x) / layout.size.x,
-			(p.y - layout.origin.y) / layout.size.y);
-		float q = M.b0 * pt.x + M.b1 * pt.y;
-		float r = M.b2 * pt.x + M.b3 * pt.y;
-		return Hexf(q, r);
-	}
+	//Hexf pixelToHex(Layout layout, Vec2 p);
 
-	inline Hexi hexRound(Hexf h) {
-		int q = (int) round(h.q());
-		int r = (int) round(h.r());
-		int s = (int) round(h.s());
-		float q_diff = std::abs(q - h.q());
-		float r_diff = std::abs(r - h.r());
-		float s_diff = std::abs(s - h.s());
-		if (q_diff > r_diff && q_diff > s_diff) {
-			q = -r - s;
-		} else if (r_diff > s_diff) {
-			r = -q - s;
-		} else {
-			s = -q - r;
-		}
-		return Hexi(q, r);
-	}
+	Hexi hexRound(Hexf h);
 
-	inline Hexi oddToCube(int x, int y) {
-		auto q = x - (y - (y & 1)) / 2;
-		auto s = y;
-		auto r = -q - s;
-		return Hexi(q, r);
-	}
+	Hexi oddToCube(int x, int y);
 
 
 } // Namespace vin.

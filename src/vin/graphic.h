@@ -27,7 +27,7 @@ namespace vin {
     public:
 		Graphic();
 
-		void setMatrix(const Mat44& matrix);
+		void setMatrix(const Mat4& matrix);
 
 		void addFlatHexagon(Vec2 center, float radius, Color color);
 
@@ -63,7 +63,7 @@ namespace vin {
 		int lastIndexCounter_ = 0;
 		BatchView lastView_;
 		std::vector<BatchData> batches_;
-		Mat44 matrix_;
+		Mat4 matrix_;
 		bool initiated_ = false;
 		sdl::VertexArrayObject vao_;
     };
