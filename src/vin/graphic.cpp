@@ -25,7 +25,8 @@ namespace vin {
 
 	}
 
-	Graphic::Graphic() : batch_(GL_DYNAMIC_DRAW), matrix_(1) {
+	Graphic::Graphic() : batch_(GL_DYNAMIC_DRAW) {
+		matrixes_.emplace_back(1);
 	}
 
 	void Graphic::draw() {
@@ -33,7 +34,9 @@ namespace vin {
 			shader_.useProgram();
 			bind();
 			batch_.uploadToGraphicCard();
-			shader_.setMatrix(matrix_);
+			currentMatrix_ = 0;
+			shader_.setMatrix(matrixes_.front());
+			
 			for (auto& batchData : batches_) {
 				draw(batchData);
 			}
@@ -51,7 +54,7 @@ namespace vin {
 			Vertex{pos + Vec2{0.f, size.y}, {0.f, 0.f}, color}
 		);
 		batch_.addIndexes(0, 1, 2, 0, 2, 3);
-		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES));
+		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
 	void Graphic::addFlatHexagon(Vec2 center, float radius, Color color) {
@@ -91,7 +94,7 @@ namespace vin {
 			}
 		}
 
-		auto& batchData = batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES));
+		auto& batchData = batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 		batchData.texture_ = sprite.getTexture();
 	}
 
@@ -121,7 +124,7 @@ namespace vin {
 			batch_.addIndexes(i, 6 + i, 6 + (i + 1) % 6,
 				i, (i + 1) % 6, 6 + (i + 1) % 6);
 		}
-		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES));
+		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
 	void Graphic::addCircle(Vec2 center, float radius, Color color, const int iterations, float startAngle) {
@@ -140,7 +143,7 @@ namespace vin {
 			batch_.addIndexes(0, i, (i % iterations) + 1);
 		}
 
-		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES));
+		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
 	void Graphic::bind() {
@@ -162,6 +165,10 @@ namespace vin {
 		} else {
 			shader_.setTextureId(-1);
 		}
+		if (currentMatrix_ != batchData.matrixIndex_) {
+			currentMatrix_ = batchData.matrixIndex_;
+			shader_.setMatrix(matrixes_[currentMatrix_]);
+		}
 		batch_.draw(batchData.batchView_);
 	}
 
@@ -170,8 +177,9 @@ namespace vin {
 		batches_.clear();
 	}
 
-	void Graphic::setMatrix(const Mat4& model) {
-		matrix_ = model;
+	void Graphic::pushMatrix(const Mat4& model) {
+		currentMatrix_ = matrixes_.size();
+		matrixes_.push_back(model);
 	}
 
 } // vin.

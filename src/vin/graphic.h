@@ -16,18 +16,20 @@ namespace vin {
 	class BatchData {
 	public:
 		BatchData() = default;
-		BatchData(sdl::BatchView<Vertex>&& batchView) : batchView_(batchView) {
+		BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex)
+			: batchView_(batchView), matrixIndex_(matrixIndex) {
 		}
-
+		
 		sdl::Texture texture_;
 		sdl::BatchView<Vertex> batchView_;
+		int matrixIndex_ = 0;
 	};
 
     class Graphic {
     public:
 		Graphic();
 
-		void setMatrix(const Mat4& matrix);
+		void pushMatrix(const Mat4& matrix);
 
 		void addFlatHexagon(Vec2 center, float radius, Color color);
 
@@ -63,7 +65,8 @@ namespace vin {
 		int lastIndexCounter_ = 0;
 		BatchView lastView_;
 		std::vector<BatchData> batches_;
-		Mat4 matrix_;
+		std::vector<Mat4> matrixes_;
+		int currentMatrix_ = 0;
 		bool initiated_ = false;
 		sdl::VertexArrayObject vao_;
     };

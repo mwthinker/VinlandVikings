@@ -155,7 +155,7 @@ namespace vin {
 	void Canvas::drawCanvas(double deltaTime) {
 		auto model = Mat4(1);
 		graphic_.clearDraw();
-		graphic_.setMatrix(projection_ * camera_.getView() * model);
+		graphic_.pushMatrix(projection_ * camera_.getView() * model);
 
 		addGrid();
 		addGridImages();

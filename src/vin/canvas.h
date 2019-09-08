@@ -23,7 +23,7 @@ namespace vin {
 
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color);
 
-	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);	
+	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);
 
     class Canvas {
     public:
