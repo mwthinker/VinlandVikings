@@ -55,6 +55,9 @@ namespace vin {
 		void drawHexImage(const sdl::ImGuiShader& imGuiShader, Hexi hex, const HexImage& image);
 
     private:
+		Hexi worldToHex(Vec2 pos) const;
+		Vec2 hexToWorld(Hexi pos) const;
+
 		void addGrid();
 		void addGridImages();
 		void updateCanvasSize();
@@ -80,7 +83,7 @@ namespace vin {
 		
 		Camera camera_;
 
-		Mat2 hexModel_;
+		Mat2 hexToWorldModel_;
 		Vec2 windowSize_ = {0.f ,0.f};
 		Vec2 windowPos_ = {0.f, 0.f};
 		Mat4 projection_;

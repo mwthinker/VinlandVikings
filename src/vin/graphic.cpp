@@ -8,24 +8,19 @@ namespace vin {
 
 	namespace {
 
-		bool operator==(const BatchData& batchData1, const BatchData& batchData2) {
-			return batchData1.texture_ == batchData2.texture_;
-		}
-
-		constexpr GLenum VBO_MODE = GL_TRIANGLES;
 		constexpr GLenum VBO_USAGE = GL_DYNAMIC_DRAW;
-
-		/*
-		inline Vertex createHexCornerVertexTexture(const Vertex& vertex, float size, float xTexSize, float yTexSize, int nbr) {
-			auto hexCorner = getHexCorner(vertex.pos, size, nbr);
-			auto texCorner = getHexCorner(vertex.tex, xTexSize * 0.5f, yTexSize * 0.5f, nbr);
-			return {hexCorner, texCorner, vertex.color};
-		}
-		*/
 
 	}
 
-	Graphic::Graphic() : batch_(GL_DYNAMIC_DRAW) {
+	Graphic::BatchData::BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex)
+		: batchView_(batchView), matrixIndex_(matrixIndex) {
+	}
+
+	Graphic::BatchData::BatchData(const sdl::Texture& texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex)
+		: texture_(texture), batchView_(batchView), matrixIndex_(matrixIndex) {
+	}
+
+	Graphic::Graphic() : batch_(VBO_USAGE) {
 		matrixes_.emplace_back(1);
 	}
 
@@ -94,8 +89,7 @@ namespace vin {
 			}
 		}
 
-		auto& batchData = batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
-		batchData.texture_ = sprite.getTexture();
+		auto& batchData = batches_.emplace_back(sprite.getTexture(), batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
 	void Graphic::addFlatHexagon(Vec2 center, float innerRadius, float outerRadius, Color color) {

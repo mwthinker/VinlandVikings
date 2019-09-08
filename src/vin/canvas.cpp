@@ -5,6 +5,11 @@
 
 namespace vin {
 
+	struct ViewPort {
+		Vec2 pos;
+		Vec2 size;
+	};
+
 	namespace {
 
 		float getRotationAngle(int rotations) {
@@ -14,6 +19,33 @@ namespace vin {
 		void rotate(HexSides& hexSides, int rotations) {
 			std::rotate(hexSides.begin(), hexSides.begin() + rotations % 6, hexSides.end());
 		}
+
+		constexpr float normalizedDeviceCoordsToWindowCoords(float pos, float size, float normalizedPos) {
+			return (pos + 1.f) * size / 2.f + normalizedPos;;
+		}
+
+		Vec2 normalizedDeviceCoordsToWindowCoords(ViewPort viewPort, Vec2 normalizedDeviceCoord) {
+			float x = normalizedDeviceCoordsToWindowCoords(viewPort.pos.x, viewPort.size.x, normalizedDeviceCoord.x);
+			float y = normalizedDeviceCoordsToWindowCoords(viewPort.pos.y, viewPort.size.y, normalizedDeviceCoord.y);
+			return {x, y};
+		}
+
+		Vec2 sdlCoordToViewPortCoord(Uint32 windowsId, const ViewPort& viewPort, Vec2 pos) {
+			int w, h;
+			SDL_GetWindowSize(SDL_GetWindowFromID(windowsId), &w, &h);
+
+			float x = viewPort.pos.x + pos.x;
+			float y = h + viewPort.pos.y - pos.y - 1;
+			return {x, y};
+		}
+		
+		Vec2 viewPortCoordToClipSpace(const ViewPort & viewPort, Vec2 pos) {
+			return {(pos.x / viewPort.size.x - 0.5f) * 2.f, (pos.y / viewPort.size.y - 0.5f) * 2.f};
+		}
+
+		constexpr float HEX_INNER_SIZE = 0.8f;
+		constexpr float HEX_OUTER_SIZE = 1.f;
+		constexpr float HEX_ANGLE = PI / 2;
 
 	}
 
@@ -44,6 +76,7 @@ namespace vin {
 		auto hexes = createRectangleShape(10, 10);
 		//auto hexes = createParallelogramShape(10, 5);
 		hexTileMap_ = HexTileMap(hexes.begin(), hexes.end());
+		hexToWorldModel_ = createHexToCoordModel(HEX_ANGLE, HEX_OUTER_SIZE);
 	}
 
 	void Canvas::drawHexImage(const sdl::ImGuiShader& imGuiShader, Hexi hex, const HexImage& image) {
@@ -69,7 +102,7 @@ namespace vin {
 		const auto& w = windowSize_.x;
 		const auto& h = windowSize_.y;
 
-		glViewport((GLint)x, (GLint)y, (GLsizei)w, (GLsizei)h);
+		glViewport((GLint)x , (GLint) y, (GLsizei) w, (GLsizei) h);
 		projection_ = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);		
 		projection_ = glm::scale(projection_, Vec3{zoom_, zoom_, 1});
 
@@ -113,6 +146,15 @@ namespace vin {
 		ImGui::EndChild();
 	}
 
+	Hexi Canvas::worldToHex(Vec2 pos) const {
+		auto hex = glm::inverse<>(hexToWorldModel_) * pos;
+		return hexRound({hex.x, hex.y});
+	}
+
+	Vec2 Canvas::hexToWorld(Hexi pos) const {
+		return hexToWorldModel_ * Vec2{pos.q(), pos.r()};
+	}
+
 	Hexi Canvas::getHexFromMouse() const {
 		ImVec2 pos = ImGui::GetMousePos();
 		Hexf hexf{0,0}; // = pixelToHex(createFlatLayout(x_, y_, zoom_), Vec2(pos.x, pos.y));
@@ -120,16 +162,13 @@ namespace vin {
 	}
 
 	void Canvas::addGrid() {
-		constexpr float innerRadius = 0.8f;
-		constexpr float outerRadius = 1.f;
-
 		//constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
 		for (const auto& [hex, hexTile] : hexTileMap_) {
-			auto pos = createHexToCoordModel(PI/2) * Vec2{hex.q(), hex.r()};
+			auto pos = hexToWorld(hex);
 			if (hex == Hexi{0,0}) {
-				graphic_.addPointyHexagon(pos, innerRadius, outerRadius, BLUE);
+				graphic_.addPointyHexagon(pos, HEX_INNER_SIZE, HEX_OUTER_SIZE, BLUE);
 			} else {
-				graphic_.addPointyHexagon(pos, innerRadius, outerRadius, RED);
+				graphic_.addPointyHexagon(pos, HEX_INNER_SIZE, HEX_OUTER_SIZE, RED);
 			}
 		}
 
@@ -246,10 +285,31 @@ namespace vin {
 					switch (windowEvent.button.button) {
 						case SDL_BUTTON_LEFT:
 						{
+							const auto& button = windowEvent.button;
 							const auto& w = windowSize_.x;
 							const auto& h = windowSize_.y;
-							auto result = screenPosToWorld({windowEvent.button.x, windowEvent.button.y * w / h});
-							logger()->info("(x, y): ({}, {})", result.x, result.y);
+							auto result = screenPosToWorld({button.x, button.y * w / h});
+							//logger()->info("(x, y): ({}, {})", result.x, result.y);
+							//logger()->info("(x, y): ({}, {})", windowEvent.button.x, windowEvent.button.y);
+							auto pos = Vec4{button.x, button.y, 0, 0};
+							//auto result2 = glm::inverse<>(projection_ * camera_.getView()) * pos;
+
+							ViewPort viewPort = {
+								windowPos_,
+								windowSize_
+							};
+							
+							Vec2 windowPos = {(float) button.x, (float) button.y};
+
+							//auto result2 = normalizedDeviceCoordsToWindowCoords(viewPort, {(float)windowEvent.button.x / windowSize_.x, (float)windowEvent.button.y / windowSize_.y});
+							
+							auto result2 = sdlCoordToViewPortCoord(button.windowID, viewPort, windowPos);
+							result2 = viewPortCoordToClipSpace(viewPort, result2);
+							logger()->info("(x, y): ({}, {})", result2.x, result2.y);
+							auto result3 = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result2.x, result2.y, 0, 1.f };
+							logger()->info("(xInv, yInv): ({}, {})", result3.x, result3.y);
+							Hexi hex = worldToHex({ result3 .x, result3.y });
+							logger()->info("(q, r, s): ({}, {}, {})", hex.q(), hex.r(), hex.s());
 							if (activateHexagon_) {
 								//logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
 								Hexi hex = getHexFromMouse();

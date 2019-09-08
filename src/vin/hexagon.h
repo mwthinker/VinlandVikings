@@ -23,7 +23,7 @@ namespace vin {
 		Hexi(0, -1) // s = 1
 	};
 
-	const auto PI = glm::pi<GLfloat>();
+	constexpr auto PI = glm::pi<GLfloat>();
 
 	ImVec2 getHexCorner(ImVec2 center, float size, int nbr);
 
@@ -49,9 +49,9 @@ namespace vin {
 
 	constexpr float SQRT_3 = 1.7320508075688772935274463f;
 
-	inline Mat2 createHexToCoordModel(float angle = 0.f) {
-		float cos = std::cos(angle);
-		float sin = std::sin(angle);
+	inline Mat2 createHexToCoordModel(float angle = 0.f, float hexSize = 1.f) {
+		float cos = hexSize * std::cos(angle);
+		float sin = hexSize * std::sin(angle);
 		return Mat2{cos, sin, -sin, cos} * Mat2{3.f / 2.f, SQRT_3 / 2, 0.f, SQRT_3};
 	}
 

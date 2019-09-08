@@ -11,19 +11,7 @@
 #include <sdl/vertexarrayobject.h>
 #include <stack>
 
-namespace vin {
-
-	class BatchData {
-	public:
-		BatchData() = default;
-		BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex)
-			: batchView_(batchView), matrixIndex_(matrixIndex) {
-		}
-		
-		sdl::Texture texture_;
-		sdl::BatchView<Vertex> batchView_;
-		int matrixIndex_ = 0;
-	};
+namespace vin {	
 
     class Graphic {
     public:
@@ -50,6 +38,17 @@ namespace vin {
 		void clearDraw();
 
     private:
+		class BatchData {
+		public:
+			BatchData() = default;
+			BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex);
+			BatchData(const sdl::Texture& texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex);
+
+			sdl::Texture texture_;
+			sdl::BatchView<Vertex> batchView_;
+			int matrixIndex_ = 0;
+		};
+
 		using Batch = sdl::Batch<Vertex>;
 		using BatchView = sdl::BatchView<Vertex>;
 
