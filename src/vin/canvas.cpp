@@ -161,6 +161,17 @@ namespace vin {
 		return hexRound(hexf);
 	}
 
+	Hexi Canvas::getHexFromMouse(Uint32 windowsId, int x, int y) const {
+		ViewPort viewPort = {
+			windowPos_,
+			windowSize_
+		};
+		auto result = sdlCoordToViewPortCoord(windowsId, viewPort, {x, y});
+		result = viewPortCoordToClipSpace(viewPort, result);
+		result = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result, 0, 1.f };
+		return worldToHex({result.x, result.y});
+	}
+
 	void Canvas::addGrid() {
 		//constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
 		for (const auto& [hex, hexTile] : hexTileMap_) {
@@ -180,14 +191,9 @@ namespace vin {
 	}
 	
 	void Canvas::addGridImages() {
-		//constexpr float innerRadius = 0.19f;
-		//constexpr float outerRadius = 0.2f;
-
-		//constexpr Layout layout(layoutPointy, {outerRadius, outerRadius}, {0.f, 0.f});
 		for (const auto& [hex, hexTile] : hexImages_) {
-			//auto pos = hexToPixel(layout, hex);
-			auto pos = createHexToCoordModel(0.f) * Vec2{hex.q(), hex.r()};
-			//graphic_.addPointyHexagon(pos, 0.8f, 1.f, RED);
+			auto pos = hexToWorld(hex);
+			graphic_.addPointyHexagonImage(pos, 1.f, hexTile.getImage());
 		}
 	}
 
@@ -212,7 +218,7 @@ namespace vin {
 		graphic_.addFlatHexagon({0.2f, 0.2f}, 0.2f, 0.3f, RED);
 		graphic_.addPointyHexagon({-0.2f, -0.2f}, 0.2f, 0.3f, RED);
 		*/
-
+		glActiveTexture(GL_TEXTURE1);
 		graphic_.draw();
 	}
 
@@ -284,35 +290,11 @@ namespace vin {
 				case SDL_MOUSEBUTTONUP:
 					switch (windowEvent.button.button) {
 						case SDL_BUTTON_LEFT:
-						{
-							const auto& button = windowEvent.button;
-							const auto& w = windowSize_.x;
-							const auto& h = windowSize_.y;
-							auto result = screenPosToWorld({button.x, button.y * w / h});
-							//logger()->info("(x, y): ({}, {})", result.x, result.y);
-							//logger()->info("(x, y): ({}, {})", windowEvent.button.x, windowEvent.button.y);
-							auto pos = Vec4{button.x, button.y, 0, 0};
-							//auto result2 = glm::inverse<>(projection_ * camera_.getView()) * pos;
-
-							ViewPort viewPort = {
-								windowPos_,
-								windowSize_
-							};
-							
-							Vec2 windowPos = {(float) button.x, (float) button.y};
-
-							//auto result2 = normalizedDeviceCoordsToWindowCoords(viewPort, {(float)windowEvent.button.x / windowSize_.x, (float)windowEvent.button.y / windowSize_.y});
-							
-							auto result2 = sdlCoordToViewPortCoord(button.windowID, viewPort, windowPos);
-							result2 = viewPortCoordToClipSpace(viewPort, result2);
-							logger()->info("(x, y): ({}, {})", result2.x, result2.y);
-							auto result3 = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result2.x, result2.y, 0, 1.f };
-							logger()->info("(xInv, yInv): ({}, {})", result3.x, result3.y);
-							Hexi hex = worldToHex({ result3 .x, result3.y });
-							logger()->info("(q, r, s): ({}, {}, {})", hex.q(), hex.r(), hex.s());
+						{							
 							if (activateHexagon_) {
-								//logger()->info("Hex: ({}, {}, {})", hexi.q(), hexi.r(), hexi.s());
-								Hexi hex = getHexFromMouse();
+								const auto& button = windowEvent.button;
+								Hexi hex = getHexFromMouse(button.windowID, button.x, button.y);
+								logger()->info("(q, r, s): ({}, {}, {})", hex.q(), hex.r(), hex.s());
 								HexSides sides = hexImage_.getHexSides();
 								rotate(sides, rotations_);
 								HexTile hexTile(hex, sides);

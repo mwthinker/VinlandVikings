@@ -64,6 +64,7 @@ namespace vin {
 
 		Vec2 screenPosToWorld(Vec2 pos);
 
+		Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
 		Hexi getHexFromMouse() const;
 
 		sdl::Texture whiteSquare_;
