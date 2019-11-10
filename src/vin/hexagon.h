@@ -15,15 +15,13 @@
 namespace vin {
 
 	constexpr std::array<Hexi, 6> CUBE_DIRECTIONS = {
-		Hexi(1, -1), // s = 0
-		Hexi(1, 0), // s = -1
-		Hexi(0, 1), // s = -1
-		Hexi(-1, 1), // s = 0
-		Hexi(-1, 0), // s = 1
-		Hexi(0, -1) // s = 1
+		Hexi{1, -1}, // s = 0
+		Hexi{1, 0}, // s = -1
+		Hexi{0, 1}, // s = -1
+		Hexi{-1, 1}, // s = 0
+		Hexi{-1, 0}, // s = 1
+		Hexi{0, -1} // s = 1
 	};
-
-	constexpr auto PI = glm::pi<GLfloat>();
 
 	ImVec2 getHexCorner(ImVec2 center, float size, int nbr);
 

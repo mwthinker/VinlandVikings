@@ -34,10 +34,8 @@ namespace ImGui {
 			return ImGui::GetIO().MouseClicked[1];
 		}
 
-		void addImageQuad(ImDrawList* drawList, const sdl::Sprite& sprite,
+		void addImageQuad(ImDrawList* drawList, const vin::SpriteView& sprite,
 			const ImVec2& pos, ImVec2& size, float angle, const ImColor& color) {
-
-			auto[texW, texH] = sprite.getTexture().getSize();
 
 			ImVec2 delta = {size.x * std::cos(angle), size.y * std::sin(angle)};
 
@@ -56,18 +54,16 @@ namespace ImGui {
 			ImVec2 c = {pos.x + deltaC.x, pos.y + deltaC.y};
 			ImVec2 d = {pos.x + deltaD.x, pos.y + deltaD.y};
 
-			ImVec2 uv_c = {sprite.getX() / texW, sprite.getY() / texH};
-			ImVec2 uv_d = {(sprite.getX() + sprite.getWidth()) / texW, sprite.getY() / texH};
-			ImVec2 uv_a = {(sprite.getX() + sprite.getWidth()) / texW, (sprite.getY() + sprite.getHeight()) / texH};
-			ImVec2 uv_b = {sprite.getX() / texW, (sprite.getY() + sprite.getHeight()) / texH};
+			ImVec2 uv_c = {sprite.getX(), sprite.getY()};
+			ImVec2 uv_d = {sprite.getX() + sprite.getWidth(), sprite.getY()};
+			ImVec2 uv_a = {sprite.getX() + sprite.getWidth(), sprite.getY() + sprite.getHeight()};
+			ImVec2 uv_b = {sprite.getX(), sprite.getY() + sprite.getHeight()};
 
 			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
 		}
 
-		void addCenteredImageQuad(ImDrawList* drawList, const sdl::Sprite& sprite,
+		void addCenteredImageQuad(ImDrawList* drawList, const vin::SpriteView& sprite,
 			const ImVec2& pos, ImVec2& size, float angle, const ImColor& color) {
-
-			auto [texW, texH] = sprite.getTexture().getSize();
 
 			ImVec2 delta = {size.x * std::cos(angle), size.y * std::sin(angle)};
 
@@ -86,15 +82,13 @@ namespace ImGui {
 			ImVec2 c = {pos.x + deltaC.x, pos.y + deltaC.y};
 			ImVec2 d = {pos.x + deltaD.x, pos.y + deltaD.y};
 
-			ImVec2 uv_c = {sprite.getX() / texW, sprite.getY() / texH};
-			ImVec2 uv_d = {(sprite.getX() + sprite.getWidth()) / texW, sprite.getY() / texH};
-			ImVec2 uv_a = {(sprite.getX() + sprite.getWidth()) / texW, (sprite.getY() + sprite.getHeight()) / texH};
-			ImVec2 uv_b = {sprite.getX() / texW, (sprite.getY() + sprite.getHeight()) / texH};
+			ImVec2 uv_c = {sprite.getX(), sprite.getY()};
+			ImVec2 uv_d = {sprite.getX() + sprite.getWidth(), sprite.getY()};
+			ImVec2 uv_a = {sprite.getX() + sprite.getWidth(), sprite.getY() + sprite.getHeight()};
+			ImVec2 uv_b = {sprite.getX(), sprite.getY() + sprite.getHeight()};
 
 			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
 		}
-
-
 
 	}
 
@@ -103,41 +97,35 @@ namespace ImGui {
 		ImGui::GetWindowDrawList()->AddRectFilled({0, 0}, {size.x, height}, color);
 	}
 
-	IMGUI_API void Image(const sdl::Sprite& sprite, const ImVec2& size, const ImVec4& tint_col,
+	IMGUI_API void Image(const vin::SpriteView& sprite, const ImVec2& size, const ImVec4& tint_col,
 		const ImVec4& border_col) {
-		sprite.bindTexture();
-		Image((ImTextureID)(intptr_t) sprite.getTexture().getGlTexture(), size);
+		Image((ImTextureID)(intptr_t) sprite, size);
 	}
 
-	IMGUI_API void Image(const sdl::Sprite& sprite, const ImVec2& pos, ImVec2& size, float rotate, const ImColor& color) {
-		sprite.bindTexture();
-
+	IMGUI_API void Image(const vin::SpriteView& sprite, const ImVec2& pos, ImVec2& size, float rotate, const ImColor& color) {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		drawList->PushTextureID((ImTextureID)(intptr_t)sprite.getTexture().getGlTexture());
+		drawList->PushTextureID((ImTextureID)(intptr_t) sprite);
 		drawList->PrimReserve(6, 4);
 		addImageQuad(drawList, sprite, pos, size, rotate, color);
 		drawList->PopTextureID();
 	}
 
-	IMGUI_API bool ImageButton(const sdl::Sprite& sprite, const ImVec2& size, const ImVec4& tint_col,
+	IMGUI_API bool ImageButton(const vin::SpriteView& sprite, const ImVec2& size, const ImVec4& tint_col,
 		const ImVec4& border_col) {
-		sprite.bindTexture();
-		//Image((ImTextureID)(intptr_t)sprite.getTexture().getGlTexture(), size);
-		return ImageButton((ImTextureID)(intptr_t)sprite.getTexture().getGlTexture(), size);
+		return ImageButton((ImTextureID)(intptr_t) sprite, size);
 	}
 
-	IMGUI_API void ImageBackground(const sdl::Sprite& sprite) {
-		sprite.bindTexture();
+	IMGUI_API void ImageBackground(const vin::SpriteView& sprite) {
 		ImVec2 size = ImGui::GetWindowSize();
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		drawList->PushTextureID((ImTextureID)(intptr_t) sprite.getTexture().getGlTexture());
+		drawList->PushTextureID((ImTextureID)(intptr_t) sprite);
 		drawList->PrimReserve(6, 4);
 		addImageQuad(drawList, sprite, {0, 0}, size, 0.f, { 1.f, 1.f, 1.f, 1.f });
 		drawList->PopTextureID();
 	}
 
-	IMGUI_API bool ManButton(const char* idStr, int& nbr, int max, const sdl::Sprite& noMan,
-		const sdl::Sprite& man,	const ImVec2& size, ImColor color) {
+	IMGUI_API bool ManButton(const char* idStr, int& nbr, int max, const vin::SpriteView& noMan,
+		const vin::SpriteView& man,	const ImVec2& size, ImColor color) {
 		
 		ImVec2 p = GetCursorScreenPos();
 
@@ -168,7 +156,7 @@ namespace ImGui {
 		ImGui::PopID();
 
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		drawList->PushTextureID((ImTextureID)(intptr_t) noMan.getTexture().getGlTexture());
+		drawList->PushTextureID((ImTextureID)(intptr_t) noMan);
 		buttons = (nbr > 0 ? nbr : 2);
 		drawList->PrimReserve(6 * buttons, 4 * buttons);
 		

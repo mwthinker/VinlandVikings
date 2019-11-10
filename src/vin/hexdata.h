@@ -3,6 +3,7 @@
 
 #include "hexagon.h"
 #include "heximage.h"
+#include "textureview.h"
 
 #include <sdl/sound.h>
 #include <sdl/sprite.h>
@@ -20,8 +21,8 @@ namespace vin {
 
 	class HexData {
 	public:
-		static HexData& getInstance() {
-			static HexData instance;
+		static HexData& getInstance(const std::string& filename = "") {
+			static HexData instance{filename};
 			return instance;
 		}
 
@@ -30,20 +31,28 @@ namespace vin {
 
 		void save();
 
-		sdl::Font loadFont(const std::string& file, unsigned int fontSize);
-		sdl::Sprite loadSprite(const std::string& file);
+		const sdl::Font& loadFont(const std::string& file, unsigned int fontSize);
+		SpriteView loadSprite(const std::string& file);
 
-		sdl::Font getDefaultFont(int size);
+		const sdl::Font& getDefaultFont(int size);
 
 		std::vector<HexImage> loadHexImages();
 
 	private:
-		HexData();
+		HexData(const std::string& filename);
+
+		struct Image {
+			sdl::Texture texture;
+			float x{};
+			float y{};
+			float dx{};
+			float dy{};
+		};
 
 		std::string jsonPath_;
 		std::map<std::string, sdl::Sound> sounds_;
 		std::map<std::string, sdl::Font> fonts_;
-		std::map<std::string, sdl::Sprite> sprites_;
+		std::map<std::string, Image> images_;
 		nlohmann::json jsonObject_;
 	};
 

@@ -31,12 +31,12 @@ namespace vin {
 	}
 
 	ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {
-		auto rad = PI / 3 * nbr - PI / 6;
+		auto rad = PI / 3 * nbr;
 		return {center.x + size * std::cos(rad), center.y + size * std::sin(rad)};
 	}
 
 	Vec2 getHexCorner(int nbr, float startAngle) {
-		return glm::rotate(Vec2{1, 0.f}, PI / 3 * nbr - PI / 6 + startAngle);
+		return glm::rotate(Vec2{1, 0.f}, PI / 3 * nbr + startAngle);
 	}
 
 	Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle) {
@@ -52,7 +52,7 @@ namespace vin {
 	}
 
 	ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
-		return  {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
+		return {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
 	}
 
 	/*
@@ -78,14 +78,14 @@ namespace vin {
 		} else if (r_diff > s_diff) {
 			r = -q - s;
 		}
-		return Hexi(q, r);
+		return {q, r};
 	}
 
 	Hexi oddToCube(int x, int y) {
 		auto q = x - (y - (y & 1)) / 2;
 		auto s = y;
 		auto r = -q - s;
-		return Hexi(q, r);
+		return {q, r};
 	}
 
 } // Namespace vin.

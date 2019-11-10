@@ -23,7 +23,12 @@ namespace vin {
 
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color);
 
-	void HexagonImage(const sdl::Sprite& image, ImVec2 pos, ImVec2 size, float angle);
+	void HexagonImage(const vin::SpriteView& image, ImVec2 pos, ImVec2 size, float angle);
+
+	struct ViewPort {
+		Vec2 pos;
+		Vec2 size;
+	};
 
     class Canvas {
     public:
@@ -46,7 +51,7 @@ namespace vin {
 			rotations_ = 0;
 		}
 
-		const sdl::Sprite& currentHexSprite() const {
+		SpriteView currentHexSprite() const {
 			return hexImage_.getImage();
 		}
 
@@ -60,9 +65,10 @@ namespace vin {
 
 		void addGrid();
 		void addGridImages();
+		void addMouseHex();
 		void updateCanvasSize();
 
-		Vec2 screenPosToWorld(Vec2 pos);
+		Vec2 screenDeltaPosToWorld(Vec2 pos);
 
 		Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
 		Hexi getHexFromMouse() const;
@@ -81,12 +87,13 @@ namespace vin {
 		bool lastAllowed_ = false;
 		std::unordered_map<Hexi, HexImage> hexImages_;
 		int rotations_ = 0;
+
+		Vec2 sdlMousePos{};
 		
 		Camera camera_;
 
 		Mat2 hexToWorldModel_;
-		Vec2 windowSize_ = {0.f ,0.f};
-		Vec2 windowPos_ = {0.f, 0.f};
+		ViewPort viewPort_{ Vec2{0, 0}, Vec2{0 ,0}};
 		Mat4 projection_;
     };
 

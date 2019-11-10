@@ -30,21 +30,20 @@ namespace vin {
 		hex = static_cast<HexSide>(j.get<int>());
 	}
 
-	HexData::HexData() {
+	HexData::HexData(const std::string& filename) {
 		std::ifstream defaultStream("USE_APPLICATION_JSON");
 		bool applicationJson;
 		defaultStream >> applicationJson;
-		const std::string APPLICATION_JSON = "images/hexdata.json";
 		if (applicationJson) {
-			jsonPath_ = APPLICATION_JSON;
+			jsonPath_ = filename;
 		} else {
 			// Find default path to save/load file from.
-			jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + APPLICATION_JSON;
+			jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + filename;
 		}
 		std::ifstream stream(jsonPath_);
 		if (!stream.is_open()) {
 			// Assume that the file does not exist, load file from application folder.
-			stream = std::ifstream(APPLICATION_JSON);
+			stream = std::ifstream(filename);
 		}
 		stream >> jsonObject_;
 	}
@@ -54,7 +53,7 @@ namespace vin {
 		stream << jsonObject_.dump(1);
 	}
 
-	sdl::Font HexData::loadFont(const std::string& file, unsigned int fontSize) {
+	const sdl::Font& HexData::loadFont(const std::string& file, unsigned int fontSize) {
 		size_t size = fonts_.size();
 		std::string key = file;
 		key += fontSize;
@@ -67,14 +66,18 @@ namespace vin {
 		return font;
 	}
 
-	sdl::Sprite HexData::loadSprite(const std::string& file) {
-		size_t size = sprites_.size();
-		auto& sprite = sprites_[file];
+	SpriteView HexData::loadSprite(const std::string& file) {
+		size_t size = images_.size();
+		auto& image = images_[file];
 		
-		if (sprites_.size() > size) {
-			sprite = sdl::Sprite("images/" + file);
+		if (images_.size() > size) {
+			sdl::Surface surface{file};
+			image.texture.generate();
+			image.texture.texImage(surface);
+			image.dx = static_cast<float>(surface.getWidth());
+			image.dy = static_cast<float>(surface.getHeight());
 		}
-		return sprite;
+		return SpriteView{image.texture, 0, 0, 1, 1};
 	}
 
 	std::vector<HexImage> HexData::loadHexImages() {
@@ -84,7 +87,8 @@ namespace vin {
 		for (auto& hex : hexes) {
 			std::string filename = "images/" + hex["image"].get<std::string>();
 
-			sdl::Texture texture(filename);
+			loadSprite(filename);
+			const auto& image = images_[filename];
 
 			float size = hex["size"].get<float>();
 			bool flat = hex["flat"].get<bool>();
@@ -100,16 +104,16 @@ namespace vin {
 			}
 			float width = size;
 			float height = std::sqrt(3.f) / 2.f * size;
-			float x = (texture.getWidth() - width) / 2.f;
-			float y = (texture.getHeight() - height) / 2.f;
+			float x = (image.dx - width) / 2.f / image.dx;
+			float y = (image.dy - height) / 2.f / image.dy;
 
-			sdl::Sprite sprite(texture, x, y, width, height);
+			SpriteView sprite{image.texture, x, y, width/image.dx, height/image.dy};
 			hexImages.emplace_back(filename, sprite, hexSides, flat);
 		}
 		return hexImages;
 	}
 
-	sdl::Font HexData::getDefaultFont(int size) {
+	const sdl::Font& HexData::getDefaultFont(int size) {
 		return loadFont(jsonObject_["window"]["font"].get<std::string>(), size);
 	}
 

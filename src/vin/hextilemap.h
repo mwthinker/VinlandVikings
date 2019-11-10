@@ -37,7 +37,7 @@ namespace vin {
 		}
 
 		HexTile(const Hexi& hex, const HexSides& sides)
-			: hex_(hex), sides_(sides) {
+			: hex_{hex}, sides_{sides} {
 		}
 
 		HexTile(const HexTile&) = default;

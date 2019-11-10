@@ -70,13 +70,13 @@ namespace vin {
 	using Hexi = Hex<int>;
 	using Hexf = Hex<float>;
 
-	constexpr Hexi HEX_ZERO(0, 0);
+	constexpr Hexi HEXI_ZERO = {0, 0};
 
-	constexpr Hexi HEX_Q(1, 0);
+	constexpr Hexi HEXI_Q = {1, 0};
 
-	constexpr Hexi HEX_R(0, 1);
+	constexpr Hexi HEXI_R = {0, 1};
 
-	constexpr Hexi HEX_S(-1, 1);
+	constexpr Hexi HEXI_S = {-1, 1};
 
 } // Namespace vin.
 

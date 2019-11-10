@@ -5,6 +5,7 @@
 #include "shader.h"
 #include "logger.h"
 #include "vertex.h"
+#include "textureview.h"
 
 #include <sdl/sprite.h>
 #include <sdl/batch.h>
@@ -19,15 +20,7 @@ namespace vin {
 
 		void pushMatrix(const Mat4& matrix);
 
-		void addFlatHexagon(Vec2 center, float radius, Color color);
-
-		void addPointyHexagon(Vec2 center, float radius, Color color);
-
-		void addFlatHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite);
-		void addPointyHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite);
-		
-		void addFlatHexagon(Vec2 center, float innerRadius, float outerRadius, Color color);
-		void addPointyHexagon(Vec2 center, float innerRadius, float outerRadius, Color color);
+		void addFilledHexagon(Vec2 center, float radius, Color color);
 
 		void addRectangle(Vec2 pos, Vec2 size, Color color);
 
@@ -37,14 +30,17 @@ namespace vin {
 
 		void clearDraw();
 
+		void addHexagonImage(Vec2 center, float radius, const SpriteView& sprite, float startAngle = 0);
+		void addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle = 0);
+
     private:
 		class BatchData {
 		public:
 			BatchData() = default;
 			BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex);
-			BatchData(const sdl::Texture& texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex);
+			BatchData(TextureView texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex);
 
-			sdl::Texture texture_;
+			TextureView texture_;
 			sdl::BatchView<Vertex> batchView_;
 			int matrixIndex_ = 0;
 		};
@@ -54,20 +50,16 @@ namespace vin {
 
 		void bind();
 
-		void draw(const BatchData& batchData);
-
-		void addHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite, float startAngle);
-		void addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle);
+		void draw(const BatchData& batchData);		
 
 		Shader shader_;
 		Batch batch_;
-		int lastIndexCounter_ = 0;
 		BatchView lastView_;
 		std::vector<BatchData> batches_;
 		std::vector<Mat4> matrixes_;
+		sdl::VertexArrayObject vao_;
 		int currentMatrix_ = 0;
 		bool initiated_ = false;
-		sdl::VertexArrayObject vao_;
     };
 
 } // Namespace vin.

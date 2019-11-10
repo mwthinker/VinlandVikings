@@ -1,5 +1,6 @@
 #include "vinlandwindow.h"
 #include "logger.h"
+#include "hexdata.h"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h> // or "../stdout_sinks.h" if no colors needed
@@ -18,6 +19,7 @@ struct TerminalConfig {
 	bool showWarnings = false;
 	bool showErrors = false;
 	bool showDebugInfo = false;
+	std::string filename = "images/hexdata.json";
 };
 
 int main(int argc, char** argv) {
@@ -35,7 +37,10 @@ int main(int argc, char** argv) {
 	TerminalConfig config;
 
 	auto cli
-		= clara::Opt(config.width, "width")
+		= clara::Opt(config.filename, "filename")
+		["-f"]["--filename"]
+		("config filename") |
+		clara::Opt(config.width, "width")
 		["-W"]["--width"]
 		("window width") |
 		clara::Opt(config.width, "height")
@@ -62,6 +67,8 @@ int main(int argc, char** argv) {
 		std::cerr << cli << std::endl;
 		return 0;
 	}
+
+	vin::HexData::getInstance(config.filename);
 
 	try {
 		const sdl::InitSdl SDL;

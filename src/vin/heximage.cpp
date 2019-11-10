@@ -2,16 +2,16 @@
 
 namespace vin {
 
-	HexImage::HexImage(const std::string& filename, const sdl::Sprite& image, const HexSides& hexSides, bool flat, int rotations)
-		: filename_(filename), image_(image), hexSides_(hexSides), flat_(flat), rotations_(rotations) {
+	HexImage::HexImage(const std::string& filename, SpriteView sprite, const HexSides& hexSides, bool flat, int rotations)
+		: filename_(filename), sprite_(sprite), hexSides_(hexSides), flat_(flat), rotations_(rotations) {
 	}
 
 	const std::string& HexImage::getFilename() const {
 		return filename_;
 	}
 
-	const sdl::Sprite& HexImage::getImage() const {
-		return image_;
+	SpriteView HexImage::getImage() const {
+		return sprite_;
 	}
 
 	const HexSides& HexImage::getHexSides() const {

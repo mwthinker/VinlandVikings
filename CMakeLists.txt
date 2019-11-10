@@ -21,6 +21,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
+	src/vin/camera.cpp
 	src/vin/camera.h
 	src/vin/canvas.cpp
 	src/vin/canvas.h
@@ -46,6 +47,7 @@ set(SOURCES
 	src/vin/orientation.h
 	src/vin/shader.cpp
 	src/vin/shader.h
+	src/vin/textureview.h
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h

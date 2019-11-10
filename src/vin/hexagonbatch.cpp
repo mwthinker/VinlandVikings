@@ -9,8 +9,6 @@ namespace vin {
 
     namespace {
 
-        const auto PI = glm::pi<GLfloat>();
-
 		inline ImDrawVert createVertex(float x, float y, float xTex, float yTex, ImU32 color) {
 			return  {{x, y}, ImVec2(xTex, yTex), color};
 		}
@@ -68,8 +66,8 @@ namespace vin {
 	}
 
 	void HexagonBatch::addRectangle(float x, float y, float w, float h, const sdl::Sprite& sprite, ImU32 color) {
-		int textureW = sprite.getTexture().getWidth();
-		int textureH = sprite.getTexture().getHeight();
+		int textureW = sprite.getTextureWidth();
+		int textureH = sprite.getTextureHeight();
 
 		addTriangle(createVertex(x, y, sprite.getX() / textureW, sprite.getY() / textureH, color),
 			createVertex(x + w, y, (sprite.getX() + sprite.getWidth()) / textureW, sprite.getY() / textureH, color),
@@ -81,9 +79,9 @@ namespace vin {
 	}
 
 	void HexagonBatch::addHexagonImage(float x, float y, float size, const sdl::Sprite& sprite, ImU32 color) {
-		if (sprite.getTexture().isValid()) {
-			int textureW = sprite.getTexture().getWidth();
-			int textureH = sprite.getTexture().getHeight();
+		if (sprite.isValid()) {
+			int textureW = sprite.getTextureWidth();
+			int textureH = sprite.getTextureHeight();
 			float xTexSize = sprite.getWidth() / textureW;
 			float yTexSize = sprite.getHeight() / textureH;
 

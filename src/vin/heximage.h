@@ -4,7 +4,7 @@
 #include "heximage.h"
 #include "hexsides.h"
 
-#include <sdl/sprite.h>
+#include "textureview.h"
 
 #include <string>
 
@@ -18,11 +18,11 @@ namespace vin {
 
 		HexImage& operator=(const HexImage&) = default;
 
-		HexImage(const std::string& filename, const sdl::Sprite& image, const HexSides& hexSides, bool flat, int rotations = 0);
+		HexImage(const std::string& filename, SpriteView sprite, const HexSides& hexSides, bool flat, int rotations = 0);
 
 		const std::string& getFilename() const;
 
-		const sdl::Sprite& getImage() const;
+		SpriteView getImage() const;
 
 		const HexSides& getHexSides() const;
 
@@ -32,8 +32,8 @@ namespace vin {
 
 	private:
 		std::string filename_;
-		sdl::Sprite image_;
-		HexSides hexSides_ = { HexSide::NONE };
+		SpriteView sprite_;
+		HexSides hexSides_{};
 		bool flat_ = true;
 		int rotations_ = 0;
 	};

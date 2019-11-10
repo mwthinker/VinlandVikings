@@ -5,11 +5,11 @@
 
 namespace vin {
 
-    namespace {
+	namespace {
 
-        const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
+		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
 
-        const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
 		void HelpMarker(const std::string& text) {
 			if (ImGui::IsItemHovered()) {
@@ -21,13 +21,9 @@ namespace vin {
 			}
 		}
 
-    }
+	}
 
-	VinlandWindow::VinlandWindow() : page_(Page::START), whiteSquare_(1, 1, 255, 255, 255, 255) {
-		hexImages_ = HexData::getInstance().loadHexImages();
-		for (const auto& hexImage : hexImages_) {
-			hexTypes_[hexImage.getHexSides()].hexImages_.push_back(hexImage);
-		}
+	VinlandWindow::VinlandWindow() : page_{Page::START} {
 	}
 
 	VinlandWindow::~VinlandWindow() {
@@ -66,6 +62,17 @@ namespace vin {
     void VinlandWindow::imGuiUpdate(double deltaTime) {
 		beginMain();
 
+		ImGui::Button("hejasdasdasdasd");
+		ImGui::SameLine();
+		ImGui::Button("hejasdasdasdasd");
+		ImGui::SameLine();
+		ImGui::Button("hejasdasdasdasd");
+		ImGui::SameLine();
+		ImGui::Button("hejasdasdasdasd");
+		ImGui::SameLine();
+		ImGui::Button("hejasdasdasdasd");
+		ImGui::SameLine();
+		ImGui::Button("hejasdasdasdasd");
 		drawHexTypesButtons();
 
 		canvas_.drawImgui();
@@ -83,7 +90,7 @@ namespace vin {
 			auto& hexImages = pair.second.hexImages_;
 			ImVec2 buttonSize(50.f, 50.f);
 			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
-				if (hexImages[index].getImage().getTexture() == canvas_.currentHexSprite().getTexture()) {
+				if (hexImages[index].getImage() == canvas_.currentHexSprite()) {
 					index = (index + 1) % hexImages.size();
 				}
 				canvas_.activateHexagon(hexImages[index]);
@@ -112,6 +119,11 @@ namespace vin {
 		auto [w, h] = sdl::ImGuiWindow::getSize();
         glViewport(0, 0, w, h);
 		canvas_.init(getImGuiShader());
+
+		hexImages_ = HexData::getInstance().loadHexImages();
+		for (const auto& hexImage : hexImages_) {
+			hexTypes_[hexImage.getHexSides()].hexImages_.push_back(hexImage);
+		}
 	}
 
 	void VinlandWindow::beginMain() {
@@ -122,7 +134,7 @@ namespace vin {
 
 		ImGui::SetNextWindowPos({0.f, 0.f});
 		auto [width, height] = sdl::Window::getSize();
-		ImGui::SetNextWindowSize({(float)width, (float)height});
+		ImGui::SetNextWindowSize({(float) width, (float) height});
 
 		ImGui::Begin("Main", nullptr, ImGuiNoWindow);
 	}

@@ -34,7 +34,7 @@ namespace vin {
 
 		void endMain();
 
-        enum class Page { START };
+        enum class Page { START, EDITOR };
 	private:
 		void initPreLoop() override;
 
@@ -51,7 +51,6 @@ namespace vin {
 		Canvas canvas_;
 		Page page_;
 		HexagonBatch hexagonBatch_;
-		sdl::Texture whiteSquare_;		
 		std::vector<HexImage> hexImages_;
 		std::map<HexSidesKey, HexImageTypeVector> hexTypes_;
 	};

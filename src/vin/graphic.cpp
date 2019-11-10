@@ -16,15 +16,17 @@ namespace vin {
 		: batchView_(batchView), matrixIndex_(matrixIndex) {
 	}
 
-	Graphic::BatchData::BatchData(const sdl::Texture& texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex)
+	Graphic::BatchData::BatchData(TextureView texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex)
 		: texture_(texture), batchView_(batchView), matrixIndex_(matrixIndex) {
 	}
 
 	Graphic::Graphic() : batch_(VBO_USAGE) {
-		matrixes_.emplace_back(1);
+		matrixes_.emplace_back(1.f);
 	}
 
 	void Graphic::draw() {
+		glActiveTexture(GL_TEXTURE1);
+
 		if (batch_.getSize() > 0) {
 			shader_.useProgram();
 			bind();
@@ -52,32 +54,19 @@ namespace vin {
 		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
-	void Graphic::addFlatHexagon(Vec2 center, float radius, Color color) {
+	void Graphic::addFilledHexagon(Vec2 center, float radius, Color color) {
 		addCircle(center, radius, color, 6);
 	}
 
-	void Graphic::addPointyHexagon(Vec2 center, float radius, Color color) {
-		addCircle(center, radius, color, 6, PI / 2);
-	}
-
-	void Graphic::addFlatHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite) {
-		addHexagonImage(center, radius, sprite, 0.f);
-	}
-
-	void Graphic::addPointyHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite) {
-		addHexagonImage(center, radius, sprite, PI / 2);
-	}
-
-	void Graphic::addHexagonImage(Vec2 center, float radius, const sdl::Sprite& sprite, float startAngle) {
+	void Graphic::addHexagonImage(Vec2 center, float radius, const SpriteView& sprite, float startAngle) {
 		batch_.startBatchView();
 		batch_.startAdding();
 
-		if (sprite.getTexture().isValid()) {
-			Vec2 size = {sprite.getTexture().getWidth(), sprite.getTexture().getHeight()};
-			Vec2 texSize = Vec2{sprite.getWidth() / size.x, sprite.getHeight() / size.y} *0.5f;
-			Vec2 texPos = Vec2{sprite.getX() / size.x, sprite.getY() / size.y} +texSize;
+		if (sprite) {
+			Vec2 texSize = Vec2{sprite.getWidth(), sprite.getHeight()} * 0.5f;
+			Vec2 texPos = Vec2{sprite.getX(), sprite.getY()} + texSize;
 
-			auto centerVertex = Vertex{center, texPos, WHITE};
+			Vertex centerVertex{center, texPos, WHITE};
 			batch_.pushBack(centerVertex);
 
 			for (int i = 0; i < 6; ++i) {
@@ -89,15 +78,7 @@ namespace vin {
 			}
 		}
 
-		auto& batchData = batches_.emplace_back(sprite.getTexture(), batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
-	}
-
-	void Graphic::addFlatHexagon(Vec2 center, float innerRadius, float outerRadius, Color color) {
-		addHexagon(center, innerRadius, outerRadius, color, PI / 2);
-	}
-
-	void Graphic::addPointyHexagon(Vec2 center, float innerRadius, float outerRadius, Color color) {
-		addHexagon(center, innerRadius, outerRadius, color, 0);
+		auto& batchData = batches_.emplace_back(sprite, batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
 	void Graphic::addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle) {
@@ -129,7 +110,7 @@ namespace vin {
 
 		for (int i = 0; i < iterations; ++i) {
 			auto rad = 2 * PI * i / iterations + startAngle;
-			auto edge = center + glm::rotate(Vec2(radius, 0.f), rad);
+			auto edge = center + glm::rotate(Vec2{radius, 0.f}, rad);
 
 			batch_.pushBack({edge, {0.f, 0.f}, color});
 		}
@@ -153,9 +134,9 @@ namespace vin {
 	}
 
 	void Graphic::draw(const BatchData& batchData) {
-		if (const auto& texture = batchData.texture_; texture.isValid()) {
+		if (const auto& texture = batchData.texture_; texture) {
 			shader_.setTextureId(1);
-			texture.bindTexture();
+			texture.bind();
 		} else {
 			shader_.setTextureId(-1);
 		}
@@ -169,10 +150,11 @@ namespace vin {
 	void Graphic::clearDraw() {
 		batch_.clear();
 		batches_.clear();
+		matrixes_.clear();
 	}
 
 	void Graphic::pushMatrix(const Mat4& model) {
-		currentMatrix_ = matrixes_.size();
+		currentMatrix_ = static_cast<int>(matrixes_.size());
 		matrixes_.push_back(model);
 	}
 
