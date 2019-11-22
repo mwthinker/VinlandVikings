@@ -2,7 +2,7 @@
 
 namespace vin {
 
-	HexImage::HexImage(const std::string& filename, SpriteView sprite, const HexSides& hexSides, bool flat, int rotations)
+	HexImage::HexImage(const std::string& filename, SpriteView sprite, const hex::HexSides& hexSides, bool flat, int rotations)
 		: filename_(filename), sprite_(sprite), hexSides_(hexSides), flat_(flat), rotations_(rotations) {
 	}
 
@@ -14,7 +14,7 @@ namespace vin {
 		return sprite_;
 	}
 
-	const HexSides& HexImage::getHexSides() const {
+	const hex::HexSides& HexImage::getHexSides() const {
 		return hexSides_;
 	}
 

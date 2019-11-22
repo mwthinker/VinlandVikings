@@ -1,7 +1,7 @@
 #ifndef VINLANDVIKINGS_VIN_TYPES_H
 #define VINLANDVIKINGS_VIN_TYPES_H
 
-#include "hex.h"
+#include "hex/hex.h"
 
 #include <sdl/color.h>
 
@@ -47,23 +47,23 @@ struct fmt::formatter<vin::Vec2> {
 };
 
 template <>
-struct fmt::formatter<vin::Hexf> {
+struct fmt::formatter<vin::hex::Hexf> {
 	template <typename ParseContext>
 	constexpr auto parse(ParseContext& ctx) { return ctx.begin(); }
 
 	template <typename FormatContext>
-	auto format(const vin::Hexf& hex, FormatContext& ctx) {
+	auto format(const vin::hex::Hexf& hex, FormatContext& ctx) {
 		return format_to(ctx.out(), "({:.{}f}, {:.{}f}, {:.{}f})", hex.q(), 3, hex.r(), 3, hex.s(), 3);
 	}
 };
 
 template <>
-struct fmt::formatter<vin::Hexi> {
+struct fmt::formatter<vin::hex::Hexi> {
 	template <typename ParseContext>
 	constexpr auto parse(ParseContext& ctx) { return ctx.begin(); }
 
 	template <typename FormatContext>
-	auto format(const vin::Hexi& hex, FormatContext& ctx) {
+	auto format(const vin::hex::Hexi& hex, FormatContext& ctx) {
 		return format_to(ctx.out(), "({}, {}, {})", hex.q(), hex.r(), hex.s());
 	}
 };

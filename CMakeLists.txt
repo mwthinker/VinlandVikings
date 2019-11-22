@@ -21,30 +21,30 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
+	src/vin/hex/hex.h
+	src/vin/hex/hexagon.cpp
+	src/vin/hex/hexagon.h
+	src/vin/hex/hexsides.h
+	src/vin/hex/hexsideskey.h
+	src/vin/hex/hextilemap.cpp
+	src/vin/hex/hextilemap.h
 	src/vin/camera.cpp
 	src/vin/camera.h
 	src/vin/canvas.cpp
 	src/vin/canvas.h
 	src/vin/graphic.cpp
 	src/vin/graphic.h
-	src/vin/hex.h
-	src/vin/hexagon.cpp
-	src/vin/hexagon.h
+	
 	src/vin/hexagonbatch.cpp
 	src/vin/hexagonbatch.h
 	src/vin/hexdata.cpp
 	src/vin/hexdata.h
 	src/vin/heximage.cpp
 	src/vin/heximage.h
-	src/vin/hexsides.h
-	src/vin/hexsideskey.h
-	src/vin/hextilemap.cpp
-	src/vin/hextilemap.h
 	src/vin/imguiextra.cpp
 	src/vin/imguiextra.h
 	src/vin/logger.h
 	src/vin/main.cpp
-	src/vin/orientation.h
 	src/vin/shader.cpp
 	src/vin/shader.h
 	src/vin/textureview.h

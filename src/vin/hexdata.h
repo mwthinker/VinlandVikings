@@ -1,7 +1,7 @@
 #ifndef VINLANDVIKINGS_VIN_HEXDATA_H
 #define VINLANDVIKINGS_VIN_HEXDATA_H
 
-#include "hexagon.h"
+#include "hex/hexagon.h"
 #include "heximage.h"
 #include "textureview.h"
 

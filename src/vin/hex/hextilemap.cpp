@@ -1,8 +1,8 @@
 #include "hextilemap.h"
-#include "types.h"
+#include "../types.h"
 #include "hexsideskey.h"
 
-namespace vin {
+namespace vin::hex {
 
 	namespace {
 

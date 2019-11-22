@@ -1,6 +1,6 @@
 #include "hexagon.h"
 
-namespace vin {
+namespace vin::hex {
 
 	namespace {
 

@@ -1,11 +1,11 @@
 #ifndef VINLANDVIKINGS_VIN_HEXSIDES_H
 #define VINLANDVIKINGS_VIN_HEXSIDES_H
 
-#include "logger.h"
+#include "../logger.h"
 
 #include <array>
 
-namespace vin {
+namespace vin::hex {
 
 	enum class HexSide {
 		NONE,

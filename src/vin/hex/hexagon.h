@@ -1,10 +1,9 @@
 #ifndef VINLANDVIKINGS_VIN_HEXAGON_H
 #define VINLANDVIKINGS_VIN_HEXAGON_H
 
-#include "types.h"
+#include "../types.h"
 #include "hex.h"
 #include "hexsides.h"
-#include "orientation.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 
@@ -12,7 +11,7 @@
 
 #include <array>
 
-namespace vin {
+namespace vin::hex {
 
 	constexpr std::array<Hexi, 6> CUBE_DIRECTIONS = {
 		Hexi{1, -1}, // s = 0

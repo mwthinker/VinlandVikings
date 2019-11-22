@@ -2,7 +2,7 @@
 #define VINLANDVIKINGS_VIN_HEXTILEMAP_H
 
 #include "hexagon.h"
-#include "types.h"
+#include "../types.h"
 #include "hexsides.h"
 #include "hexsideskey.h"
 
@@ -12,8 +12,8 @@
 
 namespace std {
 	
-	template <> struct hash<vin::Hexi> {
-		size_t operator()(const vin::Hexi& h) const {
+	template <> struct hash<vin::hex::Hexi> {
+		size_t operator()(const vin::hex::Hexi& h) const {
 			hash<int> int_hash;
 			size_t hq = int_hash(h.q());
 			size_t hr = int_hash(h.r());
@@ -23,7 +23,7 @@ namespace std {
 
 }
 
-namespace vin {
+namespace vin::hex {
 
 	std::vector<Hexi> createFlatHexShape(int radiusNbr);
 

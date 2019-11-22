@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-namespace vin {
+namespace vin::hex {
 
 	template <class Type>
 	class Hex {
@@ -78,6 +78,6 @@ namespace vin {
 
 	constexpr Hexi HEXI_S = {-1, 1};
 
-} // Namespace vin.
+} // Namespace vin::hex.
 
 #endif // VINLANDVIKINGS_VIN_HEX_H

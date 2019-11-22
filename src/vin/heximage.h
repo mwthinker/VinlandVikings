@@ -2,7 +2,7 @@
 #define VINLANDVIKINGS_VIN_HEXIMAGE_H
 
 #include "heximage.h"
-#include "hexsides.h"
+#include "hex/hexsides.h"
 
 #include "textureview.h"
 
@@ -18,13 +18,13 @@ namespace vin {
 
 		HexImage& operator=(const HexImage&) = default;
 
-		HexImage(const std::string& filename, SpriteView sprite, const HexSides& hexSides, bool flat, int rotations = 0);
+		HexImage(const std::string& filename, SpriteView sprite, const hex::HexSides& hexSides, bool flat, int rotations = 0);
 
 		const std::string& getFilename() const;
 
 		SpriteView getImage() const;
 
-		const HexSides& getHexSides() const;
+		const hex::HexSides& getHexSides() const;
 
 		bool isFlat() const;
 
@@ -33,7 +33,7 @@ namespace vin {
 	private:
 		std::string filename_;
 		SpriteView sprite_;
-		HexSides hexSides_{};
+		hex::HexSides hexSides_{};
 		bool flat_ = true;
 		int rotations_ = 0;
 	};

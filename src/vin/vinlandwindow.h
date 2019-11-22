@@ -4,7 +4,7 @@
 #include "hexagonbatch.h"
 #include "canvas.h"
 #include "hexdata.h"
-#include "hexsideskey.h"
+#include "hex/hexsideskey.h"
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
@@ -52,7 +52,7 @@ namespace vin {
 		Page page_;
 		HexagonBatch hexagonBatch_;
 		std::vector<HexImage> hexImages_;
-		std::map<HexSidesKey, HexImageTypeVector> hexTypes_;
+		std::map<hex::HexSidesKey, HexImageTypeVector> hexTypes_;
 	};
 
 } // Namespace vin.

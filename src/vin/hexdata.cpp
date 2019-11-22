@@ -1,5 +1,5 @@
 #include "hexdata.h"
-#include "hexagon.h"
+#include "hex/hexagon.h"
 #include "logger.h"
 
 #include <fstream>
@@ -74,24 +74,24 @@ namespace vin {
 
 	namespace {
 
-		constexpr HexSide toVinHexSide(vin_config::HexSide hexSide) {
+		constexpr hex::HexSide toVinHexSide(vin_config::HexSide hexSide) {
 			switch (hexSide) {
 				case vin_config::HexSide::NONE:
-					return HexSide::NONE;
+					return hex::HexSide::NONE;
 				case vin_config::HexSide::MOUNTAIN:
-					return HexSide::MOUNTAIN;
+					return hex::HexSide::MOUNTAIN;
 				case vin_config::HexSide::GRASS:
-					return HexSide::GRASS;
+					return hex::HexSide::GRASS;
 				case vin_config::HexSide::WATER:
-					return HexSide::WATER;
+					return hex::HexSide::WATER;
 				case vin_config::HexSide::FOREST:
-					return HexSide::FOREST;
+					return hex::HexSide::FOREST;
 			}
 			assert(false); // Should not be here.
 		}
 
-		constexpr HexSides convertConfigHexSides(const pb::RepeatedField<pb::int32>& configSides) {
-			HexSides hexSides{};
+		constexpr hex::HexSides convertConfigHexSides(const pb::RepeatedField<pb::int32>& configSides) {
+			hex::HexSides hexSides{};
 			for (int i = 0; i < 6; ++i) {
 				//hexSides[i] = toVinHexSide(configSides.sides(i));
 			}
@@ -114,7 +114,7 @@ namespace vin {
 				logger()->warn("Missing sides in {}, nr of sides is {}", filename, size);
 				continue;
 			}
-			HexSides hexSides{};
+			hex::HexSides hexSides{};
 			for (int i = 0; i < 6; ++i) {
 				hexSides[i] = toVinHexSide(tile.sides(i));
 			}

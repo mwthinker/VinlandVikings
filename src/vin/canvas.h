@@ -3,8 +3,8 @@
 
 #include "types.h"
 #include "hexagonbatch.h"
-#include "hexagon.h"
-#include "hextilemap.h"
+#include "hex/hexagon.h"
+#include "hex/hextilemap.h"
 #include "heximage.h"
 #include "shader.h"
 #include "graphic.h"
@@ -57,11 +57,11 @@ namespace vin {
 
 		void init(const sdl::ImGuiShader& imGuiShader);
 
-		void drawHexImage(const sdl::ImGuiShader& imGuiShader, Hexi hex, const HexImage& image);
+		void drawHexImage(const sdl::ImGuiShader& imGuiShader, hex::Hexi hex, const HexImage& image);
 
     private:
-		Hexi worldToHex(Vec2 pos) const;
-		Vec2 hexToWorld(Hexi pos) const;
+		hex::Hexi worldToHex(Vec2 pos) const;
+		Vec2 hexToWorld(hex::Hexi pos) const;
 
 		void addGrid();
 		void addGridImages();
@@ -70,22 +70,22 @@ namespace vin {
 
 		Vec2 screenDeltaPosToWorld(Vec2 pos);
 
-		Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
-		Hexi getHexFromMouse() const;
+		hex::Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
+		hex::Hexi getHexFromMouse() const;
 
 		sdl::Texture whiteSquare_;
 		float zoom_ = 1.f;
 		bool hasFocus_ = false;;
 		bool activateHexagon_;
 		HexImage hexImage_;
-		HexTileMap hexTileMap_;
+		hex::HexTileMap hexTileMap_;
 		HexagonBatch hexagonBatch_;
 		Shader shader_;
 		Graphic graphic_;
 
-		HexTile lastHexTile_;
+		hex::HexTile lastHexTile_;
 		bool lastAllowed_ = false;
-		std::unordered_map<Hexi, HexImage> hexImages_;
+		std::unordered_map<hex::Hexi, HexImage> hexImages_;
 		int rotations_ = 0;
 
 		Vec2 sdlMousePos{};

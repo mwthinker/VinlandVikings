@@ -1,5 +1,5 @@
 #include "canvas.h"
-#include "hexagon.h"
+#include "hex/hexagon.h"
 #include "logger.h"
 #include "imguiextra.h"
 
@@ -11,7 +11,7 @@ namespace vin {
 			return std::fmod(rotations * PI / 3.f + PI / 2.f, 2.f * PI);
 		}
 
-		void rotate(HexSides& hexSides, int rotations) {
+		void rotate(hex::HexSides& hexSides, int rotations) {
 			std::rotate(hexSides.begin(), hexSides.begin() + rotations % 6, hexSides.end());
 		}
 
@@ -65,11 +65,11 @@ namespace vin {
 	}
 
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color) {
-		auto v1 = getHexCorner(center, innerSize, 0);
-		auto v2 = getHexCorner(center, outerSize, 0);
+		auto v1 = hex::getHexCorner(center, innerSize, 0);
+		auto v2 = hex::getHexCorner(center, outerSize, 0);
 		for (int i = 0; i < 6; ++i) {
-			auto v3 = getHexCorner(center, outerSize, (i + 1) % 6);
-			auto v4 = getHexCorner(center, innerSize, (i + 1) % 6);
+			auto v3 = hex::getHexCorner(center, outerSize, (i + 1) % 6);
+			auto v4 = hex::getHexCorner(center, innerSize, (i + 1) % 6);
 			drawList->AddTriangleFilled(v1, v2, v4, color);
 			drawList->AddTriangleFilled(v4, v2, v3, color);
 			v1 = v4;
@@ -79,13 +79,13 @@ namespace vin {
 
 	Canvas::Canvas() {
 		//auto hexes = createFlatHexShape(10);
-		auto hexes = createRectangleShape(10, 10);
+		auto hexes = hex::createRectangleShape(10, 10);
 		//auto hexes = createParallelogramShape(10, 5);
-		hexTileMap_ = HexTileMap(hexes.begin(), hexes.end());
-		hexToWorldModel_ = createHexToCoordModel(HEX_ANGLE, HEX_OUTER_SIZE);
+		hexTileMap_ = hex::HexTileMap(hexes.begin(), hexes.end());
+		hexToWorldModel_ = hex::createHexToCoordModel(HEX_ANGLE, HEX_OUTER_SIZE);
 	}
 
-	void Canvas::drawHexImage(const sdl::ImGuiShader& imGuiShader, Hexi hex, const HexImage& image) {
+	void Canvas::drawHexImage(const sdl::ImGuiShader& imGuiShader, hex::Hexi hex, const HexImage& image) {
 		hexagonBatch_.clear();
 		image.getImage().bind();
 		imGuiShader.setTextureId(1);
@@ -115,23 +115,23 @@ namespace vin {
 		ImGui::EndChild();
 	}
 
-	Hexi Canvas::worldToHex(Vec2 pos) const {
+	hex::Hexi Canvas::worldToHex(Vec2 pos) const {
 		auto hex = glm::inverse<>(hexToWorldModel_) * pos;
-		return hexRound({hex.x, hex.y});
+		return hex::hexRound({hex.x, hex.y});
 	}
 
-	Vec2 Canvas::hexToWorld(Hexi pos) const {
+	Vec2 Canvas::hexToWorld(hex::Hexi pos) const {
 		return hexToWorldModel_ * Vec2{pos.q(), pos.r()};
 	}
 
-	Hexi Canvas::getHexFromMouse() const {
+	hex::Hexi Canvas::getHexFromMouse() const {
 		ImVec2 pos = ImGui::GetMousePos();
 		auto result = deviceCoordToClipSpace(viewPort_, sdlMousePos);
 		Vec4 result2 = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result, 0.1f, 1.f };
 		return worldToHex({result2.x, result2.y});
 	}
 
-	Hexi Canvas::getHexFromMouse(Uint32 windowsId, int x, int y) const {
+	hex::Hexi Canvas::getHexFromMouse(Uint32 windowsId, int x, int y) const {
 		auto result = deviceCoordToClipSpace(viewPort_, {x, y});
 		logger()->info("(deviceCoordToClipSpace): ({})", result);
 		Vec4 result2 = glm::inverse<>(projection_ * camera_.getView()) * Vec4{result, 0.1f, 1.f};
@@ -155,7 +155,7 @@ namespace vin {
 	void Canvas::addGrid() {
 		for (const auto& [hex, hexTile] : hexTileMap_) {
 			auto pos = hexToWorld(hex);
-			if (hex == Hexi{0,0}) {
+			if (hex == hex::Hexi{0,0}) {
 				graphic_.addHexagon(pos, HEX_INNER_SIZE, HEX_OUTER_SIZE, BLUE, HEX_ANGLE);
 			} else {
 				graphic_.addHexagon(pos, HEX_INNER_SIZE, HEX_OUTER_SIZE, RED, HEX_ANGLE);
@@ -176,13 +176,13 @@ namespace vin {
 	}
 
 	void Canvas::addMouseHex() {
-		Hexi hex = getHexFromMouse();
+		hex::Hexi hex = getHexFromMouse();
 		//logger()->info("(q, r, s): {}", hex);
 
-		HexSides sides = hexImage_.getHexSides();
+		hex::HexSides sides = hexImage_.getHexSides();
 		rotate(sides, rotations_);
 		//logger()->info("Rotations: {}", rotations_);
-		HexTile hexTile{hex, sides};
+		hex::HexTile hexTile{hex, sides};
 		/*
 		if (lastHexTile_ != hexTile) {
 			lastAllowed_ = hexTileMap_.isAllowed(hexTile);
@@ -294,11 +294,11 @@ namespace vin {
 						{
 							if (activateHexagon_) {
 								const auto& button = windowEvent.button;
-								Hexi hex = getHexFromMouse(button.windowID, button.x, button.y);
+								hex::Hexi hex = getHexFromMouse(button.windowID, button.x, button.y);
 								logger()->info("(q, r, s): {}", hex);
-								HexSides sides = hexImage_.getHexSides();
+								hex::HexSides sides = hexImage_.getHexSides();
 								rotate(sides, rotations_);
-								HexTile hexTile{hex, sides};
+								hex::HexTile hexTile{hex, sides};
 								logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile)? "True" : "False");
 								if (hexTileMap_.put(hexTile)) {
 									hexImages_[hex] = HexImage{hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_};

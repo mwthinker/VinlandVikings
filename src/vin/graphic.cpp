@@ -1,5 +1,5 @@
 #include "graphic.h"
-#include "hexagon.h"
+#include "hex/hexagon.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/component_wise.hpp>
@@ -70,7 +70,7 @@ namespace vin {
 			batch_.pushBack(centerVertex);
 
 			for (int i = 0; i < 6; ++i) {
-				auto v = Vertex{getHexCorner(center, radius, i), texPos + texSize * getHexCorner(i, startAngle), WHITE};
+				auto v = Vertex{hex::getHexCorner(center, radius, i), texPos + texSize * hex::getHexCorner(i, startAngle), WHITE};
 				batch_.pushBack(v);
 			}
 			for (int i = 1; i <= 6; ++i) {
@@ -85,8 +85,8 @@ namespace vin {
 		batch_.startBatchView();
 		batch_.startAdding();
 
-		auto innerCorners = getHexCorners(center, innerRadius, startAngle);
-		auto outerCorners = getHexCorners(center, outerRadius, startAngle);
+		auto innerCorners = hex::getHexCorners(center, innerRadius, startAngle);
+		auto outerCorners = hex::getHexCorners(center, outerRadius, startAngle);
 
 		for (const auto& corner : innerCorners) {
 			batch_.pushBack({corner, {0.f, 0.f}, color});

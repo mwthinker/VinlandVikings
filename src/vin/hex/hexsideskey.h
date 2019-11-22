@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-namespace vin {
+namespace vin::hex {
 
 	// Unique key for HexSides.
 	class HexSidesKey {
