@@ -23,7 +23,7 @@ namespace vin {
 
 	}
 
-	VinlandWindow::VinlandWindow() : page_{Page::START} {
+	VinlandWindow::VinlandWindow() {
 	}
 
 	VinlandWindow::~VinlandWindow() {
@@ -88,7 +88,7 @@ namespace vin {
 		for (auto& pair : hexTypes_) {
 			auto& index = pair.second.index_;
 			auto& hexImages = pair.second.hexImages_;
-			ImVec2 buttonSize(50.f, 50.f);
+			ImVec2 buttonSize{50.f, 50.f};
 			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
 				if (hexImages[index].getImage() == canvas_.currentHexSprite()) {
 					index = (index + 1) % hexImages.size();
@@ -127,7 +127,7 @@ namespace vin {
 	}
 
 	void VinlandWindow::beginMain() {
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, {1.f, 1.f, 1.f, 0.f});

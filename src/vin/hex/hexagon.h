@@ -13,7 +13,7 @@
 
 namespace vin::hex {
 
-	constexpr std::array<Hexi, 6> CUBE_DIRECTIONS = {
+	constexpr std::array<Hexi, 6> CUBE_DIRECTIONS{
 		Hexi{1, -1}, // s = 0
 		Hexi{1, 0}, // s = -1
 		Hexi{0, 1}, // s = -1
@@ -52,30 +52,10 @@ namespace vin::hex {
 		return Mat2{cos, sin, -sin, cos} * Mat2{3.f / 2.f, SQRT_3 / 2, 0.f, SQRT_3};
 	}
 
-	/*
-	struct Layout {
-		const Orientation orientation;
-		const Vec2 size;
-		const Vec2 origin;
-		constexpr Layout(const Orientation& orientation_, Vec2 size_, Vec2 origin_)
-			: orientation(orientation_), size(size_), origin(origin_) {}
-	};
-
-	constexpr Vec2 hexToPixel(const Layout& layout, Hexi h) {
-		const Orientation& M = layout.orientation;
-		float x = (M.f0 * h.q() + M.f1 * h.r()) * layout.size.x;
-		float y = (M.f2 * h.q() + M.f3 * h.r()) * layout.size.y;
-		return {x + layout.origin.x, y + layout.origin.y};
-	}
-	*/
-
-	//Hexf pixelToHex(Layout layout, Vec2 p);
-
 	Hexi hexRound(Hexf h);
 
 	Hexi oddToCube(int x, int y);
 
-
-} // Namespace vin.
+} // Namespace vin::hex.
 
 #endif // VINLANDVIKINGS_VIN_HEXAGON_H

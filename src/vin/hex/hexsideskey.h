@@ -10,7 +10,7 @@ namespace vin::hex {
 	// Unique key for HexSides.
 	class HexSidesKey {
 	public:
-		constexpr HexSidesKey() noexcept;
+		constexpr HexSidesKey() noexcept = default;
 
 		constexpr HexSidesKey(const HexSidesKey&) noexcept = default;
 
@@ -25,11 +25,8 @@ namespace vin::hex {
 		constexpr bool HexSidesKey::operator<(const HexSidesKey& key) const noexcept;
 
 	private:
-		uint_fast64_t key_;
+		uint_fast64_t key_{0};
 	};
-
-	inline constexpr HexSidesKey::HexSidesKey() noexcept : key_(0) {
-	}
 
 	// Assumes one side is not bigger than one byte.
 	inline constexpr HexSidesKey::HexSidesKey(const HexSides& sides) noexcept :
@@ -45,6 +42,6 @@ namespace vin::hex {
 		return key_ < key.key_;
 	}
 
-} // Namespace vin.
+} // Namespace vin::hex.
 
 #endif // VINLANDVIKINGS_VIN_HEXSIDESKEY_H

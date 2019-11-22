@@ -91,7 +91,7 @@ namespace vin::hex {
 		HexTileMap(const iterator& begin, const iterator& end) {
 			for (auto it = begin; it != end; ++it) {
 				Hexi hex = *it;
-				hexes_[hex] = HexTile(hex, {HexSide::NONE});
+				hexes_[hex] = HexTile{hex, HEXSIDES_NONE};
 			}
 		}
 
@@ -121,6 +121,6 @@ namespace vin::hex {
 		std::unordered_map<Hexi, HexTile> hexes_;
 	};
 
-} // Namespace vin.
+} // Namespace vin::hex.
 
 #endif // VINLANDVIKINGS_VIN_HEXTILEMAP_H

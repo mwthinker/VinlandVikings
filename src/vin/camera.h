@@ -24,8 +24,8 @@ namespace vin {
 	private:
 		Vec3 getCenter() const;
 
-		Vec2 lookAtPos_ = {0, 0};
-		float angle_ = 0.f;
+		Vec2 lookAtPos_{0, 0};
+		float angle_{0};
 	};
 
 } // Namespace vin.

@@ -6,9 +6,9 @@
 namespace vin {
 	
 	struct Vertex {
-		Vec2 pos = {0, 0};
-		Vec2 tex = {0, 0};
-		Color color = WHITE;
+		Vec2 pos{0, 0};
+		Vec2 tex{0, 0};
+		Color color{WHITE};
 	};
 
 } // Namespace vin.

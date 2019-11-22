@@ -15,12 +15,8 @@
 
 namespace vin {
 	
-	class HexImageTypeVector {
-	public:
-		HexImageTypeVector() : index_(0) {
-		}
-
-		int index_;
+	struct HexImageTypeVector {
+		int index_{0};
 		std::vector<HexImage> hexImages_;
 	};
 
@@ -49,7 +45,7 @@ namespace vin {
 		void drawHexTypesButtons();
 
 		Canvas canvas_;
-		Page page_;
+		Page page_{Page::START};
 		HexagonBatch hexagonBatch_;
 		std::vector<HexImage> hexImages_;
 		std::map<hex::HexSidesKey, HexImageTypeVector> hexTypes_;

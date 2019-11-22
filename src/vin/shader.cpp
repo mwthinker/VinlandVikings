@@ -55,49 +55,6 @@ void main() {
 
 	}
 
-	void Shader::load() {
-		shaderProgram_.bindAttribute(A_POS);
-		shaderProgram_.bindAttribute(A_TEX);
-		shaderProgram_.bindAttribute(A_COL);
-		shaderProgram_.loadAndLink(getVertexShaderGlsl_330(), getFragmentShaderGlsl_330());
-
-		shaderProgram_.useProgram();
-
-		if (shaderProgram_.isLinked()) {
-			// Collect the vertex buffer attributes indexes.
-			aPos_ = shaderProgram_.getAttributeLocation(A_POS);
-			aTex_ = shaderProgram_.getAttributeLocation(A_TEX);
-			aColor_ = shaderProgram_.getAttributeLocation(A_COL);
-
-			// Collect the vertex buffer uniforms indexes.
-			uMat_ = shaderProgram_.getUniformLocation(U_MAT);
-			uTexture_ = shaderProgram_.getUniformLocation(U_TEXTURE);
-			uUseTexture_ = shaderProgram_.getUniformLocation(U_USE_TEXTURE);
-		} else {
-			logger()->warn("[VinShader] failed to create VinShader, shader not linked");
-		}
-	}
-
-	Shader::Shader(Shader&& other) noexcept :
-		shaderProgram_(std::move(other.shaderProgram_)), aPos_(other.aPos_),
-		aTex_(other.aTex_), aColor_(other.aColor_),
-		uMat_(other.uMat_),
-		uTexture_(other.uTexture_),
-		uUseTexture_(other.uUseTexture_) {
-	}
-
-	Shader& Shader::operator=(Shader&& other) noexcept {
-		shaderProgram_ = std::move(other.shaderProgram_);
-		aPos_ = other.aPos_;
-		aTex_ = other.aTex_;
-		aColor_ = other.aColor_;
-		
-		uMat_ = other.uMat_;
-		uTexture_ = other.uTexture_;
-		uUseTexture_ = other.uUseTexture_;
-		return *this;
-	}
-
 	void Shader::useProgram() {
 		if (!initiated_) {
 			initiated_ = true;
@@ -134,6 +91,29 @@ void main() {
 		} else {
 			glUniform1i(uTexture_, textureId);
 			glUniform1f(uUseTexture_, 1.f);
+		}
+	}
+
+	void Shader::load() {
+		shaderProgram_.bindAttribute(A_POS);
+		shaderProgram_.bindAttribute(A_TEX);
+		shaderProgram_.bindAttribute(A_COL);
+		shaderProgram_.loadAndLink(getVertexShaderGlsl_330(), getFragmentShaderGlsl_330());
+
+		shaderProgram_.useProgram();
+
+		if (shaderProgram_.isLinked()) {
+			// Collect the vertex buffer attributes indexes.
+			aPos_ = shaderProgram_.getAttributeLocation(A_POS);
+			aTex_ = shaderProgram_.getAttributeLocation(A_TEX);
+			aColor_ = shaderProgram_.getAttributeLocation(A_COL);
+
+			// Collect the vertex buffer uniforms indexes.
+			uMat_ = shaderProgram_.getUniformLocation(U_MAT);
+			uTexture_ = shaderProgram_.getUniformLocation(U_TEXTURE);
+			uUseTexture_ = shaderProgram_.getUniformLocation(U_USE_TEXTURE);
+		} else {
+			logger()->warn("[VinShader] failed to create VinShader, shader not linked");
 		}
 	}
 

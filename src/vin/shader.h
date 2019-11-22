@@ -14,8 +14,8 @@ namespace vin {
 		Shader(const Shader&) = delete;
 		Shader& operator=(const Shader&) = delete;
 
-		Shader(Shader&& other) noexcept;
-		Shader& operator=(Shader&& other) noexcept;		
+		Shader(Shader&& other) noexcept = default;
+		Shader& operator=(Shader&& other) noexcept = default;
 
 		void useProgram();
 

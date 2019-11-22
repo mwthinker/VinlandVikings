@@ -6,21 +6,15 @@
 
 namespace vin {
 
-	namespace {
-
-		constexpr GLenum VBO_USAGE = GL_DYNAMIC_DRAW;
-
-	}
-
 	Graphic::BatchData::BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex)
-		: batchView_(batchView), matrixIndex_(matrixIndex) {
+		: batchView_{batchView}, matrixIndex_{matrixIndex} {
 	}
 
 	Graphic::BatchData::BatchData(TextureView texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex)
-		: texture_(texture), batchView_(batchView), matrixIndex_(matrixIndex) {
+		: texture_{texture}, batchView_{batchView}, matrixIndex_{matrixIndex} {
 	}
 
-	Graphic::Graphic() : batch_(VBO_USAGE) {
+	Graphic::Graphic() {
 		matrixes_.emplace_back(1.f);
 	}
 

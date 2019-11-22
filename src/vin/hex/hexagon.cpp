@@ -88,4 +88,4 @@ namespace vin::hex {
 		return {q, r};
 	}
 
-} // Namespace vin.
+} // Namespace vin::hex.

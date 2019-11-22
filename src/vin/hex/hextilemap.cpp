@@ -4,18 +4,12 @@
 
 namespace vin::hex {
 
-	namespace {
-
-		const HexSides NONE_SIDES ( HexSides {HexSide::NONE} );
-
-	}
-
 	std::vector<Hexi> createFlatHexShape(int radiusNbr) {
 		std::vector<Hexi> hexes;
-		for (int q = -radiusNbr; q <= radiusNbr; q++) {
+		for (int q = -radiusNbr; q <= radiusNbr; ++q) {
 			int r1 = std::max(-radiusNbr, -q - radiusNbr);
 			int r2 = std::min(radiusNbr, -q + radiusNbr);
-			for (int r = r1; r <= r2; r++) {
+			for (int r = r1; r <= r2; ++r) {
 				hexes.emplace_back(q, r);
 			}
 		}
@@ -46,7 +40,7 @@ namespace vin::hex {
     HexTileMap::HexTileMap() {
     }
 
-    HexTileMap::HexTileMap(HexTileMap&& map) noexcept : hexes_(std::move(map.hexes_)) {
+	HexTileMap::HexTileMap(HexTileMap&& map) noexcept : hexes_{std::move(map.hexes_)} {
     }
 
     HexTileMap& HexTileMap::operator=(HexTileMap&& map) noexcept {
@@ -56,8 +50,7 @@ namespace vin::hex {
 
     HexTileMap::HexTileMap(const std::vector<Hexi>& hexes) {
         for (const auto& hex : hexes) {
-
-            hexes_.insert({hex, HexTile(hex, {HexSide::NONE})});
+			hexes_.insert({hex, HexTile{hex, HEXSIDES_NONE}});
         }
     }
 
@@ -71,7 +64,7 @@ namespace vin::hex {
 			return false;
 		}
 
-		return it->second.getHexSides() == NONE_SIDES;
+		return it->second.getHexSides() == HEXSIDES_NONE;
 	}
 
 	bool HexTileMap::isAllowed(HexTile hexTile) const {
@@ -112,14 +105,14 @@ namespace vin::hex {
 	HexTile HexTileMap::getHexTile(Hexi hex) const {
 		auto it = hexes_.find(hex);
 		if (it == hexes_.end()) {
-			return HexTile(hex, NONE_SIDES);
+			return HexTile{hex, HEXSIDES_NONE};
 		}
 		return it->second;
 	}
 
     void HexTileMap::clear() {
         for (auto& hexTile : hexes_) {
-            hexTile.second = HexTile(hexTile.first, {HexSide::NONE});
+			hexTile.second = HexTile{hexTile.first, HEXSIDES_NONE};
         }
 	}
 
@@ -131,4 +124,4 @@ namespace vin::hex {
 		return true;
 	}
 
-} // Namespace vin.
+} // Namespace vin::hex.

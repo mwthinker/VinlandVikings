@@ -43,6 +43,6 @@ namespace vin::hex {
 		}
 	}
 
-} // Namespace vin.
+} // Namespace vin::hex.
 
 #endif // VINLANDVIKINGS_VIN_HEXSIDES_H

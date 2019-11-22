@@ -8,11 +8,11 @@ namespace vin::hex {
 	template <class Type>
 	class Hex {
 	public:
-		constexpr Hex() noexcept : q_(0), r_(0) {
+		constexpr Hex() noexcept {
 			IS_ARITHMETIC<Type>();
 		}
 
-		constexpr Hex(Type q, Type r) noexcept : q_(q), r_(r) {
+		constexpr Hex(Type q, Type r) noexcept : q_{q}, r_{r} {
 			IS_ARITHMETIC<Type>();
 		}
 
@@ -35,27 +35,27 @@ namespace vin::hex {
 		}
 
 		constexpr Hex operator+(Hex hex) const noexcept {
-			return Hex(q_ + hex.q_, r_ + hex.r_);
+			return {q_ + hex.q_, r_ + hex.r_};
 		}
 
 		constexpr Hex operator-(Hex hex) const noexcept {
-			return Hex(q_ - hex.q_, r_ - hex.r_);
+			return {q_ - hex.q_, r_ - hex.r_};
 		}
 
 		constexpr Hex operator-() const noexcept {
-			return Hex(-q_, -r_);
+			return {-q_, -r_};
 		}
 
 		constexpr Hex operator*(Type nbr) const noexcept {
-			return Hex(q_ * nbr, r_ * nbr);
+			return {q_ * nbr, r_ * nbr};
 		}
 
 		constexpr Hex operator+(Type hex) const noexcept {
-			return Hex(q_ + hex.q_, r_ + hex.r_);
+			return {q_ + hex.q_, r_ + hex.r_};
 		}
 
 		constexpr Hex operator-(Type hex) const noexcept {
-			return Hex(q_ - hex.q_, r_ - hex.r_);
+			return {q_ - hex.q_, r_ - hex.r_};
 		}
 
 	private:
@@ -64,19 +64,20 @@ namespace vin::hex {
 			static_assert(std::is_arithmetic<AritmeticType>(), "Hex type must be of arithmetic type");
 		}
 
-		Type q_, r_;
+		Type q_{0};
+		Type r_{0};
 	};
 
 	using Hexi = Hex<int>;
 	using Hexf = Hex<float>;
 
-	constexpr Hexi HEXI_ZERO = {0, 0};
+	constexpr Hexi HEXI_ZERO{0, 0};
 
-	constexpr Hexi HEXI_Q = {1, 0};
+	constexpr Hexi HEXI_Q{1, 0};
 
-	constexpr Hexi HEXI_R = {0, 1};
+	constexpr Hexi HEXI_R{0, 1};
 
-	constexpr Hexi HEXI_S = {-1, 1};
+	constexpr Hexi HEXI_S{-1, 1};
 
 } // Namespace vin::hex.
 

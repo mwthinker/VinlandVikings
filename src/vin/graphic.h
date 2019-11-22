@@ -53,12 +53,12 @@ namespace vin {
 		void draw(const BatchData& batchData);		
 
 		Shader shader_;
-		Batch batch_;
+		Batch batch_{GL_DYNAMIC_DRAW};
 		BatchView lastView_;
 		std::vector<BatchData> batches_;
 		std::vector<Mat4> matrixes_;
 		sdl::VertexArrayObject vao_;
-		int currentMatrix_ = 0;
+		int currentMatrix_{0};
 		bool initiated_ = false;
     };
 
