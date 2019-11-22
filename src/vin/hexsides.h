@@ -23,7 +23,7 @@ namespace vin {
 	}
 
 	using HexSides = std::array<HexSide, 6>;
-	constexpr HexSides HEXSIDES_NONE = {HexSide::NONE};
+	constexpr HexSides HEXSIDES_NONE{};
 
 	constexpr const char* toString(HexSide side) {
 		switch (side) {

@@ -54,8 +54,8 @@ namespace vin {
 		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
-	void Graphic::addFilledHexagon(Vec2 center, float radius, Color color) {
-		addCircle(center, radius, color, 6);
+	void Graphic::addFilledHexagon(Vec2 center, float radius, Color color, float startAngle) {
+		addCircle(center, radius, color, 6, startAngle);
 	}
 
 	void Graphic::addHexagonImage(Vec2 center, float radius, const SpriteView& sprite, float startAngle) {

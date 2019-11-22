@@ -12,7 +12,7 @@
 #include <sdl/vertexarrayobject.h>
 #include <stack>
 
-namespace vin {	
+namespace vin {
 
     class Graphic {
     public:
@@ -20,7 +20,7 @@ namespace vin {
 
 		void pushMatrix(const Mat4& matrix);
 
-		void addFilledHexagon(Vec2 center, float radius, Color color);
+		void addFilledHexagon(Vec2 center, float radius, Color color, float startAngle = 0);
 
 		void addRectangle(Vec2 pos, Vec2 size, Color color);
 

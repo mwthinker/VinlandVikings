@@ -10,12 +10,13 @@
 #include <sdl/font.h>
 #include <sdl/textureatlas.h>
 
-#include <nlohmann/json.hpp>
 #include <imgui.h>
 
 #include <map>
 #include <vector>
 #include <array>
+
+#include <config.pb.h>
 
 namespace vin {
 
@@ -31,7 +32,7 @@ namespace vin {
 
 		void save();
 
-		const sdl::Font& loadFont(const std::string& file, unsigned int fontSize);
+		const sdl::Font& loadFont(const std::string& file, int fontSize);
 		SpriteView loadSprite(const std::string& file);
 
 		const sdl::Font& getDefaultFont(int size);
@@ -53,7 +54,7 @@ namespace vin {
 		std::map<std::string, sdl::Sound> sounds_;
 		std::map<std::string, sdl::Font> fonts_;
 		std::map<std::string, Image> images_;
-		nlohmann::json jsonObject_;
+		vin_config::HexTiles hexTiles_;
 	};
 
 }

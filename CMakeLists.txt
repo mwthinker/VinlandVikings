@@ -55,7 +55,6 @@ set(SOURCES
 )
 
 find_package(Threads REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On) 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VinlandVikings)
@@ -65,6 +64,8 @@ source_group(TREE
 	FILES
 		${SOURCES}
 )
+
+add_subdirectory(Config)
 
 set(CppSdl2ImGui TRUE BOOL "Must use ImGui")
 
@@ -127,8 +128,7 @@ endif ()
 
 target_link_libraries(VinlandVikings
 	PRIVATE
-		nlohmann_json
-		nlohmann_json::nlohmann_json
 		Threads::Threads
 		${ExternalDependencies}
+		Config
 )
