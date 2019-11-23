@@ -8,24 +8,17 @@
 #include <sdl/sound.h>
 #include <sdl/sprite.h>
 #include <sdl/font.h>
-#include <sdl/textureatlas.h>
 
 #include <imgui.h>
 
-#include <map>
 #include <vector>
-#include <array>
-
-#include <config.pb.h>
+#include <memory>
 
 namespace vin {
 
 	class HexData {
 	public:
-		static HexData& getInstance(const std::string& filename = "") {
-			static HexData instance{filename};
-			return instance;
-		}
+		static HexData& getInstance(const std::string& filename = "");
 
 		HexData(HexData const&) = delete;
 		HexData& operator=(const HexData&) = delete;
@@ -40,21 +33,10 @@ namespace vin {
 		std::vector<HexImage> loadHexImages();
 
 	private:
+		class Impl;
+		std::unique_ptr<Impl> impl_;
+
 		HexData(const std::string& filename);
-
-		struct Image {
-			sdl::Texture texture;
-			float x{};
-			float y{};
-			float dx{};
-			float dy{};
-		};
-
-		std::string jsonPath_;
-		std::map<std::string, sdl::Sound> sounds_;
-		std::map<std::string, sdl::Font> fonts_;
-		std::map<std::string, Image> images_;
-		vin_config::HexTiles hexTiles_;
 	};
 
 }
