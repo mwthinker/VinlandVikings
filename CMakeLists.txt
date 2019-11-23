@@ -21,6 +21,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
+	src/vin/hex/tile.h
+	src/vin/hex/hash.h
 	src/vin/hex/hex.h
 	src/vin/hex/hexagon.cpp
 	src/vin/hex/hexagon.h
@@ -39,6 +41,7 @@ set(SOURCES
 	src/vin/hexagonbatch.h
 	src/vin/hexdata.cpp
 	src/vin/hexdata.h
+	src/vin/hexdimension.h
 	src/vin/heximage.cpp
 	src/vin/heximage.h
 	src/vin/imguiextra.cpp
@@ -47,6 +50,8 @@ set(SOURCES
 	src/vin/main.cpp
 	src/vin/shader.cpp
 	src/vin/shader.h
+	src/vin/tilesgraphic.cpp
+	src/vin/tilesgraphic.h
 	src/vin/textureview.h
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp

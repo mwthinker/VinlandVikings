@@ -81,25 +81,26 @@ namespace vin {
 
 	void VinlandWindow::drawHexTypesButtons() {
 		ImGuiStyle& style = ImGui::GetStyle();
-		const auto buttonsCount = hexTypes_.size();
-		float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+		const int buttonsCount = static_cast<int>(hexTypes_.size());
+		const float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 		
 		int n = 0;
 		for (auto& pair : hexTypes_) {
 			auto& index = pair.second.index_;
 			auto& hexImages = pair.second.hexImages_;
-			ImVec2 buttonSize{50.f, 50.f};
+			const ImVec2 buttonSize{50.f, 50.f};
 			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
 				if (hexImages[index].getImage() == canvas_.currentHexSprite()) {
-					index = (index + 1) % hexImages.size();
+					index = (index + 1) % static_cast<int>(hexImages.size());
 				}
 				canvas_.activateHexagon(hexImages[index]);
 			}
 			HelpMarker(hexImages[index].getFilename());
-			float lastButton_x2 = ImGui::GetItemRectMax().x;
-			float nextButton_x2 = lastButton_x2 + style.ItemSpacing.x + buttonSize.x; // Expected position if next button was on same line
-			if (n + 1 < buttonsCount && nextButton_x2 < windowVisible_x2)
+			const float lastButton_x2 = ImGui::GetItemRectMax().x;
+			const float nextButton_x2 = lastButton_x2 + style.ItemSpacing.x + buttonSize.x; // Expected position if next button was on same line
+			if (n + 1 < buttonsCount && nextButton_x2 < windowVisible_x2) {
 				ImGui::SameLine();
+			}
 			++n;
 		}
 	}

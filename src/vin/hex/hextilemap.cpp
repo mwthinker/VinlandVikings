@@ -50,7 +50,7 @@ namespace vin::hex {
 
     HexTileMap::HexTileMap(const std::vector<Hexi>& hexes) {
         for (const auto& hex : hexes) {
-			hexes_.insert({hex, HexTile{hex, HEXSIDES_NONE}});
+			hexes_.insert({hex, Tile{hex, HEXSIDES_NONE}});
         }
     }
 
@@ -67,7 +67,7 @@ namespace vin::hex {
 		return it->second.getHexSides() == HEXSIDES_NONE;
 	}
 
-	bool HexTileMap::isAllowed(HexTile hexTile) const {
+	bool HexTileMap::isAllowed(Tile hexTile) const {
 		logger()->info("isAllowed");
 
 		if (!isInside(hexTile.getHexi())) {
@@ -83,11 +83,11 @@ namespace vin::hex {
 		return isNeighborsMatching(hexTile);
 	}
 
-    bool HexTileMap::isNeighborsMatching(HexTile hexTile) const {
+    bool HexTileMap::isNeighborsMatching(Tile hexTile) const {
         HexSides sides = hexTile.getHexSides();
         for (int i = 0; i < 6; ++i) {
             Hexi pos = CUBE_DIRECTIONS[i] + hexTile.getHexi();
-            HexTile neighbor = getHexTile(pos);
+			Tile neighbor = getTile(pos);
 
             int oppositeSide = (i + 3) % 6;
             HexSide neighborSide = neighbor.getHexSides()[oppositeSide];
@@ -102,21 +102,21 @@ namespace vin::hex {
         return true;
 	}
 
-	HexTile HexTileMap::getHexTile(Hexi hex) const {
+	Tile HexTileMap::getTile(Hexi hex) const {
 		auto it = hexes_.find(hex);
 		if (it == hexes_.end()) {
-			return HexTile{hex, HEXSIDES_NONE};
+			return Tile{hex, HEXSIDES_NONE};
 		}
 		return it->second;
 	}
 
     void HexTileMap::clear() {
         for (auto& hexTile : hexes_) {
-			hexTile.second = HexTile{hexTile.first, HEXSIDES_NONE};
+			hexTile.second = Tile{hexTile.first, HEXSIDES_NONE};
         }
 	}
 
-	bool HexTileMap::put(const HexTile& tile) {
+	bool HexTileMap::put(const Tile& tile) {
 		if (!isAllowed(tile)) {
 			return false;
 		}

@@ -83,7 +83,7 @@ namespace vin {
 		Shader shader_;
 		Graphic graphic_;
 
-		hex::HexTile lastHexTile_;
+		hex::Tile lastHexTile_;
 		bool lastAllowed_ = false;
 		std::unordered_map<hex::Hexi, HexImage> hexImages_;
 		int rotations_ = 0;

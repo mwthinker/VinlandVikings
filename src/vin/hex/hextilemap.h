@@ -5,23 +5,12 @@
 #include "../types.h"
 #include "hexsides.h"
 #include "hexsideskey.h"
+#include "hash.h"
+#include "tile.h"
 
 #include <vector>
 
 #include <unordered_map>
-
-namespace std {
-	
-	template <> struct hash<vin::hex::Hexi> {
-		size_t operator()(const vin::hex::Hexi& h) const {
-			hash<int> int_hash;
-			size_t hq = int_hash(h.q());
-			size_t hr = int_hash(h.r());
-			return hq ^ (hr + 0x9e3779b9 + (hq << 6) + (hq >> 2));
-		}
-	};
-
-}
 
 namespace vin::hex {
 
@@ -31,50 +20,9 @@ namespace vin::hex {
 
 	std::vector<Hexi> createRectangleShape(int columns, int rows);
 
-	class HexTile {
-	public:
-		HexTile() {
-		}
-
-		HexTile(const Hexi& hex, const HexSides& sides)
-			: hex_{hex}, sides_{sides} {
-		}
-
-		HexTile(const HexTile&) = default;
-		HexTile(HexTile&&) = default;
-
-		HexTile& operator=(const HexTile& tile) {
-			hex_ = tile.hex_;
-			sides_ = tile.sides_;
-			return *this;
-		}
-
-		HexTile& operator=(HexTile&&) = default;
-
-        bool operator==(const HexTile& tile) const {
-            return hex_ == tile.hex_ && sides_ == tile.sides_;
-        }
-
-        bool operator!=(const HexTile& tile) const {
-            return hex_ != tile.hex_ || sides_ != tile.sides_;
-        }
-
-		const Hexi& getHexi() const {
-			return hex_;
-		}
-
-		const HexSides& getHexSides() const {
-			return sides_;
-		}
-
-	private:
-		Hexi hex_;
-		HexSides sides_{};
-	};
-
 	class HexTileMap {
 	public:
-		using const_iterator = std::unordered_map<Hexi, HexTile>::const_iterator;
+		using const_iterator = std::unordered_map<Hexi, Tile>::const_iterator;
 
 		HexTileMap();
 
@@ -91,13 +39,13 @@ namespace vin::hex {
 		HexTileMap(const iterator& begin, const iterator& end) {
 			for (auto it = begin; it != end; ++it) {
 				Hexi hex = *it;
-				hexes_[hex] = HexTile{hex, HEXSIDES_NONE};
+				hexes_[hex] = Tile{hex, HEXSIDES_NONE};
 			}
 		}
 
 		void clear();
 
-		bool put(const HexTile& tile);
+		bool put(const Tile& tile);
 
 		bool isInside(const Hexi& hex) const;
 
@@ -111,14 +59,14 @@ namespace vin::hex {
 			return hexes_.end();
 		}
 
-		bool isNeighborsMatching(HexTile hexTile) const;
+		bool isNeighborsMatching(Tile hexTile) const;
 
-		bool isAllowed(HexTile hexTile) const;
+		bool isAllowed(Tile hexTile) const;
 
-		HexTile getHexTile(Hexi hex) const;
+		Tile getTile(Hexi hex) const;
 
 	private:
-		std::unordered_map<Hexi, HexTile> hexes_;
+		std::unordered_map<Hexi, Tile> hexes_;
 	};
 
 } // Namespace vin::hex.

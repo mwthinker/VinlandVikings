@@ -2,6 +2,7 @@
 #include "hex/hexagon.h"
 #include "logger.h"
 #include "imguiextra.h"
+#include "hexdimension.h"
 
 namespace vin {
 
@@ -40,10 +41,6 @@ namespace vin {
 			return viewPortCoordToClipSpace(viewPort, sdlCoordToViewPortCoord(viewPort, pos));
 		}
 
-		constexpr float HEX_INNER_SIZE = 0.95f;
-		constexpr float HEX_OUTER_SIZE = 1.f;
-		constexpr float HEX_ANGLE = PI / 3;
-
 		void glViewport(const ViewPort& viewPort) {
 			::glViewport((GLint) viewPort.pos.x, (GLint) viewPort.pos.y, (GLsizei) viewPort.size.x, (GLsizei) viewPort.size.y);
 		}
@@ -56,6 +53,8 @@ namespace vin {
 			auto projection = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);
 			return glm::scale(projection, Vec3{zoom, zoom, 1});
 		}
+
+		constexpr HexDimension HEX_DIMENSION;
 
 	}
 
@@ -82,7 +81,7 @@ namespace vin {
 		auto hexes = hex::createRectangleShape(10, 10);
 		//auto hexes = createParallelogramShape(10, 5);
 		hexTileMap_ = hex::HexTileMap(hexes.begin(), hexes.end());
-		hexToWorldModel_ = hex::createHexToCoordModel(HEX_ANGLE, HEX_OUTER_SIZE);
+		hexToWorldModel_ = hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize);
 	}
 
 	void Canvas::drawHexImage(const sdl::ImGuiShader& imGuiShader, hex::Hexi hex, const HexImage& image) {
@@ -156,9 +155,9 @@ namespace vin {
 		for (const auto& [hex, hexTile] : hexTileMap_) {
 			auto pos = hexToWorld(hex);
 			if (hex == hex::Hexi{0,0}) {
-				graphic_.addHexagon(pos, HEX_INNER_SIZE, HEX_OUTER_SIZE, BLUE, HEX_ANGLE);
+				graphic_.addHexagon(pos, HEX_DIMENSION.innerSize, HEX_DIMENSION.outerSize, BLUE, HEX_DIMENSION.angle);
 			} else {
-				graphic_.addHexagon(pos, HEX_INNER_SIZE, HEX_OUTER_SIZE, RED, HEX_ANGLE);
+				graphic_.addHexagon(pos, HEX_DIMENSION.innerSize, HEX_DIMENSION.outerSize, RED, HEX_DIMENSION.angle);
 			}
 		}
 	}
@@ -171,7 +170,7 @@ namespace vin {
 	void Canvas::addGridImages() {
 		for (const auto& [hex, hexImage] : hexImages_) {
 			auto pos = hexToWorld(hex);
-			graphic_.addHexagonImage(pos, HEX_OUTER_SIZE, hexImage.getImage(), hexImage.getRotations() * PI / 3 + HEX_ANGLE);
+			graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage.getImage(), hexImage.getRotations() * PI / 3 + HEX_DIMENSION.angle);
 		}
 	}
 
@@ -182,7 +181,7 @@ namespace vin {
 		hex::HexSides sides = hexImage_.getHexSides();
 		rotate(sides, rotations_);
 		//logger()->info("Rotations: {}", rotations_);
-		hex::HexTile hexTile{hex, sides};
+		hex::Tile hexTile{hex, sides};
 		/*
 		if (lastHexTile_ != hexTile) {
 			lastAllowed_ = hexTileMap_.isAllowed(hexTile);
@@ -194,7 +193,7 @@ namespace vin {
 			hexTile.getHexSides()[0], hexTile.getHexSides()[1], hexTile.getHexSides()[2],
 			hexTile.getHexSides()[3], hexTile.getHexSides()[4], hexTile.getHexSides()[5]);
 		auto pos = hexToWorld(hex);
-		graphic_.addHexagonImage(pos, HEX_OUTER_SIZE, hexImage_.getImage(), rotations_ * PI / 3 + HEX_ANGLE);
+		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
 	}
 
 	void Canvas::drawCanvas(double deltaTime) {
@@ -298,7 +297,7 @@ namespace vin {
 								logger()->info("(q, r, s): {}", hex);
 								hex::HexSides sides = hexImage_.getHexSides();
 								rotate(sides, rotations_);
-								hex::HexTile hexTile{hex, sides};
+								hex::Tile hexTile{hex, sides};
 								logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile)? "True" : "False");
 								if (hexTileMap_.put(hexTile)) {
 									hexImages_[hex] = HexImage{hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_};
