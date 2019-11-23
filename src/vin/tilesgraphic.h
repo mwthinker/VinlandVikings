@@ -31,12 +31,15 @@ namespace vin {
 
 		void fill(const Color& color);
 		void fill(const HexImage& image);
+		void fillGrid(hex::Hexi hex, const Color& color);
 
 		void clearTile(hex::Hexi hex);
 
 		void clear();
 
-		void draw();
+		void draw(Shader& shader);
+
+		void setMatrix(const Mat4& mat);
 
 	private:
 		hex::Hexi worldToHex(Vec2 pos) const;
@@ -50,6 +53,7 @@ namespace vin {
 
 		HexDimension hexDimension_;
 		Mat2 hexToWorld_;
+		Mat4 worldToScreen_;
 		Graphic graphic_;
 		std::unordered_map<hex::Hexi, HexImage> hexImages_;
 	};

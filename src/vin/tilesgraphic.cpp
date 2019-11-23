@@ -1,6 +1,7 @@
 #include "tilesgraphic.h"
 #include "hex/hexagon.h"
 #include "hex/hash.h"
+#include "logger.h"
 
 namespace vin {
 
@@ -66,6 +67,11 @@ namespace vin {
 		}
 	}
 
+	void TilesGraphic::fillGrid(hex::Hexi hex, const Color& color) {
+		hexImages_[hex] = HexImage{"", {}, {}, true};
+		dirty_ = true;
+	}
+
 	void TilesGraphic::clearTile(hex::Hexi hex) {
 		auto size = hexImages_.size();
 		if (size != hexImages_.erase(hex)) {
@@ -79,9 +85,11 @@ namespace vin {
 		dirty_ = true;
 	}
 
-	void TilesGraphic::draw() {
+	void TilesGraphic::draw(Shader& shader) {
 		if (dirty_) {
+			logger()->info("State dirty");
 			graphic_.clearDraw();
+			graphic_.setMatrix(worldToScreen_);
 			if (grid_) {
 				for (const auto& [hex, hexTile] : hexImages_) {
 					auto pos = hexToWorld(hex);
@@ -103,9 +111,15 @@ namespace vin {
 				graphic_.addHexagonImage(pos, hexDimension_.outerSize, hexImage.getImage(), hexImage.getRotations() * PI / 3 + hexDimension_.angle);
 			}
 			dirty_ = false;
+		} else {
+			graphic_.setMatrix(worldToScreen_);
 		}
+		
+		graphic_.draw(shader);
+	}
 
-		graphic_.draw();
+	void TilesGraphic::setMatrix(const Mat4& mat) {
+		worldToScreen_ = mat;
 	}
 
 } // Namespace vin.

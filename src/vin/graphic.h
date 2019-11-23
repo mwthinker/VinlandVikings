@@ -18,6 +18,8 @@ namespace vin {
     public:
 		Graphic();
 
+		void setMatrix(const Mat4& matrix);
+
 		void pushMatrix(const Mat4& matrix);
 
 		void addFilledHexagon(Vec2 center, float radius, Color color, float startAngle = 0);
@@ -26,7 +28,7 @@ namespace vin {
 
 		void addCircle(Vec2 center, float radius, Color color, const int iterations = 40, float startAngle = 0);
 
-		void draw();
+		void draw(Shader& shader);
 
 		void clearDraw();
 
@@ -48,11 +50,10 @@ namespace vin {
 		using Batch = sdl::Batch<Vertex>;
 		using BatchView = sdl::BatchView<Vertex>;
 
-		void bind();
+		void bind(Shader& shader);
 
-		void draw(const BatchData& batchData);		
-
-		Shader shader_;
+		void draw(Shader& shader, const BatchData& batchData);
+		
 		Batch batch_{GL_DYNAMIC_DRAW};
 		BatchView lastView_;
 		std::vector<BatchData> batches_;

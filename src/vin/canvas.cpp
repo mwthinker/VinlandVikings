@@ -76,12 +76,17 @@ namespace vin {
 		}
 	}
 
-	Canvas::Canvas() {
+	Canvas::Canvas() : 
+		hexToWorldModel_{hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize)},
+		tilesGraphic_{HEX_DIMENSION, hexToWorldModel_} {
+
 		//auto hexes = createFlatHexShape(10);
 		auto hexes = hex::createRectangleShape(10, 10);
 		//auto hexes = createParallelogramShape(10, 5);
 		hexTileMap_ = hex::HexTileMap(hexes.begin(), hexes.end());
-		hexToWorldModel_ = hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize);
+		for (const auto& [hex, tile] : hexTileMap_) {
+			tilesGraphic_.fillGrid(hex, RED);
+		}
 	}
 
 	void Canvas::drawHexImage(const sdl::ImGuiShader& imGuiShader, hex::Hexi hex, const HexImage& image) {
@@ -151,29 +156,11 @@ namespace vin {
 		return worldToHex({result2.x, result2.y});
 	}
 
-	void Canvas::addGrid() {
-		for (const auto& [hex, hexTile] : hexTileMap_) {
-			auto pos = hexToWorld(hex);
-			if (hex == hex::Hexi{0,0}) {
-				graphic_.addHexagon(pos, HEX_DIMENSION.innerSize, HEX_DIMENSION.outerSize, BLUE, HEX_DIMENSION.angle);
-			} else {
-				graphic_.addHexagon(pos, HEX_DIMENSION.innerSize, HEX_DIMENSION.outerSize, RED, HEX_DIMENSION.angle);
-			}
-		}
-	}
-
 	Vec2 Canvas::screenDeltaPosToWorld(Vec2 pos) {
 		Vec4 rel = Vec4{pos.x / -4.f / 100, pos.y / 4.f / 100, 0.f, 1.f};
 		return glm::inverse<>(projection_) * rel;
 	}
 	
-	void Canvas::addGridImages() {
-		for (const auto& [hex, hexImage] : hexImages_) {
-			auto pos = hexToWorld(hex);
-			graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage.getImage(), hexImage.getRotations() * PI / 3 + HEX_DIMENSION.angle);
-		}
-	}
-
 	void Canvas::addMouseHex() {
 		hex::Hexi hex = getHexFromMouse();
 		//logger()->info("(q, r, s): {}", hex);
@@ -193,20 +180,17 @@ namespace vin {
 			hexTile.getHexSides()[0], hexTile.getHexSides()[1], hexTile.getHexSides()[2],
 			hexTile.getHexSides()[3], hexTile.getHexSides()[4], hexTile.getHexSides()[5]);
 		auto pos = hexToWorld(hex);
-		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		//graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
 	}
 
 	void Canvas::drawCanvas(double deltaTime) {
 		auto model = Mat4(1);
-		graphic_.clearDraw();
-		graphic_.pushMatrix(projection_ * camera_.getView() * model);
+		//graphic_.clearDraw();
+		//graphic_.pushMatrix(projection_ * camera_.getView() * model);
 
-		addGrid();
-		addGridImages();
+		tilesGraphic_.setMatrix(projection_ * camera_.getView() * model);
 		addMouseHex();
-		
-		graphic_.addRectangle({0.f, 0.f}, {2.0f, 0.05f}, RED);
-		graphic_.addRectangle({0.f, 0.f}, {0.05f, 2.0f}, GREEN);
+
 		//graphic_.addRectangle({-0.3f, -0.3f}, {0.3f, 0.3f}, GREEN);
 
 		/*
@@ -222,12 +206,11 @@ namespace vin {
 		graphic_.addFlatHexagon({0.2f, 0.2f}, 0.2f, 0.3f, RED);
 		graphic_.addPointyHexagon({-0.2f, -0.2f}, 0.2f, 0.3f, RED);
 		*/
-		graphic_.draw();
+		//graphic_.draw();
+		tilesGraphic_.draw(shader_);
 	}
 
 	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
-		addGrid();
-		addGridImages();
 	}
 
 	void Canvas::eventUpdate(const SDL_Event& windowEvent) {
@@ -301,6 +284,7 @@ namespace vin {
 								logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile)? "True" : "False");
 								if (hexTileMap_.put(hexTile)) {
 									hexImages_[hex] = HexImage{hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_};
+									tilesGraphic_.fillTile(hex, hexImages_[hex]);
 								}
 								//hexTileMap_.isAllowed(hexTile);
 							}

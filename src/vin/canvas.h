@@ -9,6 +9,7 @@
 #include "shader.h"
 #include "graphic.h"
 #include "camera.h"
+#include "tilesgraphic.h"
 
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
@@ -62,9 +63,7 @@ namespace vin {
     private:
 		hex::Hexi worldToHex(Vec2 pos) const;
 		Vec2 hexToWorld(hex::Hexi pos) const;
-
-		void addGrid();
-		void addGridImages();
+		
 		void addMouseHex();
 		void updateCanvasSize();
 
@@ -81,18 +80,19 @@ namespace vin {
 		hex::HexTileMap hexTileMap_;
 		HexagonBatch hexagonBatch_;
 		Shader shader_;
-		Graphic graphic_;
+		//Graphic graphic_;
+		Mat2 hexToWorldModel_;
+		TilesGraphic tilesGraphic_;
 
 		hex::Tile lastHexTile_;
-		bool lastAllowed_ = false;
+		bool lastAllowed_ = false;		
 		std::unordered_map<hex::Hexi, HexImage> hexImages_;
 		int rotations_ = 0;
 
 		Vec2 sdlMousePos{};
 		
 		Camera camera_;
-
-		Mat2 hexToWorldModel_;
+		
 		ViewPort viewPort_{ Vec2{0, 0}, Vec2{0 ,0}};
 		Mat4 projection_;
     };

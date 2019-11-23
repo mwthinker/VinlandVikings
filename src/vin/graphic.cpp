@@ -7,7 +7,7 @@
 namespace vin {
 
 	Graphic::BatchData::BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex)
-		: batchView_{batchView}, matrixIndex_{matrixIndex} {
+		: batchView_{batchView}, matrixIndex_{0} {
 	}
 
 	Graphic::BatchData::BatchData(TextureView texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex)
@@ -18,18 +18,17 @@ namespace vin {
 		matrixes_.emplace_back(1.f);
 	}
 
-	void Graphic::draw() {
+	void Graphic::draw(Shader& shader) {
 		glActiveTexture(GL_TEXTURE1);
 
 		if (batch_.getSize() > 0) {
-			shader_.useProgram();
-			bind();
+			shader.useProgram();
+			bind(shader);
 			batch_.uploadToGraphicCard();
-			currentMatrix_ = 0;
-			shader_.setMatrix(matrixes_.front());
+			shader.setMatrix(matrixes_.front());
 			
 			for (auto& batchData : batches_) {
-				draw(batchData);
+				draw(shader, batchData);
 			}
 		}
 	}
@@ -115,28 +114,28 @@ namespace vin {
 		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
-	void Graphic::bind() {
+	void Graphic::bind(Shader& shader) {
 		if (!initiated_) {
 			initiated_ = true;
 			vao_.generate();
 			vao_.bind();
 			batch_.bind();
-			shader_.setVertexAttribPointer();
+			shader.setVertexAttribPointer();
 		} else {
 			vao_.bind();
 		}
 	}
 
-	void Graphic::draw(const BatchData& batchData) {
+	void Graphic::draw(Shader& shader, const BatchData& batchData) {
 		if (const auto& texture = batchData.texture_; texture) {
-			shader_.setTextureId(1);
+			shader.setTextureId(1);
 			texture.bind();
 		} else {
-			shader_.setTextureId(-1);
+			shader.setTextureId(-1);
 		}
 		if (currentMatrix_ != batchData.matrixIndex_) {
 			currentMatrix_ = batchData.matrixIndex_;
-			shader_.setMatrix(matrixes_[currentMatrix_]);
+			shader.setMatrix(matrixes_[currentMatrix_]);
 		}
 		batch_.draw(batchData.batchView_);
 	}
@@ -145,11 +144,17 @@ namespace vin {
 		batch_.clear();
 		batches_.clear();
 		matrixes_.clear();
+		matrixes_.emplace_back(1.f);
+		currentMatrix_ = 0;
 	}
 
 	void Graphic::pushMatrix(const Mat4& model) {
-		currentMatrix_ = static_cast<int>(matrixes_.size());
+		currentMatrix_ = static_cast<int>(matrixes_.size() - 1);
 		matrixes_.push_back(model);
+	}
+
+	void Graphic::setMatrix(const Mat4& model) {
+		matrixes_[0] = model;
 	}
 
 } // vin.
