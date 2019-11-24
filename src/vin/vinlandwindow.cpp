@@ -71,17 +71,18 @@ namespace vin {
     void VinlandWindow::imGuiUpdate(double deltaTime) {
 		beginMain();
 
-		ImGui::Button("hejasdasdasdasd");
-		ImGui::SameLine();
-		ImGui::Button("hejasdasdasdasd");
-		ImGui::SameLine();
-		ImGui::Button("hejasdasdasdasd");
-		ImGui::SameLine();
-		ImGui::Button("hejasdasdasdasd");
-		ImGui::SameLine();
-		ImGui::Button("hejasdasdasdasd");
-		ImGui::SameLine();
-		ImGui::Button("hejasdasdasdasd");
+		ImGui::Text("KEYS:");
+		ImGui::Text("ARROWS - Move window");
+		ImGui::Text("PAGE_DOWN/UP - Tilt camera");
+		ImGui::Text("C - Clear tiles");
+		ImGui::Text("G - Grid on/off");
+		ImGui::Text("x - View XY Coords");
+		ImGui::Text("h - View Hex Coords");
+		ImGui::NewLine();
+
+		ImGui::Text("MOUSE:");
+		ImGui::Text("Drag MIDDLE - Move window");
+		ImGui::Text("Left/right click - Replace with Next/Previous tile");
 		drawHexTypesButtons();
 
 		hexWorldCanvas.drawImgui();
