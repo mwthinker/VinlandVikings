@@ -7,6 +7,7 @@
 #include <array>
 #include <map>
 #include <string>
+#include <filesystem>
 
 #include <config.pb.h>
 #include <google/protobuf/util/json_util.h>
@@ -107,10 +108,7 @@ namespace vin {
 	}
 
 	HexData::Impl::Impl(const std::string& filename) {
-		std::ifstream defaultStream{"USE_APPLICATION_JSON"};
-		bool applicationJson;
-		defaultStream >> applicationJson;
-		if (applicationJson) {
+		if (std::filesystem::exists("USE_APPLICATION_JSON")) {
 			jsonPath_ = filename;
 		} else {
 			// Find default path to save/load file from.
@@ -120,7 +118,7 @@ namespace vin {
 		std::ifstream input{jsonPath_, std::ios::in | std::ios::binary};
 		if (!input.is_open()) {
 			// Assume that the file does not exist, load file from application folder.
-			//input = std::ifstream{jsonPath_, std::ios::in | std::ios::binary};
+			input = std::ifstream{jsonPath_, std::ios::in | std::ios::binary};
 		}
 
 		pbu::JsonParseOptions parseOptions;
