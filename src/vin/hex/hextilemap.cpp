@@ -4,7 +4,7 @@
 
 namespace vin::hex {
 
-	std::vector<Hexi> createFlatHexShape(int radiusNbr) {
+	std::vector<Hexi> createHexShape(int radiusNbr) {
 		std::vector<Hexi> hexes;
 		for (int q = -radiusNbr; q <= radiusNbr; ++q) {
 			int r1 = std::max(-radiusNbr, -q - radiusNbr);
@@ -68,15 +68,15 @@ namespace vin::hex {
 	}
 
 	bool HexTileMap::isAllowed(Tile hexTile) const {
-		logger()->info("isAllowed");
+		//logger()->info("isAllowed");
 
 		if (!isInside(hexTile.getHexi())) {
-			logger()->info("Not inside");
+			//logger()->info("Not inside");
 			return false;
 		}
 
 		if (!isEmpty(hexTile.getHexi())) {
-			logger()->info("Not empty");
+			//logger()->info("Not empty");
 			return false;
 		}
 

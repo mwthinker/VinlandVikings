@@ -14,7 +14,7 @@
 
 namespace vin::hex {
 
-	std::vector<Hexi> createFlatHexShape(int radiusNbr);
+	std::vector<Hexi> createHexShape(int radiusNbr);
 
 	std::vector<Hexi> createParallelogramShape(int columns, int rows);
 

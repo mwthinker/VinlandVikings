@@ -21,6 +21,8 @@ namespace vin {
 	void Graphic::draw(Shader& shader) {
 		glActiveTexture(GL_TEXTURE1);
 
+		int currentMatrix = currentMatrix_;
+		currentMatrix_ = -1;
 		if (batch_.getSize() > 0) {
 			shader.useProgram();
 			bind(shader);
@@ -31,6 +33,7 @@ namespace vin {
 				draw(shader, batchData);
 			}
 		}
+		currentMatrix_ = currentMatrix;
 	}
 
 	void Graphic::addRectangle(Vec2 pos, Vec2 size, Color color) {
@@ -149,7 +152,7 @@ namespace vin {
 	}
 
 	void Graphic::pushMatrix(const Mat4& model) {
-		currentMatrix_ = static_cast<int>(matrixes_.size() - 1);
+		currentMatrix_ = static_cast<int>(matrixes_.size());
 		matrixes_.push_back(model);
 	}
 

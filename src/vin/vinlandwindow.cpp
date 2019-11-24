@@ -21,6 +21,15 @@ namespace vin {
 			}
 		}
 
+		bool isFullWater(const hex::HexSides& hexSides) {
+			for (const auto& side : hexSides) {
+				if (side != hex::HexSide::WATER) {
+					return false;
+				}
+			}
+			return true;
+		}
+
 	}
 
 	VinlandWindow::VinlandWindow() {
@@ -31,7 +40,7 @@ namespace vin {
 
 	void VinlandWindow::eventUpdate(const SDL_Event& windowEvent) {
 		sdl::ImGuiWindow::eventUpdate(windowEvent);
-		canvas_.eventUpdate(windowEvent);
+		hexWorldCanvas.eventUpdate(windowEvent);
 
 		switch (windowEvent.type) {
             case SDL_WINDOWEVENT:
@@ -56,7 +65,7 @@ namespace vin {
 	}
 
 	void VinlandWindow::imGuiPreUpdate(double deltaTime) {
-		canvas_.drawCanvas(deltaTime);
+		hexWorldCanvas.drawCanvas(deltaTime);
 	}
 
     void VinlandWindow::imGuiUpdate(double deltaTime) {
@@ -75,7 +84,7 @@ namespace vin {
 		ImGui::Button("hejasdasdasdasd");
 		drawHexTypesButtons();
 
-		canvas_.drawImgui();
+		hexWorldCanvas.drawImgui();
 		endMain();
     }
 
@@ -90,10 +99,10 @@ namespace vin {
 			auto& hexImages = pair.second.hexImages_;
 			const ImVec2 buttonSize{50.f, 50.f};
 			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
-				if (hexImages[index].getImage() == canvas_.currentHexSprite()) {
+				if (hexImages[index].getImage() == hexWorldCanvas.currentHexSprite()) {
 					index = (index + 1) % static_cast<int>(hexImages.size());
 				}
-				canvas_.activateHexagon(hexImages[index]);
+				hexWorldCanvas.activateHexagon(hexImages[index]);
 			}
 			HelpMarker(hexImages[index].getFilename());
 			const float lastButton_x2 = ImGui::GetItemRectMax().x;
@@ -115,16 +124,21 @@ namespace vin {
         sdl::ImGuiWindow::initOpenGl();
 	}
 
+
 	void VinlandWindow::initPreLoop() {
         sdl::ImGuiWindow::initPreLoop();
 		auto [w, h] = sdl::ImGuiWindow::getSize();
         glViewport(0, 0, w, h);
-		canvas_.init(getImGuiShader());
 
 		hexImages_ = HexData::getInstance().loadHexImages();
+		HexImage waterImage{};
 		for (const auto& hexImage : hexImages_) {
 			hexTypes_[hexImage.getHexSides()].hexImages_.push_back(hexImage);
+			if (isFullWater(hexImage.getHexSides())) {
+				waterImage = hexImage;
+			}
 		}
+		hexWorldCanvas.setDefaultHexSprite(waterImage);
 	}
 
 	void VinlandWindow::beginMain() {

@@ -16,6 +16,15 @@ namespace vin {
 			return false;
 		}
 
+		template <>
+		bool updateValue<Color>(Color& value, Color newValue) {
+			if (value.toImU32() != newValue.toImU32()) {
+				value = newValue;
+				return true;
+			}
+			return false;
+		}
+
 	}
 
 	TilesGraphic::TilesGraphic(const HexDimension& dimension, const Mat2& hexToWorld)
@@ -74,11 +83,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::fill(const Color& color) {
-		HexImage colorImage{"", {}, {}, true};
-		for (auto& [hex, hexImage] : hexImages_) {
-			hexImage = colorImage;
-		}
-		dirty_ = true;
+		dirty_ = updateValue(color_, color);
 	}
 
 	void TilesGraphic::fill(const HexImage& image) {
@@ -111,6 +116,7 @@ namespace vin {
 			graphic_.clearDraw();
 			graphic_.setMatrix(worldToScreen_);
 			
+			drawColor(shader);
 			drawGrid(shader);
 			drawWorld(shader);
 			drawHexCoord(shader);
@@ -122,6 +128,15 @@ namespace vin {
 		}
 		
 		graphic_.draw(shader);
+	}
+
+	void TilesGraphic::drawColor(Shader& shader) {
+		if (color_.toImU32() != 0) {
+			for (const auto& [hex, hexTile] : hexImages_) {
+				auto pos = hexToWorld(hex);
+				graphic_.addHexagon(pos, 0.f, hexDimension_.outerSize, color_, hexDimension_.angle);
+			}
+		}
 	}
 
 	void TilesGraphic::drawGrid(Shader& shader) {

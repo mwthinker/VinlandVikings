@@ -60,7 +60,7 @@ namespace vin {
 
 	void HexagonImage(const vin::SpriteView& image, ImVec2 pos, ImVec2 size, float angle) {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		ImGui::Image(image, ImVec2(pos.x, pos.y), size, angle, WHITE);
+		ImGui::Image(image, ImVec2{pos.x, pos.y}, size, angle, WHITE);
 	}
 
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color) {
@@ -74,31 +74,10 @@ namespace vin {
 			v1 = v4;
 			v2 = v3;
 		}
-	}
+	}	
+	
+	void Canvas::eventUpdate(const SDL_Event& windowEvent) {
 
-	Canvas::Canvas() : 
-		hexToWorldModel_{hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize)},
-		tilesGraphic_{HEX_DIMENSION, hexToWorldModel_} {
-
-		//auto hexes = createFlatHexShape(10);
-		auto hexes = hex::createRectangleShape(10, 10);
-		//auto hexes = createParallelogramShape(10, 5);
-		hexTileMap_ = hex::HexTileMap(hexes.begin(), hexes.end());
-		for (const auto& [hex, tile] : hexTileMap_) {
-			tilesGraphic_.fillGrid(hex, RED);
-		}
-	}
-
-	void Canvas::drawHexImage(const sdl::ImGuiShader& imGuiShader, hex::Hexi hex, const HexImage& image) {
-		hexagonBatch_.clear();
-		image.getImage().bind();
-		imGuiShader.setTextureId(1);
-		glActiveTexture(GL_TEXTURE1);
-		//hexagonBatch_.addRectangle(0, 0, 1, 1, image.getImage(), WHITE);
-		//hexagonBatch_.addHexagonImage(0, 0, 1, image.getImage(), WHITE.toImU32());
-
-		hexagonBatch_.uploadToGraphicCard();
-		hexagonBatch_.draw(imGuiShader);
 	}
 
 	void Canvas::updateCanvasSize() {
@@ -108,194 +87,186 @@ namespace vin {
 		viewPort_ = {{pos.x, s.y - size.y - pos.y}, {size.x, size.y}};
 
 		glViewport(viewPort_);
-		projection_ = ortho(viewPort_, zoom_);
+		//projection_ = ortho(viewPort_, zoom_);
 
-		hasFocus_ = ImGui::IsWindowFocused();
+		isHovering_ = ImGui::IsWindowFocused();
+
+		logger()->info("ImGui::IsWindowHovered(): {}", ImGui::IsWindowHovered());
 	}
 
-	void Canvas::drawImgui() {
+	Mat4 Canvas::getProjection() const {
+		return projection_;
+	}
+
+	HexWorldCanvas::HexWorldCanvas() :
+		hexToWorldModel_{hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize)},
+		tilesGraphic_{HEX_DIMENSION, hexToWorldModel_} {
+
+		auto hexes = hex::createHexShape(10);
+		//auto hexes = hex::createRectangleShape(10, 10);
+		//auto hexes = createParallelogramShape(10, 5);
+		hexTileMap_ = hex::HexTileMap(hexes.begin(), hexes.end());
+		for (const auto& [hex, tile] : hexTileMap_) {
+			tilesGraphic_.fillGrid(hex, RED);
+		}
+		tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
+	}
+
+	void HexWorldCanvas::updateCanvasSize() {
+		auto pos = ImGui::GetWindowPos();
+		auto size = ImGui::GetWindowSize();
+		const auto& s = ImGui::GetIO().DisplaySize;
+		viewPort_ = {{pos.x, s.y - size.y - pos.y}, {size.x, size.y}};
+
+		glViewport(viewPort_);
+		projection_ = ortho(viewPort_, zoom_);
+
+		isHovering_ = ImGui::IsWindowHovered();
+	}
+
+	void HexWorldCanvas::drawImgui() {
 		ImGui::BeginChild("Canvas");
 		updateCanvasSize();
 		ImGui::EndChild();
 	}
 
-	hex::Hexi Canvas::worldToHex(Vec2 pos) const {
+	hex::Hexi HexWorldCanvas::worldToHex(Vec2 pos) const {
 		auto hex = glm::inverse<>(hexToWorldModel_) * pos;
 		return hex::hexRound({hex.x, hex.y});
 	}
 
-	Vec2 Canvas::hexToWorld(hex::Hexi pos) const {
+	Vec2 HexWorldCanvas::hexToWorld(hex::Hexi pos) const {
 		return hexToWorldModel_ * Vec2{pos.q(), pos.r()};
 	}
 
-	hex::Hexi Canvas::getHexFromMouse() const {
+	hex::Hexi HexWorldCanvas::getHexFromMouse() const {
 		ImVec2 pos = ImGui::GetMousePos();
 		auto result = deviceCoordToClipSpace(viewPort_, sdlMousePos);
 		Vec4 result2 = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result, 0.1f, 1.f };
 		return worldToHex({result2.x, result2.y});
 	}
 
-	hex::Hexi Canvas::getHexFromMouse(Uint32 windowsId, int x, int y) const {
+	hex::Hexi HexWorldCanvas::getHexFromMouse(Uint32 windowsId, int x, int y) const {
 		auto result = deviceCoordToClipSpace(viewPort_, {x, y});
-		logger()->info("(deviceCoordToClipSpace): ({})", result);
 		Vec4 result2 = glm::inverse<>(projection_ * camera_.getView()) * Vec4{result, 0.1f, 1.f};
-		logger()->info("(worldSpace): ({})", result2);
-		logger()->info("(clipSpace): ({})", projection_ * camera_.getView() * result2);
-				
-		logger()->info("(worldSpace11): ({})", Vec2{1, 1});
-		auto r = projection_ * camera_.getView() * Vec4{1, 1, 0, 1};
-		logger()->info("(clipSpace11): ({})", r);
-		//logger()->info("(worldSpace11): ({})", glm::inverse<>(projection_ * camera_.getView()) * Vec4{r.x, r.y, r.z, 1});
-		
-		
-		logger()->info("(clipSpace11): ({})", Vec4{r.x, r.y, 0, 1} + glm::inverse<>(projection_ * camera_.getView()) * glm::inverse<>(projection_) * glm::inverse<>(camera_.getView()) * Vec4{camera_.getEye(),0});
-		//logger()->info("(eye worldSpace11): ({})", glm::inverse<>(projection_)* Vec4 { camera_.getEye(), 0 });
-		//logger()->info("(camera worldSpace11): ({})", glm::inverse<>(projection_)* Vec4 { camera_.getEye(), 0 });
-
-
 		return worldToHex({result2.x, result2.y});
 	}
 
-	Vec2 Canvas::screenDeltaPosToWorld(Vec2 pos) {
+	Vec2 HexWorldCanvas::screenDeltaPosToWorld(Vec2 pos) {
 		Vec4 rel = Vec4{pos.x / -4.f / 100, pos.y / 4.f / 100, 0.f, 1.f};
 		return glm::inverse<>(projection_) * rel;
 	}
 	
-	void Canvas::addMouseHex() {
+	void HexWorldCanvas::addMouseHexToGraphic() {
 		hex::Hexi hex = getHexFromMouse();
-		//logger()->info("(q, r, s): {}", hex);
-
 		hex::HexSides sides = hexImage_.getHexSides();
 		rotate(sides, rotations_);
-		//logger()->info("Rotations: {}", rotations_);
 		hex::Tile hexTile{hex, sides};
-		/*
-		if (lastHexTile_ != hexTile) {
-			lastAllowed_ = hexTileMap_.isAllowed(hexTile);
-			lastHexTile_ = hexTile;
-		}
-		*/
-		//logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile) ? "True" : "False");
-		//logger()->info("Allowed {},{},{},{},{},{}",
-			//hexTile.getHexSides()[0], hexTile.getHexSides()[1], hexTile.getHexSides()[2],
-			//hexTile.getHexSides()[3], hexTile.getHexSides()[4], hexTile.getHexSides()[5]);
 		auto pos = hexToWorld(hex);
-		//graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
 	}
 
-	void Canvas::drawCanvas(double deltaTime) {
-		auto model = Mat4(1);
-		//graphic_.clearDraw();
-		//graphic_.pushMatrix(projection_ * camera_.getView() * model);
+	void HexWorldCanvas::drawCanvas(double deltaTime) {
+		Mat4 model{1};
+		graphic_.clearDraw();
+		graphic_.pushMatrix(projection_ * camera_.getView() * model);
 
 		tilesGraphic_.setMatrix(projection_ * camera_.getView() * model);
-		addMouseHex();
-
-		//graphic_.addRectangle({-0.3f, -0.3f}, {0.3f, 0.3f}, GREEN);
-
-		/*
-		graphic_.addRectangle({0.f, 0.f}, {0.3f, 0.3f}, WHITE);
-		graphic_.addRectangle({-0.3f, -0.3f}, {0.3f, 0.3f}, BLUE);
-		graphic_.addRectangle({-0.8f, 0.6f}, {0.1f, 0.1f}, RED);
-		graphic_.addCircle({0.1f,0.1f}, 0.1f, RED);
-		graphic_.addFlatHexagon({-0.3f,0.3f}, 0.1f, BLUE);
-		graphic_.addPointyHexagon({-0.4f,-0.3f}, 0.05f, BLUE);
-		graphic_.addFlatHexagonImage({0.4f, 0.4f}, 0.5f, hexImage_.getImage());
-		graphic_.addPointyHexagonImage({-0.4f, 0.4f}, 0.5f, hexImage_.getImage());		
-		graphic_.addPointyHexagon({-0.4f,-0.3f}, 0.05f, BLUE);
-		graphic_.addFlatHexagon({0.2f, 0.2f}, 0.2f, 0.3f, RED);
-		graphic_.addPointyHexagon({-0.2f, -0.2f}, 0.2f, 0.3f, RED);
-		*/
-		//graphic_.draw();
+		if (isHovering_) {
+			addMouseHexToGraphic();
+		}
+		graphic_.pushMatrix(projection_);
+		//graphic_.addRectangle({-1.f, -1.f}, {2.f, 2.f}, RED);
 		tilesGraphic_.draw(shader_);
+		graphic_.draw(shader_);
 	}
 
-	void Canvas::init(const sdl::ImGuiShader& imGuiShader) {
+	void HexWorldCanvas::setDefaultHexSprite(const HexImage& hexImage) {
+		//tilesGraphic_.fill(hexImage);
 	}
 
-	void Canvas::eventUpdate(const SDL_Event& windowEvent) {
-		if (hasFocus_) {
-			switch (windowEvent.type) {
-				case SDL_MOUSEWHEEL:
+	void HexWorldCanvas::eventUpdate(const SDL_Event& windowEvent) {
+		switch (windowEvent.type) {
+			case SDL_MOUSEWHEEL:
+				if (isHovering_) {
 					if (windowEvent.wheel.y > 0) { // scroll up
 						zoom_ *= 1.1f;
-						// Put code for handling "scroll up" here!
-						//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
 					} else if (windowEvent.wheel.y < 0) { // scroll down
 						zoom_ *= 1 / 1.1f;
-						// Put code for handling "scroll down" here!
-						//logger()->info("windowEvent.wheel.y: {}", windowEvent.wheel.y);
 					}
 					if (windowEvent.wheel.x > 0) { // scroll right
 						// ...
 					} else if (windowEvent.wheel.x < 0) { // scroll left
 						// ...
 					}
-					break;
-			    case SDL_KEYDOWN:
-			        if (hasFocus_ || true) {
-			            constexpr float STEP = 10.f;
-                        switch (windowEvent.key.keysym.sym) {
-                            case SDLK_LEFT:
-								camera_.move({-STEP,0});
-                                break;
-                            case SDLK_RIGHT:
-								camera_.move({STEP,0});
-                                break;
-                            case SDLK_UP:
-								camera_.move({0,STEP});
-                                break;
-                            case SDLK_DOWN:
-								camera_.move({0,-STEP});
-                                break;
-							case SDLK_PAGEUP:
-								camera_.angleDelta(-0.1f);
-								break;
-							case SDLK_PAGEDOWN:
-								camera_.angleDelta(0.1f);
-								break;
-                            case SDLK_c:
-                                hexImages_.clear();
-                                hexTileMap_.clear();
-                                break;
-							case SDLK_g:
-								tilesGraphic_.setGrid(!tilesGraphic_.isGrid());
-								break;
-							case SDLK_x:
-								tilesGraphic_.setXYCoord(!tilesGraphic_.isXYCoord());
-								break;
-							case SDLK_h:
-								tilesGraphic_.setHexCoord(!tilesGraphic_.isHexCoord());
-								break;
-                        }
-						logger()->info("Inv: {}", glm::inverse<>(projection_ * camera_.getView()));
-						logger()->info("determinant: {}", glm::determinant(glm::inverse<>(projection_ * camera_.getView())));
+				}
+				break;
+			case SDL_KEYDOWN:
+			    {
+			        constexpr float STEP = 10.f;
+                    switch (windowEvent.key.keysym.sym) {
+                        case SDLK_LEFT:
+							camera_.move({-STEP,0});
+                            break;
+                        case SDLK_RIGHT:
+							camera_.move({STEP,0});
+                            break;
+                        case SDLK_UP:
+							camera_.move({0,STEP});
+                            break;
+                        case SDLK_DOWN:
+							camera_.move({0,-STEP});
+                            break;
+						case SDLK_PAGEUP:
+							camera_.angleDelta(-0.1f);
+							break;
+						case SDLK_PAGEDOWN:
+							camera_.angleDelta(0.1f);
+							break;
+                        case SDLK_c:
+                            hexImages_.clear();
+                            hexTileMap_.clear();
+                            break;
+						case SDLK_g:
+							tilesGraphic_.setGrid(!tilesGraphic_.isGrid());
+							break;
+						case SDLK_x:
+							tilesGraphic_.setXYCoord(!tilesGraphic_.isXYCoord());
+							break;
+						case SDLK_h:
+							tilesGraphic_.setHexCoord(!tilesGraphic_.isHexCoord());
+							break;
                     }
-			        break;
-				case SDL_MOUSEMOTION:
+					logger()->info("Inv: {}", glm::inverse<>(projection_ * camera_.getView()));
+					logger()->info("determinant: {}", glm::determinant(glm::inverse<>(projection_ * camera_.getView())));
+                }
+			    break;
+			case SDL_MOUSEMOTION:
+				if (isHovering_) {
 					sdlMousePos = {windowEvent.motion.x, windowEvent.motion.y};
-					if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+					if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {
 						auto result = screenDeltaPosToWorld({windowEvent.motion.xrel, windowEvent.motion.yrel * viewPort_.size.x / viewPort_.size.y});
 						camera_.move(result);
 					}
-					break;
-				case SDL_MOUSEBUTTONUP:
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if (isHovering_) {
 					switch (windowEvent.button.button) {
 						case SDL_BUTTON_LEFT:
 						{
 							if (activateHexagon_) {
 								const auto& button = windowEvent.button;
 								hex::Hexi hex = getHexFromMouse(button.windowID, button.x, button.y);
-								logger()->info("(q, r, s): {}", hex);
+								//logger()->info("(q, r, s): {}", hex);
 								hex::HexSides sides = hexImage_.getHexSides();
 								rotate(sides, rotations_);
 								hex::Tile hexTile{hex, sides};
-								logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile)? "True" : "False");
+								//logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile) ? "True" : "False");
 								if (hexTileMap_.put(hexTile)) {
 									hexImages_[hex] = HexImage{hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_};
 									tilesGraphic_.fillTile(hex, hexImages_[hex]);
 								}
-								//hexTileMap_.isAllowed(hexTile);
 							}
 							break;
 						}
@@ -303,8 +274,8 @@ namespace vin {
 							rotations_ = (rotations_ + 1) % 6;
 							break;
 					}
-					break;
-			}
+				}
+				break;
 		}
 	}
 

@@ -44,7 +44,7 @@ namespace vin {
 
 		void drawHexTypesButtons();
 
-		Canvas canvas_;
+		HexWorldCanvas hexWorldCanvas;
 		Page page_{Page::START};
 		HexagonBatch hexagonBatch_;
 		std::vector<HexImage> hexImages_;

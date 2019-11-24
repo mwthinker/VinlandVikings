@@ -31,9 +31,31 @@ namespace vin {
 		Vec2 size;
 	};
 
-    class Canvas {
+	class Canvas {
+	public:
+		virtual ~Canvas() = default;
+
+		virtual void drawImgui() = 0;
+
+		virtual void drawCanvas(double deltaTime) = 0;
+
+		void eventUpdate(const SDL_Event& windowEvent);
+
+		void updateCanvasSize();
+
+		Mat4 getProjection() const;
+	
+
+	private:
+		bool hasFocus_ = false;;
+		bool isHovering_ = false;;
+		Mat4 projection_{1};
+		ViewPort viewPort_{Vec2{0, 0}, Vec2{0 ,0}};
+	};
+
+    class HexWorldCanvas {
     public:
-		Canvas();
+		HexWorldCanvas();
 
 		void drawCanvas(double deltaTime);
 
@@ -56,15 +78,13 @@ namespace vin {
 			return hexImage_.getImage();
 		}
 
-		void init(const sdl::ImGuiShader& imGuiShader);
-
-		void drawHexImage(const sdl::ImGuiShader& imGuiShader, hex::Hexi hex, const HexImage& image);
+		void setDefaultHexSprite(const HexImage& hexImage);
 
     private:
 		hex::Hexi worldToHex(Vec2 pos) const;
 		Vec2 hexToWorld(hex::Hexi pos) const;
 		
-		void addMouseHex();
+		void addMouseHexToGraphic();
 		void updateCanvasSize();
 
 		Vec2 screenDeltaPosToWorld(Vec2 pos);
@@ -75,12 +95,13 @@ namespace vin {
 		sdl::Texture whiteSquare_;
 		float zoom_ = 1.f;
 		bool hasFocus_ = false;;
+		bool isHovering_ = false;;
 		bool activateHexagon_;
 		HexImage hexImage_;
 		hex::HexTileMap hexTileMap_;
 		HexagonBatch hexagonBatch_;
 		Shader shader_;
-		//Graphic graphic_;
+		Graphic graphic_;
 		Mat2 hexToWorldModel_;
 		TilesGraphic tilesGraphic_;
 

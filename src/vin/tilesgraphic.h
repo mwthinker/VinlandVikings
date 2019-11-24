@@ -46,6 +46,7 @@ namespace vin {
 		void setMatrix(const Mat4& mat);
 
 	private:
+		void drawColor(Shader& shader);
 		void drawGrid(Shader& shader);
 		void drawHexCoord(Shader& shader);
 		void drawWorld(Shader& shader);
@@ -59,6 +60,7 @@ namespace vin {
 		bool grid_{true};
 		bool hexCoord_{true};
 		bool xyCoord_{true};
+		Color color_{};
 
 		HexDimension hexDimension_;
 		Mat2 hexToWorld_{1};
