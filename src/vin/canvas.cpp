@@ -175,10 +175,10 @@ namespace vin {
 			lastHexTile_ = hexTile;
 		}
 		*/
-		logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile) ? "True" : "False");
-		logger()->info("Allowed {},{},{},{},{},{}",
-			hexTile.getHexSides()[0], hexTile.getHexSides()[1], hexTile.getHexSides()[2],
-			hexTile.getHexSides()[3], hexTile.getHexSides()[4], hexTile.getHexSides()[5]);
+		//logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile) ? "True" : "False");
+		//logger()->info("Allowed {},{},{},{},{},{}",
+			//hexTile.getHexSides()[0], hexTile.getHexSides()[1], hexTile.getHexSides()[2],
+			//hexTile.getHexSides()[3], hexTile.getHexSides()[4], hexTile.getHexSides()[5]);
 		auto pos = hexToWorld(hex);
 		//graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
 	}
@@ -258,6 +258,15 @@ namespace vin {
                                 hexImages_.clear();
                                 hexTileMap_.clear();
                                 break;
+							case SDLK_g:
+								tilesGraphic_.setGrid(!tilesGraphic_.isGrid());
+								break;
+							case SDLK_x:
+								tilesGraphic_.setXYCoord(!tilesGraphic_.isXYCoord());
+								break;
+							case SDLK_h:
+								tilesGraphic_.setHexCoord(!tilesGraphic_.isHexCoord());
+								break;
                         }
 						logger()->info("Inv: {}", glm::inverse<>(projection_ * camera_.getView()));
 						logger()->info("determinant: {}", glm::determinant(glm::inverse<>(projection_ * camera_.getView())));

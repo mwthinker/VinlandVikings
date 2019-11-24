@@ -19,12 +19,16 @@ namespace vin {
 		TilesGraphic(const HexDimension& dimension, const Mat2& hexToWorld);
 
 		void setAngle(float angle);
+		float getAngle() const;
 		
 		void setGrid(bool grid);
+		bool isGrid() const;
 
 		void setHexCoord(bool hexCoord);
+		bool isHexCoord() const;
 
 		void setXYCoord(bool xyCoord);
+		bool isXYCoord() const;
 
 		void fillTile(hex::Hexi hex, const HexImage& image);
 		void fillTile(hex::Hexi hex, const Color& color);
@@ -42,6 +46,11 @@ namespace vin {
 		void setMatrix(const Mat4& mat);
 
 	private:
+		void drawGrid(Shader& shader);
+		void drawHexCoord(Shader& shader);
+		void drawWorld(Shader& shader);
+		void drawXYCoord(Shader& shader);
+
 		hex::Hexi worldToHex(Vec2 pos) const;
 		Vec2 hexToWorld(hex::Hexi pos) const;
 
@@ -52,8 +61,8 @@ namespace vin {
 		bool xyCoord_{true};
 
 		HexDimension hexDimension_;
-		Mat2 hexToWorld_;
-		Mat4 worldToScreen_;
+		Mat2 hexToWorld_{1};
+		Mat4 worldToScreen_{1};
 		Graphic graphic_;
 		std::unordered_map<hex::Hexi, HexImage> hexImages_;
 	};

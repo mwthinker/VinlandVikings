@@ -11,6 +11,7 @@
 #include <sdl/batch.h>
 #include <sdl/vertexarrayobject.h>
 #include <stack>
+#include <functional>
 
 namespace vin {
 
@@ -61,7 +62,7 @@ namespace vin {
 		sdl::VertexArrayObject vao_;
 		int currentMatrix_{0};
 		bool initiated_ = false;
-    };
+    };	
 
 } // Namespace vin.
 

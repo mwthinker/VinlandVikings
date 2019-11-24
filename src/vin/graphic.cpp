@@ -155,6 +155,6 @@ namespace vin {
 
 	void Graphic::setMatrix(const Mat4& model) {
 		matrixes_[0] = model;
-	}
+	}	
 
 } // vin.
