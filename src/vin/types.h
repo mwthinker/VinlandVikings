@@ -32,6 +32,8 @@ namespace vin {
 	static const Color RED = {1.f, 0.f, 0.f, 1.f};
 	static const Color GREEN = {0.f, 1.f, 0.f, 1.f};
 	static const Color BLUE = {0.f, 0.f, 1.f, 1.f};	
+	static const Color CYAN = {0.f, 1.f, 1.f, 1.f};
+	static const Color ORANGE = {1.f, 0.6471f, 0.f, 1.f};
 
 } // Namespace vin.
 

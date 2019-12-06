@@ -7,7 +7,7 @@
 namespace vin {
 
 	Graphic::BatchData::BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex)
-		: batchView_{batchView}, matrixIndex_{0} {
+		: batchView_{batchView}, matrixIndex_{matrixIndex} {
 	}
 
 	Graphic::BatchData::BatchData(TextureView texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex)
@@ -61,12 +61,12 @@ namespace vin {
 		if (sprite) {
 			Vec2 texSize = Vec2{sprite.getWidth(), sprite.getHeight()} * 0.5f;
 			Vec2 texPos = Vec2{sprite.getX(), sprite.getY()} + texSize;
-
+						
 			Vertex centerVertex{center, texPos, WHITE};
 			batch_.pushBack(centerVertex);
 
 			for (int i = 0; i < 6; ++i) {
-				auto v = Vertex{hex::getHexCorner(center, radius, i), texPos + texSize * hex::getHexCorner(i, startAngle), WHITE};
+				auto v = Vertex{hex::getHexCorner(center, radius, i, startAngle), texPos + texSize * hex::getHexCorner(i, 0), WHITE};
 				batch_.pushBack(v);
 			}
 			for (int i = 1; i <= 6; ++i) {
@@ -74,7 +74,7 @@ namespace vin {
 			}
 		}
 
-		auto& batchData = batches_.emplace_back(sprite, batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
+		batches_.emplace_back(sprite, batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
 	void Graphic::addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle) {
@@ -158,6 +158,6 @@ namespace vin {
 
 	void Graphic::setMatrix(const Mat4& model) {
 		matrixes_[0] = model;
-	}	
+	}
 
 } // vin.

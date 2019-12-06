@@ -10,7 +10,7 @@
 #include <sdl/sprite.h>
 #include <sdl/batch.h>
 #include <sdl/vertexarrayobject.h>
-#include <stack>
+#include <array>
 #include <functional>
 
 namespace vin {

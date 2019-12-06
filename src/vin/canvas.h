@@ -3,13 +3,15 @@
 
 #include "types.h"
 #include "hexagonbatch.h"
+#include "hex/hash.h"
 #include "hex/hexagon.h"
-#include "hex/hextilemap.h"
+#include "hex/tileboard.h"
 #include "heximage.h"
 #include "shader.h"
 #include "graphic.h"
 #include "camera.h"
 #include "tilesgraphic.h"
+#include "hex/mapgenerator.h"
 
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
@@ -44,7 +46,6 @@ namespace vin {
 		void updateCanvasSize();
 
 		Mat4 getProjection() const;
-	
 
 	private:
 		bool hasFocus_ = false;;
@@ -52,6 +53,24 @@ namespace vin {
 		Mat4 projection_{1};
 		ViewPort viewPort_{Vec2{0, 0}, Vec2{0 ,0}};
 	};
+
+	struct HexImageTypeVector {
+		int index_{0};
+		std::vector<HexImage> hexImages_;
+	};
+
+	using HexImagesMap = std::map<hex::HexSidesInvariantKey, HexImageTypeVector>;
+
+	/*
+	class HexImageLexicon {
+	public:
+		HexImageLexicon() {
+			
+		}
+	private:
+		HexImagesMap map_;
+	};
+	*/
 
     class HexWorldCanvas {
     public:
@@ -80,7 +99,13 @@ namespace vin {
 
 		void setDefaultHexSprite(const HexImage& hexImage);
 
+		void setDeck(const std::vector<HexImage>& hexImages);
+
+		void setHexImagesMap(const HexImagesMap& hexImagesMap);
+
     private:
+		void addTileMapToGraphic();
+
 		hex::Hexi worldToHex(Vec2 pos) const;
 		Vec2 hexToWorld(hex::Hexi pos) const;
 		
@@ -98,16 +123,16 @@ namespace vin {
 		bool isHovering_ = false;;
 		bool activateHexagon_;
 		HexImage hexImage_;
-		hex::HexTileMap hexTileMap_;
+		hex::TileBoard tileBoard_;
 		HexagonBatch hexagonBatch_;
 		Shader shader_;
 		Graphic graphic_;
 		Mat2 hexToWorldModel_;
 		TilesGraphic tilesGraphic_;
+		hex::MapGenerator hexMapGenerator_;
 
 		hex::Tile lastHexTile_;
-		bool lastAllowed_ = false;		
-		std::unordered_map<hex::Hexi, HexImage> hexImages_;
+		bool lastAllowed_ = false;
 		int rotations_ = 0;
 
 		Vec2 sdlMousePos{};
@@ -116,6 +141,9 @@ namespace vin {
 		
 		ViewPort viewPort_{ Vec2{0, 0}, Vec2{0 ,0}};
 		Mat4 projection_;
+		std::vector<HexImage> deck_;
+		HexImagesMap hexTypes_;
+		//std::unordered_map<hex::HexSides, HexImageTypeVector> hexImages_;
     };
 
 } // Namespace vin.

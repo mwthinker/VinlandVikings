@@ -28,8 +28,13 @@ set(SOURCES
 	src/vin/hex/hexagon.h
 	src/vin/hex/hexsides.h
 	src/vin/hex/hexsideskey.h
-	src/vin/hex/hextilemap.cpp
-	src/vin/hex/hextilemap.h
+	src/vin/hex/tilemap.cpp
+	src/vin/hex/tilemap.h
+	src/vin/hex/mapgenerator.h
+	src/vin/hex/mapgenerator.cpp
+
+	src/vin/batchmanager.cpp
+	src/vin/batchmanager.h
 	src/vin/camera.cpp
 	src/vin/camera.h
 	src/vin/canvas.cpp
@@ -50,6 +55,7 @@ set(SOURCES
 	src/vin/main.cpp
 	src/vin/shader.cpp
 	src/vin/shader.h
+	src/vin/random.h
 	src/vin/tilesgraphic.cpp
 	src/vin/tilesgraphic.h
 	src/vin/textureview.h

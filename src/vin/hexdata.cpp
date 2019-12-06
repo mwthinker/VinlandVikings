@@ -154,6 +154,7 @@ namespace vin {
 		
 		if (images_.size() > size) {
 			sdl::Surface surface{file};
+			sdl::flipVertical(surface);
 			image.texture.generate();
 			image.texture.texImage(surface);
 			image.dx = static_cast<float>(surface.getWidth());

@@ -7,8 +7,8 @@ namespace vin {
 
 	namespace {
 
-		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
-
+		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
+		
 		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
 		void HelpMarker(const std::string& text) {
@@ -68,8 +68,85 @@ namespace vin {
 		hexWorldCanvas.drawCanvas(deltaTime);
 	}
 
+	void VinlandWindow::showExampleMenuFile()
+	{
+		ImGui::MenuItem("(dummy menu)", NULL, false, false);
+		if (ImGui::MenuItem("New")) {}
+		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+		if (ImGui::BeginMenu("Open Recent"))
+		{
+			ImGui::MenuItem("fish_hat.c");
+			ImGui::MenuItem("fish_hat.inl");
+			ImGui::MenuItem("fish_hat.h");
+			if (ImGui::BeginMenu("More.."))
+			{
+				ImGui::MenuItem("Hello");
+				ImGui::MenuItem("Sailor");
+				if (ImGui::BeginMenu("Recurse.."))
+				{
+					showExampleMenuFile();
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::MenuItem("Save", "Ctrl+S")) {}
+		if (ImGui::MenuItem("Save As..")) {}
+		ImGui::Separator();
+		if (ImGui::BeginMenu("Options"))
+		{
+			static bool enabled = true;
+			ImGui::MenuItem("Enabled", "", &enabled);
+			ImGui::BeginChild("child", ImVec2(0, 60), true);
+			for (int i = 0; i < 10; i++)
+				ImGui::Text("Scrolling Text %d", i);
+			ImGui::EndChild();
+			static float f = 0.5f;
+			static int n = 0;
+			static bool b = true;
+			ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
+			ImGui::InputFloat("Input", &f, 0.1f);
+			ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
+			ImGui::Checkbox("Check", &b);
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Colors"))
+		{
+			float sz = ImGui::GetTextLineHeight();
+			for (int i = 0; i < ImGuiCol_COUNT; i++)
+			{
+				const char* name = ImGui::GetStyleColorName((ImGuiCol) i);
+				ImVec2 p = ImGui::GetCursorScreenPos();
+				ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol) i));
+				ImGui::Dummy(ImVec2(sz, sz));
+				ImGui::SameLine();
+				ImGui::MenuItem(name);
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Disabled", false)) // Disabled
+		{
+			IM_ASSERT(0);
+		}
+		if (ImGui::MenuItem("Checked", NULL, true)) {}
+		if (ImGui::MenuItem("Quit", "Alt+F4")) {
+			quit();
+		}
+	}
+
     void VinlandWindow::imGuiUpdate(double deltaTime) {
 		beginMain();
+
+		ImGui::BeginMenuBar();
+		static bool menu = true;
+		
+		if (ImGui::BeginMenu("Menu", &menu))
+		{
+			showExampleMenuFile();
+			ImGui::EndMenu();
+		}		
+		ImGui::EndMenuBar();
 
 		ImGui::Text("KEYS:");
 		ImGui::Text("ARROWS - Move window");
@@ -95,9 +172,9 @@ namespace vin {
 		const float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 		
 		int n = 0;
-		for (auto& pair : hexTypes_) {
-			auto& index = pair.second.index_;
-			auto& hexImages = pair.second.hexImages_;
+		for (auto& [key, hexImageType] : hexTypes_) {
+			auto& index = hexImageType.index_;
+			auto& hexImages = hexImageType.hexImages_;
 			const ImVec2 buttonSize{50.f, 50.f};
 			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
 				if (hexImages[index].getImage() == hexWorldCanvas.currentHexSprite()) {
@@ -125,21 +202,33 @@ namespace vin {
         sdl::ImGuiWindow::initOpenGl();
 	}
 
-
 	void VinlandWindow::initPreLoop() {
         sdl::ImGuiWindow::initPreLoop();
 		auto [w, h] = sdl::ImGuiWindow::getSize();
         glViewport(0, 0, w, h);
 
-		hexImages_ = HexData::getInstance().loadHexImages();
+		auto hexImages = HexData::getInstance().loadHexImages();
+		for (const auto& image : hexImages) {
+			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
+			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
+			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
+			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
+			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
+		}
+
 		HexImage waterImage{};
-		for (const auto& hexImage : hexImages_) {
+		for (const auto& hexImage : hexImages) {
 			hexTypes_[hexImage.getHexSides()].hexImages_.push_back(hexImage);
 			if (isFullWater(hexImage.getHexSides())) {
 				waterImage = hexImage;
 			}
 		}
 		hexWorldCanvas.setDefaultHexSprite(waterImage);
+		hexWorldCanvas.setHexImagesMap(hexTypes_);
+
+		//for (const auto& image : hexTypes_) {}
+
+		hexWorldCanvas.setDeck(hexImages);
 	}
 
 	void VinlandWindow::beginMain() {
@@ -159,9 +248,7 @@ namespace vin {
 		ImGui::End();
 
 		ImGui::PopStyleColor();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
+		ImGui::PopStyleVar(3);
 	}
 
 } // Namespace vin.

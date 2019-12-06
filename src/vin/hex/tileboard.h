@@ -20,32 +20,33 @@ namespace vin::hex {
 
 	std::vector<Hexi> createRectangleShape(int columns, int rows);
 
-	class HexTileMap {
+	class TileBoard {
 	public:
-		using const_iterator = std::unordered_map<Hexi, Tile>::const_iterator;
+		using Map = std::unordered_map<Hexi, HexSides>;
+		using const_iterator = Map::const_iterator;
 
-		HexTileMap();
+		TileBoard();
 
-        HexTileMap(const HexTileMap& map) = delete;
-        HexTileMap& operator=(const HexTileMap& map) = delete;
+		TileBoard(const TileBoard& map) = delete;
+		TileBoard& operator=(const TileBoard& map) = delete;
 
-		HexTileMap(HexTileMap&& map) noexcept;
+		TileBoard(TileBoard&& map) noexcept;
 
-		HexTileMap& operator=(HexTileMap&& map) noexcept;
+		TileBoard& operator=(TileBoard&& map) noexcept;
 
-		HexTileMap(const std::vector<Hexi>& hexes);
+		TileBoard(const std::vector<Hexi>& hexes);
 
 		template <class iterator>
-		HexTileMap(const iterator& begin, const iterator& end) {
+		TileBoard(const iterator& begin, const iterator& end) {
 			for (auto it = begin; it != end; ++it) {
 				Hexi hex = *it;
-				hexes_[hex] = Tile{hex, HEXSIDES_NONE};
+				hexes_[hex] = HEXSIDES_NONE;
 			}
 		}
 
 		void clear();
 
-		bool put(const Tile& tile);
+		bool put(const Hexi& pos, const HexSides& sides);
 
 		bool isInside(const Hexi& hex) const;
 
@@ -59,14 +60,14 @@ namespace vin::hex {
 			return hexes_.end();
 		}
 
-		bool isNeighborsMatching(Tile hexTile) const;
+		bool isNeighborsMatching(const Hexi& pos, const HexSides& sides) const;
 
-		bool isAllowed(Tile hexTile) const;
+		bool isAllowed(const Hexi& pos, const HexSides& sides) const;
 
-		Tile getTile(Hexi hex) const;
+		HexSides getTile(Hexi hex) const;
 
 	private:
-		std::unordered_map<Hexi, Tile> hexes_;
+		Map hexes_;
 	};
 
 } // Namespace vin::hex.

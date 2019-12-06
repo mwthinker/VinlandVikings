@@ -41,7 +41,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setAngle(float angle) {
-		dirty_ = updateValue(angle_, angle);
+		dirty_ |= updateValue(angle_, angle);
 	}
 
 	float TilesGraphic::getAngle() const {
@@ -49,7 +49,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setGrid(bool grid) {
-		dirty_ = updateValue(grid_, grid);
+		dirty_ |= updateValue(grid_, grid);
 	}
 
 	bool TilesGraphic::isGrid() const {
@@ -57,7 +57,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setHexCoord(bool hexCoord) {
-		dirty_ = updateValue(hexCoord_, hexCoord);
+		dirty_ |= updateValue(hexCoord_, hexCoord);
 	}
 
 	bool TilesGraphic::isHexCoord() const {
@@ -65,7 +65,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setXYCoord(bool xyCoord) {
-		dirty_ = updateValue(xyCoord_, xyCoord);
+		dirty_ |= updateValue(xyCoord_, xyCoord);
 	}
 
 	bool TilesGraphic::isXYCoord() const {
@@ -83,13 +83,18 @@ namespace vin {
 	}
 
 	void TilesGraphic::fill(const Color& color) {
-		dirty_ = updateValue(color_, color);
+		color_ = color;
+		for (auto& [hex, hexImage] : hexImages_) {
+			hexImage = HexImage{"", {}, {}, true};
+		}
+		dirty_ = true;
 	}
 
 	void TilesGraphic::fill(const HexImage& image) {
 		for (auto& [hex, hexImage]: hexImages_) {
 			hexImage = image;
 		}
+		dirty_ = true;
 	}
 
 	void TilesGraphic::fillGrid(hex::Hexi hex, const Color& color) {

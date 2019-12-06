@@ -14,11 +14,6 @@
 #include <map>
 
 namespace vin {
-	
-	struct HexImageTypeVector {
-		int index_{0};
-		std::vector<HexImage> hexImages_;
-	};
 
 	class VinlandWindow : public sdl::ImGuiWindow {
 	public:
@@ -44,11 +39,12 @@ namespace vin {
 
 		void drawHexTypesButtons();
 
+		void showExampleMenuFile();
+
 		HexWorldCanvas hexWorldCanvas;
 		Page page_{Page::START};
 		HexagonBatch hexagonBatch_;
-		std::vector<HexImage> hexImages_;
-		std::map<hex::HexSidesKey, HexImageTypeVector> hexTypes_;
+		HexImagesMap hexTypes_;
 	};
 
 } // Namespace vin.

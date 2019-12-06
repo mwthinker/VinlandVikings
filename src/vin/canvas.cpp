@@ -8,14 +8,6 @@ namespace vin {
 
 	namespace {
 
-		float getRotationAngle(int rotations) {
-			return std::fmod(rotations * PI / 3.f + PI / 2.f, 2.f * PI);
-		}
-
-		void rotate(hex::HexSides& hexSides, int rotations) {
-			std::rotate(hexSides.begin(), hexSides.begin() + rotations % 6, hexSides.end());
-		}
-
 		constexpr float normalizedDeviceCoordsToWindowCoords(float pos, float size, float normalizedPos) {
 			return (pos + 1.f) * size / 2.f + normalizedPos;;
 		}
@@ -55,6 +47,9 @@ namespace vin {
 		}
 
 		constexpr HexDimension HEX_DIMENSION;
+
+		constexpr float ZOOM_MIN = 0.02f;
+		constexpr float ZOOM_MAX = 3.0f;
 
 	}
 
@@ -105,8 +100,8 @@ namespace vin {
 		auto hexes = hex::createHexShape(10);
 		//auto hexes = hex::createRectangleShape(10, 10);
 		//auto hexes = createParallelogramShape(10, 5);
-		hexTileMap_ = hex::HexTileMap(hexes.begin(), hexes.end());
-		for (const auto& [hex, tile] : hexTileMap_) {
+		tileBoard_ = hex::TileBoard(hexes.begin(), hexes.end());
+		for (const auto& [hex, tile] : tileBoard_) {
 			tilesGraphic_.fillGrid(hex, RED);
 		}
 		tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
@@ -125,9 +120,28 @@ namespace vin {
 	}
 
 	void HexWorldCanvas::drawImgui() {
-		ImGui::BeginChild("Canvas");
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 10.1f);
+		ImGui::PushStyleColor(ImGuiCol_Border, RED.toImU32());
+		ImGui::BeginChild("Canvas", ImVec2{0, 0}, true);
+		
 		updateCanvasSize();
 		ImGui::EndChild();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
+	}
+
+	void HexWorldCanvas::addTileMapToGraphic() {
+		Random random;
+		/*
+		for (const auto& [pos, sides] : tileBoard_) {
+			auto it = hexImages_.find(sides);
+			if (it != hexImages_.end()) {
+				const auto& images = hexImages_[sides].hexImages_;
+				auto image = images[random.generateInt(0, images.size() - 1)];
+				tilesGraphic_.fillTile(pos, image);
+			}
+		}
+		*/
 	}
 
 	hex::Hexi HexWorldCanvas::worldToHex(Vec2 pos) const {
@@ -153,7 +167,7 @@ namespace vin {
 	}
 
 	Vec2 HexWorldCanvas::screenDeltaPosToWorld(Vec2 pos) {
-		Vec4 rel = Vec4{pos.x / -4.f / 100, pos.y / 4.f / 100, 0.f, 1.f};
+		Vec4 rel{pos.x / -4.f / 100, pos.y / 4.f / 100, 0.f, 1.f};
 		return glm::inverse<>(projection_) * rel;
 	}
 	
@@ -161,12 +175,27 @@ namespace vin {
 		hex::Hexi hex = getHexFromMouse();
 		hex::HexSides sides = hexImage_.getHexSides();
 		rotate(sides, rotations_);
-		hex::Tile hexTile{hex, sides};
 		auto pos = hexToWorld(hex);
 		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		if (!tileBoard_.isAllowed(hex, sides)) {
+			graphic_.addFilledHexagon(pos, HEX_DIMENSION.outerSize, Color{1.f, 0, 0, 0.4}, rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		}
+		logger()->warn("hex: {}", hex);
+		
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[0] * 2), HEX_DIMENSION.outerSize, RED, rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[1] * 2), HEX_DIMENSION.outerSize, GREEN, rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[2] * 2), HEX_DIMENSION.outerSize, BLUE, rotations_ * PI / 3 + HEX_DIMENSION.angle);		
+
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[3] * 2), HEX_DIMENSION.outerSize, ORANGE, rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[4] * 2), HEX_DIMENSION.outerSize, CYAN, rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[5] * 2), HEX_DIMENSION.outerSize, WHITE, rotations_ * PI / 3 + HEX_DIMENSION.angle);
 	}
 
 	void HexWorldCanvas::drawCanvas(double deltaTime) {
+		glEnable(GL_BLEND);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		Mat4 model{1};
 		graphic_.clearDraw();
 		graphic_.pushMatrix(projection_ * camera_.getView() * model);
@@ -175,8 +204,9 @@ namespace vin {
 		if (isHovering_) {
 			addMouseHexToGraphic();
 		}
-		graphic_.pushMatrix(projection_);
-		//graphic_.addRectangle({-1.f, -1.f}, {2.f, 2.f}, RED);
+		graphic_.pushMatrix(projection_);		
+		
+		//graphic_.addRectangle({-1.f, -1.f}, {2.f, 2.f}, RED); // Bottom
 		tilesGraphic_.draw(shader_);
 		graphic_.draw(shader_);
 	}
@@ -185,20 +215,35 @@ namespace vin {
 		//tilesGraphic_.fill(hexImage);
 	}
 
+	void HexWorldCanvas::setDeck(const std::vector<HexImage>& deck) {
+		deck_ = deck;
+	}
+
+	void HexWorldCanvas::setHexImagesMap(const HexImagesMap& hexTypes) {
+		hexTypes_ = hexTypes;
+		/*
+		for (const auto& [sides, invariantHexImageType] : hexTypes_) {
+			
+			for (const auto& imageType : invariantHexImageType.hexImages_)				
+				for (int i = 0; i < 6; ++i) {
+					const hex::HexSides& sides = invariantHexImageType.hexImages_[i].getHexSides();
+					auto& hexImages = hexImages_[sides];
+					//hexImages.hexImages_.push_back()
+				}
+		}
+		*/
+	}
+
 	void HexWorldCanvas::eventUpdate(const SDL_Event& windowEvent) {
 		switch (windowEvent.type) {
 			case SDL_MOUSEWHEEL:
 				if (isHovering_) {
 					if (windowEvent.wheel.y > 0) { // scroll up
 						zoom_ *= 1.1f;
-					} else if (windowEvent.wheel.y < 0) { // scroll down
+					} else if (windowEvent.wheel.y < 0) { // scroll down						
 						zoom_ *= 1 / 1.1f;
 					}
-					if (windowEvent.wheel.x > 0) { // scroll right
-						// ...
-					} else if (windowEvent.wheel.x < 0) { // scroll left
-						// ...
-					}
+					zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
 				}
 				break;
 			case SDL_KEYDOWN:
@@ -224,8 +269,8 @@ namespace vin {
 							camera_.angleDelta(0.1f);
 							break;
                         case SDLK_c:
-                            hexImages_.clear();
-                            hexTileMap_.clear();
+							tileBoard_.clear();
+							tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
                             break;
 						case SDLK_g:
 							tilesGraphic_.setGrid(!tilesGraphic_.isGrid());
@@ -235,6 +280,18 @@ namespace vin {
 							break;
 						case SDLK_h:
 							tilesGraphic_.setHexCoord(!tilesGraphic_.isHexCoord());
+							break;
+						case SDLK_r:
+							{
+								std::vector<hex::HexSides> tiles;
+								for (const auto& hexImage : deck_) {
+									tiles.push_back(hexImage.getHexSides());
+								}
+								tileBoard_.clear();
+								tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
+								hexMapGenerator_.fill(tileBoard_, tiles, {0, 0});
+								addTileMapToGraphic();
+							}
 							break;
                     }
 					logger()->info("Inv: {}", glm::inverse<>(projection_ * camera_.getView()));
@@ -257,15 +314,15 @@ namespace vin {
 						{
 							if (activateHexagon_) {
 								const auto& button = windowEvent.button;
-								hex::Hexi hex = getHexFromMouse(button.windowID, button.x, button.y);
+								hex::Hexi pos = getHexFromMouse(button.windowID, button.x, button.y);
 								//logger()->info("(q, r, s): {}", hex);
 								hex::HexSides sides = hexImage_.getHexSides();
 								rotate(sides, rotations_);
-								hex::Tile hexTile{hex, sides};
 								//logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile) ? "True" : "False");
-								if (hexTileMap_.put(hexTile)) {
-									hexImages_[hex] = HexImage{hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_};
-									tilesGraphic_.fillTile(hex, hexImages_[hex]);
+								if (tileBoard_.put(pos, sides)) {
+									HexImage image{hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_};
+									tilesGraphic_.fillTile(pos, image);
+									logger()->error("ROTATE = {}", glm::rotate(Vec2{1, 0.f}, 0.f));
 								}
 							}
 							break;

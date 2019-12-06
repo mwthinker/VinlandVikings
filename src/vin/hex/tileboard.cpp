@@ -1,4 +1,4 @@
-#include "hextilemap.h"
+#include "tileboard.h"
 #include "../types.h"
 #include "hexsideskey.h"
 
@@ -37,60 +37,55 @@ namespace vin::hex {
 		return hexes;
 	}
 
-    HexTileMap::HexTileMap() {
+	TileBoard::TileBoard() {
     }
 
-	HexTileMap::HexTileMap(HexTileMap&& map) noexcept : hexes_{std::move(map.hexes_)} {
+	TileBoard::TileBoard(TileBoard&& map) noexcept : hexes_{std::move(map.hexes_)} {
     }
 
-    HexTileMap& HexTileMap::operator=(HexTileMap&& map) noexcept {
+	TileBoard& TileBoard::operator=(TileBoard&& map) noexcept {
         hexes_ = std::move(map.hexes_);
         return *this;
     }
 
-    HexTileMap::HexTileMap(const std::vector<Hexi>& hexes) {
+	TileBoard::TileBoard(const std::vector<Hexi>& hexes) {
         for (const auto& hex : hexes) {
-			hexes_.insert({hex, Tile{hex, HEXSIDES_NONE}});
+			hexes_.insert({hex, HEXSIDES_NONE});
         }
     }
 
-	bool HexTileMap::isInside(const Hexi& hex) const {
+	bool TileBoard::isInside(const Hexi& hex) const {
 		return hexes_.find(hex) != hexes_.end();
 	}
 
-	bool HexTileMap::isEmpty(const Hexi& hex) const {
+	bool TileBoard::isEmpty(const Hexi& hex) const {
 		auto it = hexes_.find(hex);
 		if (it == hexes_.end()) {
 			return false;
 		}
 
-		return it->second.getHexSides() == HEXSIDES_NONE;
+		return it->second == HEXSIDES_NONE;
 	}
 
-	bool HexTileMap::isAllowed(Tile hexTile) const {
-		//logger()->info("isAllowed");
-
-		if (!isInside(hexTile.getHexi())) {
-			//logger()->info("Not inside");
+	bool TileBoard::isAllowed(const Hexi& pos, const HexSides& sides) const {
+		if (!isInside(pos)) {
 			return false;
 		}
 
-		if (!isEmpty(hexTile.getHexi())) {
-			//logger()->info("Not empty");
+		if (!isEmpty(pos)) {
 			return false;
 		}
 
-		return isNeighborsMatching(hexTile);
+		return isNeighborsMatching(pos, sides);
 	}
 
-    bool HexTileMap::isNeighborsMatching(Tile hexTile) const {
-        HexSides sides = hexTile.getHexSides();
+    bool TileBoard::isNeighborsMatching(const Hexi& pos, const HexSides& sides) const {
         for (int i = 0; i < 6; ++i) {
-            Hexi pos = CUBE_DIRECTIONS[i] + hexTile.getHexi();
-			Tile neighbor = getTile(pos);
+            Hexi neighborPos = CUBE_DIRECTIONS[i] + pos;
+			HexSides neighbor = getTile(neighborPos);
 
             int oppositeSide = (i + 3) % 6;
-            HexSide neighborSide = neighbor.getHexSides()[oppositeSide];
+            HexSide neighborSide = neighbor[oppositeSide];
             if (neighborSide == HexSide::NONE) {
                 continue;
             }
@@ -102,25 +97,25 @@ namespace vin::hex {
         return true;
 	}
 
-	Tile HexTileMap::getTile(Hexi hex) const {
+	HexSides TileBoard::getTile(Hexi hex) const {
 		auto it = hexes_.find(hex);
 		if (it == hexes_.end()) {
-			return Tile{hex, HEXSIDES_NONE};
+			return HEXSIDES_NONE;
 		}
 		return it->second;
 	}
 
-    void HexTileMap::clear() {
+    void TileBoard::clear() {
         for (auto& hexTile : hexes_) {
-			hexTile.second = Tile{hexTile.first, HEXSIDES_NONE};
+			hexTile.second = HEXSIDES_NONE;
         }
 	}
 
-	bool HexTileMap::put(const Tile& tile) {
-		if (!isAllowed(tile)) {
+	bool TileBoard::put(const Hexi& pos, const HexSides& sides) {
+		if (!isAllowed(pos, sides)) {
 			return false;
 		}
-		hexes_[tile.getHexi()] = tile;
+		hexes_[pos] = sides;
 		return true;
 	}
 
