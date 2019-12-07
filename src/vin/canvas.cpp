@@ -195,15 +195,6 @@ namespace vin {
 		if (!tileBoard_.isAllowed(hex, currentTile_.sides)) {
 			graphic_.addFilledHexagon(pos, HEX_DIMENSION.outerSize, Color{1.f, 0, 0, 0.4}, rotation * PI / 3 + HEX_DIMENSION.angle);
 		}
-		logger()->warn("hex: {}", hex);
-		
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[0] * 2), HEX_DIMENSION.outerSize, RED, rotation * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[1] * 2), HEX_DIMENSION.outerSize, GREEN, rotation * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[2] * 2), HEX_DIMENSION.outerSize, BLUE, rotation * PI / 3 + HEX_DIMENSION.angle);
-
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[3] * 2), HEX_DIMENSION.outerSize, ORANGE, rotation * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[4] * 2), HEX_DIMENSION.outerSize, CYAN, rotation * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[5] * 2), HEX_DIMENSION.outerSize, WHITE, rotation * PI / 3 + HEX_DIMENSION.angle);
 	}
 
 	void HexWorldCanvas::drawCanvas(double deltaTime) {

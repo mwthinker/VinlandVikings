@@ -59,8 +59,8 @@ namespace vin {
 		float angle_{PI / 3};
 		bool dirty_{true};
 		bool grid_{true};
-		bool hexCoord_{true};
-		bool xyCoord_{true};
+		bool hexCoord_{false};
+		bool xyCoord_{false};
 		Color color_{};
 
 		HexDimension hexDimension_;

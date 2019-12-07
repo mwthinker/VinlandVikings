@@ -71,6 +71,7 @@ namespace vin {
 	void VinlandWindow::showExampleMenuFile()
 	{
 		ImGui::MenuItem("(dummy menu)", NULL, false, false);
+		/*
 		if (ImGui::MenuItem("New")) {}
 		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
 		if (ImGui::BeginMenu("Open Recent"))
@@ -130,6 +131,7 @@ namespace vin {
 			IM_ASSERT(0);
 		}
 		if (ImGui::MenuItem("Checked", NULL, true)) {}
+		*/
 		if (ImGui::MenuItem("Quit", "Alt+F4")) {
 			quit();
 		}
@@ -155,11 +157,14 @@ namespace vin {
 		ImGui::Text("G - Grid on/off");
 		ImGui::Text("x - View XY Coords");
 		ImGui::Text("h - View Hex Coords");
+		ImGui::Text("r - Clear and generate map");
 		ImGui::NewLine();
 
 		ImGui::Text("MOUSE:");
 		ImGui::Text("Drag MIDDLE - Move window");
-		ImGui::Text("Left/right click - Replace with Next/Previous tile");
+		ImGui::Text("Push MIDDLE - Rotate card");
+		ImGui::Text("Left - Place card");
+		//ImGui::Text("Left/right click - Replace with Next/Previous tile");
 		drawHexTypesButtons();
 
 		hexWorldCanvas.drawImgui();
