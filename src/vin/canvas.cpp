@@ -132,6 +132,21 @@ namespace vin {
 
 	void HexWorldCanvas::addTileMapToGraphic() {
 		Random random;
+		for (const auto& [pos, sides] : tileBoard_) {
+			auto tiles = tileLexicon_.getInvariantTiles(sides);
+			if (tiles.size() > 0) {
+				auto tile = tiles[random.generateInt(0, tiles.size() - 1)];
+				if (tile.rotateUntilEqual(sides)) {
+					tilesGraphic_.fillTile(pos, tile);
+				} else {
+					logger()->warn("Something is wrong");
+				}
+			} else {
+				logger()->warn("Tile images failed to fill board");
+			}
+		}
+
+		
 		/*
 		for (const auto& [pos, sides] : tileBoard_) {
 			auto it = hexImages_.find(sides);
@@ -173,22 +188,22 @@ namespace vin {
 	
 	void HexWorldCanvas::addMouseHexToGraphic() {
 		hex::Hexi hex = getHexFromMouse();
-		hex::HexSides sides = hexImage_.getHexSides();
-		rotate(sides, rotations_);
+		
 		auto pos = hexToWorld(hex);
-		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, hexImage_.getImage(), rotations_ * PI / 3 + HEX_DIMENSION.angle);
-		if (!tileBoard_.isAllowed(hex, sides)) {
-			graphic_.addFilledHexagon(pos, HEX_DIMENSION.outerSize, Color{1.f, 0, 0, 0.4}, rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		int rotation = currentTile_.sprite.rotations;
+		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, currentTile_.sprite.sprite, rotation * PI / 3 + HEX_DIMENSION.angle);
+		if (!tileBoard_.isAllowed(hex, currentTile_.sides)) {
+			graphic_.addFilledHexagon(pos, HEX_DIMENSION.outerSize, Color{1.f, 0, 0, 0.4}, rotation * PI / 3 + HEX_DIMENSION.angle);
 		}
 		logger()->warn("hex: {}", hex);
 		
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[0] * 2), HEX_DIMENSION.outerSize, RED, rotations_ * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[1] * 2), HEX_DIMENSION.outerSize, GREEN, rotations_ * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[2] * 2), HEX_DIMENSION.outerSize, BLUE, rotations_ * PI / 3 + HEX_DIMENSION.angle);		
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[0] * 2), HEX_DIMENSION.outerSize, RED, rotation * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[1] * 2), HEX_DIMENSION.outerSize, GREEN, rotation * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[2] * 2), HEX_DIMENSION.outerSize, BLUE, rotation * PI / 3 + HEX_DIMENSION.angle);
 
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[3] * 2), HEX_DIMENSION.outerSize, ORANGE, rotations_ * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[4] * 2), HEX_DIMENSION.outerSize, CYAN, rotations_ * PI / 3 + HEX_DIMENSION.angle);
-		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[5] * 2), HEX_DIMENSION.outerSize, WHITE, rotations_ * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[3] * 2), HEX_DIMENSION.outerSize, ORANGE, rotation * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[4] * 2), HEX_DIMENSION.outerSize, CYAN, rotation * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addFilledHexagon(hexToWorld(hex + hex::CUBE_DIRECTIONS[5] * 2), HEX_DIMENSION.outerSize, WHITE, rotation * PI / 3 + HEX_DIMENSION.angle);
 	}
 
 	void HexWorldCanvas::drawCanvas(double deltaTime) {
@@ -211,27 +226,12 @@ namespace vin {
 		graphic_.draw(shader_);
 	}
 
-	void HexWorldCanvas::setDefaultHexSprite(const HexImage& hexImage) {
-		//tilesGraphic_.fill(hexImage);
-	}
-
 	void HexWorldCanvas::setDeck(const std::vector<HexImage>& deck) {
 		deck_ = deck;
 	}
 
-	void HexWorldCanvas::setHexImagesMap(const HexImagesMap& hexTypes) {
-		hexTypes_ = hexTypes;
-		/*
-		for (const auto& [sides, invariantHexImageType] : hexTypes_) {
-			
-			for (const auto& imageType : invariantHexImageType.hexImages_)				
-				for (int i = 0; i < 6; ++i) {
-					const hex::HexSides& sides = invariantHexImageType.hexImages_[i].getHexSides();
-					auto& hexImages = hexImages_[sides];
-					//hexImages.hexImages_.push_back()
-				}
-		}
-		*/
+	void HexWorldCanvas::setTileLexicon(const TileLexicon& tileLexicon) {
+		tileLexicon_ = tileLexicon;
 	}
 
 	void HexWorldCanvas::eventUpdate(const SDL_Event& windowEvent) {
@@ -316,19 +316,15 @@ namespace vin {
 								const auto& button = windowEvent.button;
 								hex::Hexi pos = getHexFromMouse(button.windowID, button.x, button.y);
 								//logger()->info("(q, r, s): {}", hex);
-								hex::HexSides sides = hexImage_.getHexSides();
-								rotate(sides, rotations_);
-								//logger()->info("Allowed {}", hexTileMap_.isAllowed(hexTile) ? "True" : "False");
-								if (tileBoard_.put(pos, sides)) {
-									HexImage image{hexImage_.getFilename(), hexImage_.getImage(), sides, hexImage_.isFlat(), rotations_};
-									tilesGraphic_.fillTile(pos, image);
+								if (tileBoard_.put(pos, currentTile_.sides)) {
+									tilesGraphic_.fillTile(pos, currentTile_);
 									logger()->error("ROTATE = {}", glm::rotate(Vec2{1, 0.f}, 0.f));
 								}
 							}
 							break;
 						}
 						case SDL_BUTTON_MIDDLE:
-							rotations_ = (rotations_ + 1) % 6;
+							currentTile_.rotateLeft();
 							break;
 					}
 				}

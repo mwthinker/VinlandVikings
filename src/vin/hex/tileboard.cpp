@@ -37,6 +37,19 @@ namespace vin::hex {
 		return hexes;
 	}
 
+	std::vector<Hexi> findAllEmptyNeighbors(const TileBoard& board, const std::vector<Hexi>& tiles) {
+		std::vector<Hexi> emptyNeighbors;
+		for (const auto& pos : tiles) {
+			for (const auto& dir : CUBE_DIRECTIONS) {
+				auto neighbor = dir + pos;
+				if (board.isEmpty(neighbor)) {
+					emptyNeighbors.push_back(neighbor);
+				}
+			}
+		}
+		return emptyNeighbors;
+	}
+
 	TileBoard::TileBoard() {
     }
 

@@ -7,6 +7,7 @@
 #include "types.h"
 #include "hexdimension.h"
 #include "hex/hash.h"
+#include "tilelexicon.h"
 
 #include <sdl/color.h>
 
@@ -30,11 +31,11 @@ namespace vin {
 		void setXYCoord(bool xyCoord);
 		bool isXYCoord() const;
 
-		void fillTile(hex::Hexi hex, const HexImage& image);
+		void fillTile(hex::Hexi hex, const Tile& tile);
 		void fillTile(hex::Hexi hex, const Color& color);
 
 		void fill(const Color& color);
-		void fill(const HexImage& image);
+		void fill(const Tile& tile);
 		void fillGrid(hex::Hexi hex, const Color& color);
 
 		void clearTile(hex::Hexi hex);
@@ -66,7 +67,7 @@ namespace vin {
 		Mat2 hexToWorld_{1};
 		Mat4 worldToScreen_{1};
 		Graphic graphic_;
-		std::unordered_map<hex::Hexi, HexImage> hexImages_;
+		std::unordered_map<hex::Hexi, Tile> hexImages_;
 	};
 	
 } // Namespace vin.

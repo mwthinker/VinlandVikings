@@ -24,6 +24,8 @@ namespace vin::hex {
 
 		constexpr bool operator<(const HexSidesKey& key) const noexcept;
 
+		constexpr operator uint64_t() const;
+
 	private:
 		uint64_t key_{0};
 	};
@@ -39,6 +41,8 @@ namespace vin::hex {
 		constexpr HexSidesInvariantKey(HexSidesInvariantKey&&) noexcept = default;
 
 		constexpr HexSidesInvariantKey& operator=(HexSidesInvariantKey&&) noexcept = default;
+
+		constexpr operator uint64_t() const;
 
 		HexSidesInvariantKey(HexSides sides) noexcept;
 
@@ -61,6 +65,10 @@ namespace vin::hex {
 		return key_ < key.key_;
 	}
 
+	inline constexpr HexSidesKey::operator uint64_t() const {
+		return key_;
+	}
+
 	inline HexSidesInvariantKey::HexSidesInvariantKey(HexSides sides) noexcept {
 		std::array<HexSidesKey, 6> keys{
 			sides,
@@ -75,6 +83,10 @@ namespace vin::hex {
 
 	inline bool HexSidesInvariantKey::operator<(const HexSidesInvariantKey& invariantKey) const noexcept {
 		return key_ < invariantKey.key_;
+	}
+
+	inline constexpr HexSidesInvariantKey::operator uint64_t() const {
+		return key_;
 	}
 
 } // Namespace vin::hex.

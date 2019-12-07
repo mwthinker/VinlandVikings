@@ -1,7 +1,6 @@
 #ifndef VINLANDVIKINGS_VIN_TILEDECK_H
 #define VINLANDVIKINGS_VIN_TILEDECK_H
 
-#include "tile.h"
 #include "tileboard.h"
 #include "../random.h"
 #include "../logger.h"
@@ -16,8 +15,6 @@ namespace vin::hex {
 
 	};
 
-	std::vector<hex::Hexi> findAllEmptyNeighbors(const hex::TileBoard& tiles);
-
 	class MapGenerator {
 	public:
 		MapGenerator();
@@ -25,10 +22,9 @@ namespace vin::hex {
 		void fill(hex::TileBoard& map, std::vector<hex::HexSides> tiles, hex::Hexi start);
 
 	private:
-		void fill(hex::TileBoard& map, const hex::Tile& tile, hex::Hexi start);
-
-		bool put(hex::TileBoard& map, const hex::Tile& tile) {
-
+		template <class T>
+		void shuffle(std::vector<T>& vector) {
+			std::shuffle(vector.begin(), vector.end(), engine_);
 		}
 
 		Random random_;

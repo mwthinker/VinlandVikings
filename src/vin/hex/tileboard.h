@@ -6,7 +6,6 @@
 #include "hexsides.h"
 #include "hexsideskey.h"
 #include "hash.h"
-#include "tile.h"
 
 #include <vector>
 
@@ -19,6 +18,9 @@ namespace vin::hex {
 	std::vector<Hexi> createParallelogramShape(int columns, int rows);
 
 	std::vector<Hexi> createRectangleShape(int columns, int rows);
+
+	class TileBoard;
+	std::vector<hex::Hexi> findAllEmptyNeighbors(const hex::TileBoard& board, const std::vector<hex::Hexi>& tiles);
 
 	class TileBoard {
 	public:

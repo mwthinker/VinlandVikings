@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "hexagonbatch.h"
-#include "hex/hash.h"
+#include "hex/hexsideskey.h"
 #include "hex/hexagon.h"
 #include "hex/tileboard.h"
 #include "heximage.h"
@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "tilesgraphic.h"
 #include "hex/mapgenerator.h"
+#include "tilelexicon.h"
 
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
@@ -54,24 +55,6 @@ namespace vin {
 		ViewPort viewPort_{Vec2{0, 0}, Vec2{0 ,0}};
 	};
 
-	struct HexImageTypeVector {
-		int index_{0};
-		std::vector<HexImage> hexImages_;
-	};
-
-	using HexImagesMap = std::map<hex::HexSidesInvariantKey, HexImageTypeVector>;
-
-	/*
-	class HexImageLexicon {
-	public:
-		HexImageLexicon() {
-			
-		}
-	private:
-		HexImagesMap map_;
-	};
-	*/
-
     class HexWorldCanvas {
     public:
 		HexWorldCanvas();
@@ -82,26 +65,24 @@ namespace vin {
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
-		void activateHexagon(const HexImage& hexImage) {
-			hexImage_ = hexImage;
+		void activateHexagon(const Tile& tile) {
+			currentTile_ = tile;
 			activateHexagon_ = true;
-			//rotations_ = rotations;
 		}
 
 		void inactivateHexagon() {
 			activateHexagon_ = false;
-			rotations_ = 0;
+			currentTile_.sprite.rotations = 0;
+			currentTile_.sides = {};
 		}
 
 		SpriteView currentHexSprite() const {
-			return hexImage_.getImage();
+			return currentTile_.sprite.sprite;
 		}
-
-		void setDefaultHexSprite(const HexImage& hexImage);
 
 		void setDeck(const std::vector<HexImage>& hexImages);
 
-		void setHexImagesMap(const HexImagesMap& hexImagesMap);
+		void setTileLexicon(const TileLexicon& tileLexicon);
 
     private:
 		void addTileMapToGraphic();
@@ -122,18 +103,19 @@ namespace vin {
 		bool hasFocus_ = false;;
 		bool isHovering_ = false;;
 		bool activateHexagon_;
-		HexImage hexImage_;
 		hex::TileBoard tileBoard_;
 		HexagonBatch hexagonBatch_;
 		Shader shader_;
 		Graphic graphic_;
 		Mat2 hexToWorldModel_;
+
+		Tile currentTile_;
+
 		TilesGraphic tilesGraphic_;
 		hex::MapGenerator hexMapGenerator_;
 
-		hex::Tile lastHexTile_;
 		bool lastAllowed_ = false;
-		int rotations_ = 0;
+		TileLexicon tileLexicon_;
 
 		Vec2 sdlMousePos{};
 		
@@ -142,10 +124,8 @@ namespace vin {
 		ViewPort viewPort_{ Vec2{0, 0}, Vec2{0 ,0}};
 		Mat4 projection_;
 		std::vector<HexImage> deck_;
-		HexImagesMap hexTypes_;
-		//std::unordered_map<hex::HexSides, HexImageTypeVector> hexImages_;
     };
 
 } // Namespace vin.
 
-#endif // VINLANDVIKINGS_VIN_HEXAGONBATCH_H
+#endif // VINLANDVIKINGS_VIN_CANVAS_H

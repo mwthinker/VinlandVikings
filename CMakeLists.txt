@@ -21,15 +21,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
-	src/vin/hex/tile.h
 	src/vin/hex/hash.h
 	src/vin/hex/hex.h
 	src/vin/hex/hexagon.cpp
 	src/vin/hex/hexagon.h
 	src/vin/hex/hexsides.h
 	src/vin/hex/hexsideskey.h
-	src/vin/hex/tilemap.cpp
-	src/vin/hex/tilemap.h
+	src/vin/hex/tileboard.cpp
+	src/vin/hex/tileboard.h
 	src/vin/hex/mapgenerator.h
 	src/vin/hex/mapgenerator.cpp
 
@@ -55,9 +54,13 @@ set(SOURCES
 	src/vin/main.cpp
 	src/vin/shader.cpp
 	src/vin/shader.h
+	src/vin/tilelexicon.cpp
+	src/vin/tilelexicon.h
 	src/vin/random.h
 	src/vin/tilesgraphic.cpp
 	src/vin/tilesgraphic.h
+	src/vin/tile.h
+	src/vin/tile.cpp
 	src/vin/textureview.h
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp

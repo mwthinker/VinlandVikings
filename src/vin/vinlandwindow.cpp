@@ -168,6 +168,7 @@ namespace vin {
 
 	void VinlandWindow::drawHexTypesButtons() {
 		ImGuiStyle& style = ImGui::GetStyle();
+		
 		const int buttonsCount = static_cast<int>(hexTypes_.size());
 		const float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 		
@@ -208,25 +209,19 @@ namespace vin {
         glViewport(0, 0, w, h);
 
 		auto hexImages = HexData::getInstance().loadHexImages();
+		tileLexicon_.add(hexImages);
+		hexWorldCanvas.setTileLexicon(tileLexicon_);
+
 		for (const auto& image : hexImages) {
 			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
-			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
-			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
-			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
-			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
 		}
 
-		HexImage waterImage{};
-		for (const auto& hexImage : hexImages) {
-			hexTypes_[hexImage.getHexSides()].hexImages_.push_back(hexImage);
-			if (isFullWater(hexImage.getHexSides())) {
-				waterImage = hexImage;
+		int size = hexImages.size();
+		for (int i = 0; i < size; ++i) {
+			for (int j = 0; j < 10; ++j) {
+				hexImages.push_back(hexImages[i]);
 			}
 		}
-		hexWorldCanvas.setDefaultHexSprite(waterImage);
-		hexWorldCanvas.setHexImagesMap(hexTypes_);
-
-		//for (const auto& image : hexTypes_) {}
 
 		hexWorldCanvas.setDeck(hexImages);
 	}

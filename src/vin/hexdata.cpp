@@ -34,6 +34,7 @@ namespace vin {
 					return hex::HexSide::FOREST;
 			}
 			assert(false); // Should not be here.
+			return hex::HexSide::NONE;
 		}
 
 		constexpr hex::HexSides convertConfigHexSides(const pb::RepeatedField<pb::int32>& configSides) {

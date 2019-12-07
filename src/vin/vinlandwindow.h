@@ -5,6 +5,7 @@
 #include "canvas.h"
 #include "hexdata.h"
 #include "hex/hexsideskey.h"
+#include "tilelexicon.h"
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
@@ -14,6 +15,13 @@
 #include <map>
 
 namespace vin {
+
+	struct HexImageTypeVector {
+		int index_{0};
+		std::vector<HexImage> hexImages_;
+	};
+
+	using HexImagesMap = std::map<hex::HexSidesInvariantKey, HexImageTypeVector>;
 
 	class VinlandWindow : public sdl::ImGuiWindow {
 	public:
@@ -44,6 +52,7 @@ namespace vin {
 		HexWorldCanvas hexWorldCanvas;
 		Page page_{Page::START};
 		HexagonBatch hexagonBatch_;
+		TileLexicon tileLexicon_;
 		HexImagesMap hexTypes_;
 	};
 

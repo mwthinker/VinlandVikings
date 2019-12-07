@@ -72,8 +72,8 @@ namespace vin {
 		return xyCoord_;
 	}
 
-	void TilesGraphic::fillTile(hex::Hexi hex, const HexImage& image) {
-		hexImages_[hex] = image;
+	void TilesGraphic::fillTile(hex::Hexi hex, const Tile& tile) {
+		hexImages_[hex] = tile;
 		dirty_ = true;
 	}
 
@@ -90,9 +90,9 @@ namespace vin {
 		dirty_ = true;
 	}
 
-	void TilesGraphic::fill(const HexImage& image) {
-		for (auto& [hex, hexImage]: hexImages_) {
-			hexImage = image;
+	void TilesGraphic::fill(const Tile& tile) {
+		for (auto& [hex, mapTile]: hexImages_) {
+			mapTile = tile;
 		}
 		dirty_ = true;
 	}
@@ -163,9 +163,9 @@ namespace vin {
 	}
 
 	void TilesGraphic::drawWorld(Shader& shader) {
-		for (const auto& [hex, hexImage] : hexImages_) {
+		for (const auto& [hex, tile] : hexImages_) {
 			auto pos = hexToWorld(hex);
-			graphic_.addHexagonImage(pos, hexDimension_.outerSize, hexImage.getImage(), hexImage.getRotations() * PI / 3 + hexDimension_.angle);
+			graphic_.addHexagonImage(pos, hexDimension_.outerSize, tile.sprite.sprite, tile.sprite.rotations * PI / 3 + hexDimension_.angle);
 		}
 	}
 
