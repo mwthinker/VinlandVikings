@@ -5,7 +5,7 @@
 
 namespace vin {
 	
-	static std::shared_ptr<spdlog::logger> logger() {
+	inline static std::shared_ptr<spdlog::logger> logger() {
 		return sdl::logger("vin");
 	}
 

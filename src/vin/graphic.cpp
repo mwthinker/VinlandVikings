@@ -40,13 +40,18 @@ namespace vin {
 		batch_.startBatchView();
 		batch_.startAdding();
 		
-		batch_.add(
-			Vertex{pos, {0.f, 0.f}, color},
-			Vertex{pos + Vec2{size.x, 0.f}, {0.f, 0.f}, color},
-			Vertex{pos + size, {0.f, 0.f}, color},
-			Vertex{pos + Vec2{0.f, size.y}, {0.f, 0.f}, color}
-		);
-		batch_.addIndexes(0, 1, 2, 0, 2, 3);
+		batch_.pushBack(Vertex{pos, {0.f, 0.f}, color});
+		batch_.pushBack(Vertex{pos + Vec2{size.x, 0.f}, {0.f, 0.f}, color});
+		batch_.pushBack(Vertex{pos + size, {0.f, 0.f}, color});
+		batch_.pushBack(Vertex{pos + Vec2{0.f, size.y}, {0.f, 0.f}, color});
+		
+		batch_.pushBackIndex(0);
+		batch_.pushBackIndex(1);
+		batch_.pushBackIndex(2);
+		batch_.pushBackIndex(0);
+		batch_.pushBackIndex(2);
+		batch_.pushBackIndex(3);
+		
 		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
 
@@ -70,7 +75,9 @@ namespace vin {
 				batch_.pushBack(v);
 			}
 			for (int i = 1; i <= 6; ++i) {
-				batch_.addIndexes(0, i, (i % 6) + 1);
+				batch_.pushBackIndex(0);
+				batch_.pushBackIndex(i);
+				batch_.pushBackIndex((i % 6) + 1);
 			}
 		}
 
@@ -92,8 +99,12 @@ namespace vin {
 		}
 
 		for (int i = 0; i < 6; ++i) {
-			batch_.addIndexes(i, 6 + i, 6 + (i + 1) % 6,
-				i, (i + 1) % 6, 6 + (i + 1) % 6);
+			batch_.pushBackIndex(i);
+			batch_.pushBackIndex(6 + i);
+			batch_.pushBackIndex(6 + (i + 1) % 6);
+			batch_.pushBackIndex(i);
+			batch_.pushBackIndex((i + 1) % 6);
+			batch_.pushBackIndex(6 + (i + 1) % 6);
 		}
 		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);
 	}
@@ -111,7 +122,9 @@ namespace vin {
 			batch_.pushBack({edge, {0.f, 0.f}, color});
 		}
 		for (int i = 1; i <= iterations; ++i) {
-			batch_.addIndexes(0, i, (i % iterations) + 1);
+			batch_.pushBackIndex(0);
+			batch_.pushBackIndex(i);
+			batch_.pushBackIndex((i % iterations) + 1);
 		}
 
 		batches_.emplace_back(batch_.getBatchView(GL_TRIANGLES), currentMatrix_);

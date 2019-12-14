@@ -210,6 +210,7 @@ namespace vin {
 
 	void VinlandWindow::initPreLoop() {
         sdl::ImGuiWindow::initPreLoop();
+		setShowDemoWindow(false);
 		auto [w, h] = sdl::ImGuiWindow::getSize();
         glViewport(0, 0, w, h);
 
@@ -222,8 +223,9 @@ namespace vin {
 		}
 
 		int size = hexImages.size();
+		int nbrOfEach = 100.0/size;
 		for (int i = 0; i < size; ++i) {
-			for (int j = 0; j < 10; ++j) {
+			for (int j = 0; j < nbrOfEach; ++j) {
 				hexImages.push_back(hexImages[i]);
 			}
 		}

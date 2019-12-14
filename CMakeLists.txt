@@ -19,6 +19,10 @@ project(VinlandVikings
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if (MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4275") # non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+endif ()
 
 set(SOURCES
 	src/vin/hex/hash.h
@@ -69,6 +73,7 @@ set(SOURCES
 )
 
 find_package(Threads REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On) 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VinlandVikings)
@@ -146,3 +151,5 @@ target_link_libraries(VinlandVikings
 		${ExternalDependencies}
 		Config
 )
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/CPack.cmake)

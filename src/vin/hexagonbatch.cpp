@@ -88,9 +88,9 @@ namespace vin {
 			auto center = createVertex(x, y, (sprite.getX() + sprite.getWidth() * 0.5f) / textureW, (sprite.getY() + sprite.getHeight() * 0.5f) / textureH, color);
 
 			for (int i = 0; i < 6; ++i) {
-				batch_.add(center);
-				batch_.add(createHexCornerVertexTexture(center, size, xTexSize, yTexSize, i));
-				batch_.add(createHexCornerVertexTexture(center, size, xTexSize, yTexSize, (i + 1) % 6));
+				batch_.pushBack(center);
+				batch_.pushBack(createHexCornerVertexTexture(center, size, xTexSize, yTexSize, i));
+				batch_.pushBack(createHexCornerVertexTexture(center, size, xTexSize, yTexSize, (i + 1) % 6));
 			}
 		}
 	}
@@ -99,9 +99,9 @@ namespace vin {
         auto center = createVertex(x, y, color);
 
         for (int i = 0; i < 6; ++i) {
-            batch_.add(center);
-            batch_.add(createHexCornerVertex(center, size, i));
-            batch_.add(createHexCornerVertex(center, size, (i + 1) % 6));
+            batch_.pushBack(center);
+            batch_.pushBack(createHexCornerVertex(center, size, i));
+            batch_.pushBack(createHexCornerVertex(center, size, (i + 1) % 6));
         }
     }
 
@@ -144,9 +144,9 @@ namespace vin {
 	}
 
 	void HexagonBatch::addTriangle(const ImDrawVert& v1, const ImDrawVert& v2, const ImDrawVert& v3) {
-		batch_.add(v1);
-		batch_.add(v2);
-		batch_.add(v3);
+		batch_.pushBack(v1);
+		batch_.pushBack(v2);
+		batch_.pushBack(v3);
 	}
 
 	void HexagonBatch::addRectangle(const ImDrawVert& v1, const ImDrawVert& v2, const ImDrawVert& v3, const ImDrawVert& v4, ImU32 color) {
