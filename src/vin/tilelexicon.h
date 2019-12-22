@@ -24,6 +24,8 @@ namespace vin {
 
 		Tiles getTiles(hex::HexSidesKey key) const;
 
+		void clear();
+
 	private:
 		using HexImageMap = std::unordered_map<hex::HexSidesKey, Tiles>;
 		using HexImageInvariantMap = std::unordered_map<hex::HexSidesInvariantKey, Tiles>;

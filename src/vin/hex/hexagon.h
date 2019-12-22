@@ -1,5 +1,5 @@
-#ifndef VINLANDVIKINGS_VIN_HEXAGON_H
-#define VINLANDVIKINGS_VIN_HEXAGON_H
+#ifndef VINLANDVIKINGS_VIN_HEX_HEXAGON_H
+#define VINLANDVIKINGS_VIN_HEX_HEXAGON_H
 
 #include "../types.h"
 #include "hex.h"
@@ -53,8 +53,6 @@ namespace vin::hex {
 	}
 
 	Hexi hexRound(Hexf h);
-
-	Hexi oddToCube(int x, int y);
 
 } // Namespace vin::hex.
 

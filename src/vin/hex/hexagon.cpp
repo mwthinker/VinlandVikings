@@ -55,17 +55,6 @@ namespace vin::hex {
 		return {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
 	}
 
-	/*
-	Hexf pixelToHex(Layout layout, Vec2 p) {
-		const Orientation& M = layout.orientation;
-		Vec2 pt = Vec2((p.x - layout.origin.x) / layout.size.x,
-			(p.y - layout.origin.y) / layout.size.y);
-		float q = M.b0 * pt.x + M.b1 * pt.y;
-		float r = M.b2 * pt.x + M.b3 * pt.y;
-		return Hexf(q, r);
-	}
-	*/
-
 	Hexi hexRound(Hexf h) {
 		auto q = (int)round(h.q());
 		auto r = (int)round(h.r());
@@ -78,13 +67,6 @@ namespace vin::hex {
 		} else if (r_diff > s_diff) {
 			r = -q - s;
 		}
-		return {q, r};
-	}
-
-	Hexi oddToCube(int x, int y) {
-		auto q = x - (y - (y & 1)) / 2;
-		auto s = y;
-		auto r = -q - s;
 		return {q, r};
 	}
 

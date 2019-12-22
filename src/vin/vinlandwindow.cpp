@@ -3,6 +3,31 @@
 #include "logger.h"
 #include "imguiextra.h"
 
+#include <filesystem>
+#include <regex>
+
+namespace fs = std::filesystem;
+
+namespace ImGui {
+
+	IMGUI_API bool Checkbox(vin::Action& action, bool active) {
+		if (Checkbox(action.getMenuName(), &active)) {
+			action();
+			return true;
+		}
+		return false;
+	}
+
+	IMGUI_API bool MenuItem(vin::Action& action) {
+		if (MenuItem(action.getMenuName())) {
+			action();
+			return true;
+		}
+		return false;
+	}
+
+}
+
 namespace vin {
 
 	namespace {
@@ -30,9 +55,49 @@ namespace vin {
 			return true;
 		}
 
+		std::vector<std::string> listFiles(const std::string& regexStr) {
+			std::vector<std::string> files;
+			try {				
+				std::regex jsonRegex{regexStr};
+				for (auto p : fs::recursive_directory_iterator("images")) {
+					auto pathStr = p.path().string();
+					if (std::regex_match(pathStr, jsonRegex)) {
+						std::replace(pathStr.begin(), pathStr.end(), '\\', '/');
+						files.push_back(pathStr);
+					}
+				}
+			} catch (std::exception& e) {
+				logger()->warn(e.what());
+			}
+			return files;
+		}
+
+		std::vector<std::string> listJsonFiles() {
+			return listFiles(".*.([j][s][o][n])");
+		}
+
+		std::vector<std::string> listImageFiles() {
+			return listFiles(".*.([Pp][Nn][Gg]|[Jj][Pp][Ee]?[Gg]|[Bb][Mm][Pp])");
+		}
+
 	}
 
 	VinlandWindow::VinlandWindow() {
+		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid   g", [&]() {
+			hexCanvas_.setGrid(!hexCanvas_.isGrid());
+		}});
+		clearAction_ = actionManager_.add(Action{SDLK_c, "Clear tiles  c", [&]() {
+			hexCanvas_.clear();
+		}});
+		xyCoordsAction_ = actionManager_.add(Action{SDLK_x, "XY - Coords  x", [&]() {
+			hexCanvas_.setXYCoords(!hexCanvas_.isXYCoords());
+		}});
+		hexCoordsAction_ = actionManager_.add(Action{SDLK_h, "HEX - Coords  h", [&]() {
+			hexCanvas_.setHexCoords(!hexCanvas_.isHexCoords());
+		}});
+		generateMapAction_ = actionManager_.add(Action{SDLK_h, "Generate map    r", [&]() {
+			hexCanvas_.clearAndGenerateMap();
+		}});
 	}
 
 	VinlandWindow::~VinlandWindow() {
@@ -40,7 +105,7 @@ namespace vin {
 
 	void VinlandWindow::eventUpdate(const SDL_Event& windowEvent) {
 		sdl::ImGuiWindow::eventUpdate(windowEvent);
-		hexWorldCanvas.eventUpdate(windowEvent);
+		hexCanvas_.eventUpdate(windowEvent);		
 
 		switch (windowEvent.type) {
             case SDL_WINDOWEVENT:
@@ -52,6 +117,7 @@ namespace vin {
                 }
                 break;
             case SDL_KEYDOWN:
+				actionManager_.update(windowEvent.key.keysym.sym);
                 switch (windowEvent.key.keysym.sym) {
                     case SDLK_ESCAPE:
                         sdl::Window::quit();
@@ -64,36 +130,40 @@ namespace vin {
 		}
 	}
 
-	void VinlandWindow::imGuiPreUpdate(double deltaTime) {
-		hexWorldCanvas.drawCanvas(deltaTime);
+	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
+		hexCanvas_.drawCanvas(deltaTime);
 	}
 
-	void VinlandWindow::showExampleMenuFile()
-	{
-		ImGui::MenuItem("(dummy menu)", NULL, false, false);
-		/*
-		if (ImGui::MenuItem("New")) {}
-		if (ImGui::MenuItem("Open", "Ctrl+O")) {}
-		if (ImGui::BeginMenu("Open Recent"))
+	void VinlandWindow::addFileInMenuBar() {
+		static bool menuActive = false;
+		if (bool tmp = menuActive; menuActive = ImGui::BeginMenu("File", true))
 		{
-			ImGui::MenuItem("fish_hat.c");
-			ImGui::MenuItem("fish_hat.inl");
-			ImGui::MenuItem("fish_hat.h");
-			if (ImGui::BeginMenu("More.."))
-			{
-				ImGui::MenuItem("Hello");
-				ImGui::MenuItem("Sailor");
-				if (ImGui::BeginMenu("Recurse.."))
-				{
-					showExampleMenuFile();
-					ImGui::EndMenu();
+			if (menuActive != tmp) {
+				jsonFiles_ = listJsonFiles();
+				for (auto str : jsonFiles_) {
+					std::cout << str << "\n";
 				}
-				ImGui::EndMenu();
+			}
+		} else {
+			return;
+		}
+
+		if (ImGui::MenuItem("New map")) {}
+		if (ImGui::BeginMenu("Open"))
+		{
+			for (const auto& file : jsonFiles_) {
+				bool selectedFile = (file == HexData::getInstance().getLoadedFilename());
+				if (ImGui::MenuItem(file.c_str(), nullptr, selectedFile)) {
+					if (!selectedFile) {
+						logger()->info("[VinlandWindow] {}", file);
+						HexData::getInstance().load(file);
+						initData();
+					}
+				}
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::MenuItem("Save", "Ctrl+S")) {}
-		if (ImGui::MenuItem("Save As..")) {}
+		/*
 		ImGui::Separator();
 		if (ImGui::BeginMenu("Options"))
 		{
@@ -126,38 +196,68 @@ namespace vin {
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Disabled", false)) // Disabled
-		{
-			IM_ASSERT(0);
-		}
-		if (ImGui::MenuItem("Checked", NULL, true)) {}
 		*/
 		if (ImGui::MenuItem("Quit", "Alt+F4")) {
 			quit();
 		}
+
+		ImGui::EndMenu();
 	}
 
-    void VinlandWindow::imGuiUpdate(double deltaTime) {
+	void VinlandWindow::addEditInMenuBar() {
+		if (!ImGui::BeginMenu("Edit", true)) {
+			return;
+		}
+		if (ImGui::MenuItem("Undo")) {}
+		if (ImGui::MenuItem("Redo")) {}
+		ImGui::MenuItem(clearAction_);
+		ImGui::MenuItem(generateMapAction_);
+		ImGui::Separator();
+		ImGui::EndMenu();
+	}
+
+	void VinlandWindow::addViewInMenuBar() {
+		if (!ImGui::BeginMenu("View", true)) {
+			return;
+		}
+		if (ImGui::BeginMenu("Zoom")) {
+			if (ImGui::MenuItem("Zoom in")) {
+				hexCanvas_.zoomIn();
+			}
+			if (ImGui::MenuItem("Zoom out")) {
+				hexCanvas_.zoomOut();
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::Separator();
+		
+		
+		ImGui::Checkbox(gridAction_, hexCanvas_.isGrid());	
+		ImGui::Checkbox(xyCoordsAction_, hexCanvas_.isXYCoords());
+		ImGui::Checkbox(hexCoordsAction_, hexCanvas_.isHexCoords());
+
+		ImGui::Separator();
+		ImGui::EndMenu();
+	}
+
+	void VinlandWindow::showMenuBar() {
+		ImGui::BeginMenuBar();
+
+		addFileInMenuBar();
+		addEditInMenuBar();
+		addViewInMenuBar();
+
+		ImGui::EndMenuBar();
+	}
+
+    void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
 		beginMain();
 
-		ImGui::BeginMenuBar();
-		static bool menu = true;
-		
-		if (ImGui::BeginMenu("Menu", &menu))
-		{
-			showExampleMenuFile();
-			ImGui::EndMenu();
-		}		
-		ImGui::EndMenuBar();
+		showMenuBar();
 
 		ImGui::Text("KEYS:");
 		ImGui::Text("ARROWS - Move window");
 		ImGui::Text("PAGE_DOWN/UP - Tilt camera");
-		ImGui::Text("C - Clear tiles");
-		ImGui::Text("G - Grid on/off");
-		ImGui::Text("x - View XY Coords");
-		ImGui::Text("h - View Hex Coords");
-		ImGui::Text("r - Clear and generate map");
 		ImGui::NewLine();
 
 		ImGui::Text("MOUSE:");
@@ -167,7 +267,7 @@ namespace vin {
 		//ImGui::Text("Left/right click - Replace with Next/Previous tile");
 		drawHexTypesButtons();
 
-		hexWorldCanvas.drawImgui();
+		hexCanvas_.drawImgui();
 		endMain();
     }
 
@@ -183,10 +283,10 @@ namespace vin {
 			auto& hexImages = hexImageType.hexImages_;
 			const ImVec2 buttonSize{50.f, 50.f};
 			if (ImGui::ImageButton(hexImages[index].getImage(), buttonSize)) {
-				if (hexImages[index].getImage() == hexWorldCanvas.currentHexSprite()) {
+				if (hexImages[index].getImage() == hexCanvas_.currentHexSprite()) {
 					index = (index + 1) % static_cast<int>(hexImages.size());
 				}
-				hexWorldCanvas.activateHexagon(hexImages[index]);
+				hexCanvas_.activateHexagon(hexImages[index]);
 			}
 			HelpMarker(hexImages[index].getFilename());
 			const float lastButton_x2 = ImGui::GetItemRectMax().x;
@@ -199,8 +299,6 @@ namespace vin {
 	}
 
 	void VinlandWindow::initOpenGl() {
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_MULTISAMPLE);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -209,28 +307,39 @@ namespace vin {
 	}
 
 	void VinlandWindow::initPreLoop() {
+		//glEnable(GL_DEPTH_TEST);
+		glEnable(GL_MULTISAMPLE);
+
         sdl::ImGuiWindow::initPreLoop();
 		setShowDemoWindow(false);
+		initData();
+	}
+	
+	void VinlandWindow::initData() {
+		tileLexicon_.clear();
+		hexTypes_.clear();
+		hexCanvas_.clear();
+
 		auto [w, h] = sdl::ImGuiWindow::getSize();
-        glViewport(0, 0, w, h);
+		glViewport(0, 0, w, h);
 
 		auto hexImages = HexData::getInstance().loadHexImages();
 		tileLexicon_.add(hexImages);
-		hexWorldCanvas.setTileLexicon(tileLexicon_);
+		hexCanvas_.setTileLexicon(tileLexicon_);
 
 		for (const auto& image : hexImages) {
 			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
 		}
 
-		int size = hexImages.size();
-		int nbrOfEach = 100.0/size;
+		int size = static_cast<int>(hexImages.size());
+		int nbrOfEach = static_cast<int>(100.0 / size);
 		for (int i = 0; i < size; ++i) {
 			for (int j = 0; j < nbrOfEach; ++j) {
 				hexImages.push_back(hexImages[i]);
 			}
 		}
 
-		hexWorldCanvas.setDeck(hexImages);
+		hexCanvas_.setDeck(hexImages);
 	}
 
 	void VinlandWindow::beginMain() {

@@ -33,8 +33,10 @@ set(SOURCES
 	src/vin/hex/hexsideskey.h
 	src/vin/hex/tileboard.cpp
 	src/vin/hex/tileboard.h
-	src/vin/hex/mapgenerator.h
 	src/vin/hex/mapgenerator.cpp
+	src/vin/hex/mapgenerator.h
+	src/vin/hex/shape.cpp
+	src/vin/hex/shape.h
 
 	src/vin/batchmanager.cpp
 	src/vin/batchmanager.h
@@ -45,6 +47,8 @@ set(SOURCES
 	src/vin/graphic.cpp
 	src/vin/graphic.h
 	
+	src/vin/action.cpp
+	src/vin/action.h
 	src/vin/hexagonbatch.cpp
 	src/vin/hexagonbatch.h
 	src/vin/hexdata.cpp
@@ -54,6 +58,8 @@ set(SOURCES
 	src/vin/heximage.h
 	src/vin/imguiextra.cpp
 	src/vin/imguiextra.h
+	src/vin/hexcanvas.cpp
+	src/vin/hexcanvas.h
 	src/vin/logger.h
 	src/vin/main.cpp
 	src/vin/shader.cpp

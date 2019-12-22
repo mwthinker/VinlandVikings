@@ -56,19 +56,19 @@ namespace vin {
 		return grid_;
 	}
 
-	void TilesGraphic::setHexCoord(bool hexCoord) {
+	void TilesGraphic::setHexCoords(bool hexCoord) {
 		dirty_ |= updateValue(hexCoord_, hexCoord);
 	}
 
-	bool TilesGraphic::isHexCoord() const {
+	bool TilesGraphic::isHexCoords() const {
 		return hexCoord_;
 	}
 
-	void TilesGraphic::setXYCoord(bool xyCoord) {
+	void TilesGraphic::setXYCoords(bool xyCoord) {
 		dirty_ |= updateValue(xyCoord_, xyCoord);
 	}
 
-	bool TilesGraphic::isXYCoord() const {
+	bool TilesGraphic::isXYCoords() const {
 		return xyCoord_;
 	}
 

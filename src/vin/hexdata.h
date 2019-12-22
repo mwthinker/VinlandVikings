@@ -18,15 +18,19 @@ namespace vin {
 
 	class HexData {
 	public:
-		static HexData& getInstance(const std::string& filename = "");
+		static HexData& getInstance();
 
 		HexData(HexData const&) = delete;
 		HexData& operator=(const HexData&) = delete;
 
+		void load(const std::string& jsonFile);
+		
 		void save();
 
 		const sdl::Font& loadFont(const std::string& file, int fontSize);
 		SpriteView loadSprite(const std::string& file);
+
+		const std::string& getLoadedFilename() const;
 
 		const sdl::Font& getDefaultFont(int size);
 
@@ -36,7 +40,7 @@ namespace vin {
 		class Impl;
 		std::unique_ptr<Impl> impl_;
 
-		HexData(const std::string& filename);
+		HexData();
 	};
 
 }

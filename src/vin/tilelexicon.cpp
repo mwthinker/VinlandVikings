@@ -34,4 +34,9 @@ namespace vin {
 		return it->second;
 	}
 
+	void TileLexicon::clear() {
+		map_.clear();
+		invariantMap_.clear();
+	}
+
 } // Namespace vin.

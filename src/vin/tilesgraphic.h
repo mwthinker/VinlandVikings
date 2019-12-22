@@ -25,11 +25,11 @@ namespace vin {
 		void setGrid(bool grid);
 		bool isGrid() const;
 
-		void setHexCoord(bool hexCoord);
-		bool isHexCoord() const;
+		void setHexCoords(bool hexCoord);
+		bool isHexCoords() const;
 
-		void setXYCoord(bool xyCoord);
-		bool isXYCoord() const;
+		void setXYCoords(bool xyCoord);
+		bool isXYCoords() const;
 
 		void fillTile(hex::Hexi hex, const Tile& tile);
 		void fillTile(hex::Hexi hex, const Color& color);

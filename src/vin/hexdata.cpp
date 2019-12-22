@@ -49,10 +49,12 @@ namespace vin {
 
 	class HexData::Impl {
 	public:
-		Impl(const std::string& filename);
+		Impl();
 
 		Impl(HexData const&) = delete;
 		Impl& operator=(const HexData&) = delete;
+
+		void load(const std::string& jsonFile);
 
 		void save();
 
@@ -63,7 +65,11 @@ namespace vin {
 
 		std::vector<HexImage> loadHexImages();
 
+		const std::string& getLoadedFilename() const;
+
 	private:
+		void clear();
+
 		struct Image {
 			sdl::Texture texture;
 			float x{};
@@ -79,17 +85,21 @@ namespace vin {
 		vin_config::HexTiles hexTiles_;
 	};
 
-	HexData::HexData(const std::string& filename)
-		: impl_{std::make_unique<HexData::Impl>(filename)} {
+	HexData::HexData()
+		: impl_{std::make_unique<HexData::Impl>()} {
 	}
 
-	HexData& HexData::getInstance(const std::string& filename) {
-		static HexData instance{filename};
+	HexData& HexData::getInstance() {
+		static HexData instance;
 		return instance;
 	}
 
 	void HexData::save() {
 		impl_->save();
+	}
+
+	void HexData::load(const std::string& jsonFile) {
+		impl_->load(jsonFile);
 	}
 
 	const sdl::Font& HexData::loadFont(const std::string& file, int fontSize) {
@@ -104,16 +114,24 @@ namespace vin {
 		return impl_->getDefaultFont(size);
 	}
 
+	const std::string& HexData::getLoadedFilename() const {
+		return impl_->getLoadedFilename();
+	}
+
 	std::vector<HexImage> HexData::loadHexImages() {
 		return impl_->loadHexImages();
 	}
 
-	HexData::Impl::Impl(const std::string& filename) {
+	HexData::Impl::Impl() {
+	}
+
+	void HexData::Impl::load(const std::string& jsonFile) {
+		clear();
 		if (std::filesystem::exists("USE_APPLICATION_JSON")) {
-			jsonPath_ = filename;
+			jsonPath_ = jsonFile;
 		} else {
 			// Find default path to save/load file from.
-			jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + filename;
+			jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + jsonFile;
 		}
 
 		std::ifstream input{jsonPath_, std::ios::in | std::ios::binary};
@@ -125,12 +143,12 @@ namespace vin {
 		pbu::JsonParseOptions parseOptions;
 		parseOptions.case_insensitive_enum_parsing = false;
 		parseOptions.ignore_unknown_fields = false;
-		
+
 		std::string jsonContent{std::istreambuf_iterator<char>{input}, std::istreambuf_iterator<char>{}};
 		auto status = pbu::JsonStringToMessage(jsonContent, &hexTiles_, parseOptions);
 
 		if (!status.ok()) {
-			logger()->warn("Jsonfile {}, protobuf parsing error: {}", filename, status.message().ToString());
+			logger()->warn("Jsonfile {}, protobuf parsing error: {}", jsonFile, status.message().ToString());
 			logger()->warn("Error message: {}", status.error_message().ToString());
 		}
 	}
@@ -196,6 +214,18 @@ namespace vin {
 
 	const sdl::Font& HexData::Impl::getDefaultFont(int size) {
 		return {};
+	}
+
+	const std::string& HexData::Impl::getLoadedFilename() const {
+		return jsonPath_;
+	}
+
+	void HexData::Impl::clear() {
+		jsonPath_ = "";
+		sounds_.clear();
+		fonts_.clear();
+		images_.clear();
+		hexTiles_.Clear();
 	}
 
 } // Namespace vin.

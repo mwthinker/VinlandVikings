@@ -1,11 +1,11 @@
 #ifndef VINLANDVIKINGS_VIN_VINLANDWINDOW_H
 #define VINLANDVIKINGS_VIN_VINLANDWINDOW_H
 
-#include "hexagonbatch.h"
-#include "canvas.h"
+#include "hexcanvas.h"
 #include "hexdata.h"
 #include "hex/hexsideskey.h"
 #include "tilelexicon.h"
+#include "action.h"
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
@@ -14,7 +14,7 @@
 #include <vector>
 #include <map>
 
-namespace vin {
+namespace vin {	
 
 	struct HexImageTypeVector {
 		int index_{0};
@@ -39,21 +39,35 @@ namespace vin {
 
 		void initOpenGl() override;
 
-		void imGuiPreUpdate(double deltaTime) override;
+		void imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) override;
 
-        void imGuiUpdate(double deltaTime) override;
+        void imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) override;
 
 		void eventUpdate(const SDL_Event& windowEvent) override;
 
 		void drawHexTypesButtons();
 
-		void showExampleMenuFile();
+		void showMenuBar();
+		
+		void addFileInMenuBar();
+		void addEditInMenuBar();
+		void addViewInMenuBar();
 
-		HexWorldCanvas hexWorldCanvas;
+		void initData();
+
+		HexCanvas hexCanvas_;
 		Page page_{Page::START};
-		HexagonBatch hexagonBatch_;
 		TileLexicon tileLexicon_;
 		HexImagesMap hexTypes_;
+
+		std::vector<std::string> jsonFiles_;
+		ActionManager actionManager_;
+		
+		Action gridAction_;
+		Action clearAction_;
+		Action xyCoordsAction_;
+		Action hexCoordsAction_;
+		Action generateMapAction_;
 	};
 
 } // Namespace vin.

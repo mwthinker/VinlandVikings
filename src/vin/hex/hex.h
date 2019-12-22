@@ -1,5 +1,5 @@
-#ifndef VINLANDVIKINGS_VIN_HEX_H
-#define VINLANDVIKINGS_VIN_HEX_H
+#ifndef VINLANDVIKINGS_VIN_HEX_HEX_H
+#define VINLANDVIKINGS_VIN_HEX_HEX_H
 
 #include <type_traits>
 
@@ -81,4 +81,4 @@ namespace vin::hex {
 
 } // Namespace vin::hex.
 
-#endif // VINLANDVIKINGS_VIN_HEX_H
+#endif // VINLANDVIKINGS_VIN_HEX_HEX_H

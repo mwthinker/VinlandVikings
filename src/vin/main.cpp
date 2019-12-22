@@ -68,7 +68,8 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	vin::HexData::getInstance(config.filename);
+	auto& hexData = vin::HexData::getInstance();
+	hexData.load(config.filename);
 
 	try {
 		const sdl::InitSdl SDL;

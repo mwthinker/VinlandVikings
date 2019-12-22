@@ -1,5 +1,5 @@
-#ifndef VINLANDVIKINGS_VIN_HEXTILEMAP_H
-#define VINLANDVIKINGS_VIN_HEXTILEMAP_H
+#ifndef VINLANDVIKINGS_VIN_HEX_HEXTILEMAP_H
+#define VINLANDVIKINGS_VIN_HEX_HEXTILEMAP_H
 
 #include "hexagon.h"
 #include "../types.h"
@@ -12,12 +12,6 @@
 #include <unordered_map>
 
 namespace vin::hex {
-
-	std::vector<Hexi> createHexShape(int radiusNbr);
-
-	std::vector<Hexi> createParallelogramShape(int columns, int rows);
-
-	std::vector<Hexi> createRectangleShape(int columns, int rows);
 
 	class TileBoard;
 	std::vector<hex::Hexi> findAllEmptyNeighbors(const hex::TileBoard& board, const std::vector<hex::Hexi>& tiles);
