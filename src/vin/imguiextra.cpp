@@ -92,6 +92,22 @@ namespace ImGui {
 
 	}
 
+	IMGUI_API bool Checkbox(vin::Action& action, bool active) {
+		if (Checkbox(action.getMenuName(), &active)) {
+			action();
+			return true;
+		}
+		return false;
+	}
+
+	IMGUI_API bool MenuItem(vin::Action& action) {
+		if (MenuItem(action.getMenuName())) {
+			action();
+			return true;
+		}
+		return false;
+	}
+
 	IMGUI_API void Bar(float height, const ImColor& color) {
 		ImVec2 size = ImGui::GetWindowSize();
 		ImGui::GetWindowDrawList()->AddRectFilled({0, 0}, {size.x, height}, color);

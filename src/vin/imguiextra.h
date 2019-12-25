@@ -1,12 +1,18 @@
 #ifndef VINLANDVIKINGS_VIN__IMGUIEXTRA_H
 #define VINLANDVIKINGS_VIN__IMGUIEXTRA_H
 
-#include <imgui.h>
-
+#include "action.h"
 #include "textureview.h"
+
 #include <sdl/sprite.h>
 
+#include <imgui.h>
+
 namespace ImGui {
+
+	IMGUI_API bool Checkbox(vin::Action& action, bool active);
+
+	IMGUI_API bool MenuItem(vin::Action& action);
 
 	IMGUI_API void Bar(float height, const ImColor& color);
 

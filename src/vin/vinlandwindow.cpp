@@ -8,26 +8,6 @@
 
 namespace fs = std::filesystem;
 
-namespace ImGui {
-
-	IMGUI_API bool Checkbox(vin::Action& action, bool active) {
-		if (Checkbox(action.getMenuName(), &active)) {
-			action();
-			return true;
-		}
-		return false;
-	}
-
-	IMGUI_API bool MenuItem(vin::Action& action) {
-		if (MenuItem(action.getMenuName())) {
-			action();
-			return true;
-		}
-		return false;
-	}
-
-}
-
 namespace vin {
 
 	namespace {
@@ -83,19 +63,19 @@ namespace vin {
 	}
 
 	VinlandWindow::VinlandWindow() {
-		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid   g", [&]() {
+		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid", [&]() {
 			hexCanvas_.setGrid(!hexCanvas_.isGrid());
 		}});
-		clearAction_ = actionManager_.add(Action{SDLK_c, "Clear tiles  c", [&]() {
+		clearAction_ = actionManager_.add(Action{SDLK_c, "Clear tiles", [&]() {
 			hexCanvas_.clear();
 		}});
-		xyCoordsAction_ = actionManager_.add(Action{SDLK_x, "XY - Coords  x", [&]() {
+		xyCoordsAction_ = actionManager_.add(Action{SDLK_x, "XY", [&]() {
 			hexCanvas_.setXYCoords(!hexCanvas_.isXYCoords());
 		}});
-		hexCoordsAction_ = actionManager_.add(Action{SDLK_h, "HEX - Coords  h", [&]() {
+		hexCoordsAction_ = actionManager_.add(Action{SDLK_h, "HEX", [&]() {
 			hexCanvas_.setHexCoords(!hexCanvas_.isHexCoords());
 		}});
-		generateMapAction_ = actionManager_.add(Action{SDLK_h, "Generate map    r", [&]() {
+		generateMapAction_ = actionManager_.add(Action{SDLK_r, "Generate map", [&]() {
 			hexCanvas_.clearAndGenerateMap();
 		}});
 	}
@@ -108,22 +88,22 @@ namespace vin {
 		hexCanvas_.eventUpdate(windowEvent);		
 
 		switch (windowEvent.type) {
-            case SDL_WINDOWEVENT:
-                switch (windowEvent.window.event) {
-                    case SDL_WINDOWEVENT_LEAVE:
-                        break;
-                    case SDL_WINDOWEVENT_CLOSE:
-                        sdl::Window::quit();
-                }
-                break;
-            case SDL_KEYDOWN:
+			case SDL_WINDOWEVENT:
+				switch (windowEvent.window.event) {
+					case SDL_WINDOWEVENT_LEAVE:
+						break;
+					case SDL_WINDOWEVENT_CLOSE:
+						sdl::Window::quit();
+				}
+				break;
+			case SDL_KEYDOWN:
 				actionManager_.update(windowEvent.key.keysym.sym);
-                switch (windowEvent.key.keysym.sym) {
-                    case SDLK_ESCAPE:
-                        sdl::Window::quit();
-                        break;
-                }
-                break;
+				switch (windowEvent.key.keysym.sym) {
+					case SDLK_ESCAPE:
+						sdl::Window::quit();
+						break;
+				}
+				break;
 			case SDL_QUIT:
 				sdl::Window::quit();
 				break;
@@ -205,6 +185,8 @@ namespace vin {
 	}
 
 	void VinlandWindow::addEditInMenuBar() {
+		ImGui::PushItemWidth(600);
+
 		if (!ImGui::BeginMenu("Edit", true)) {
 			return;
 		}
@@ -214,12 +196,14 @@ namespace vin {
 		ImGui::MenuItem(generateMapAction_);
 		ImGui::Separator();
 		ImGui::EndMenu();
+		ImGui::PopItemWidth();
 	}
 
 	void VinlandWindow::addViewInMenuBar() {
 		if (!ImGui::BeginMenu("View", true)) {
 			return;
 		}
+
 		if (ImGui::BeginMenu("Zoom")) {
 			if (ImGui::MenuItem("Zoom in")) {
 				hexCanvas_.zoomIn();
@@ -238,14 +222,18 @@ namespace vin {
 
 		ImGui::Separator();
 		ImGui::EndMenu();
+		
 	}
 
 	void VinlandWindow::showMenuBar() {
 		ImGui::BeginMenuBar();
-
+		
+		
 		addFileInMenuBar();
 		addEditInMenuBar();
 		addViewInMenuBar();
+		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(50.f, 50.f));
+		//ImGui::PopStyleVar();
 
 		ImGui::EndMenuBar();
 	}

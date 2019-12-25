@@ -275,17 +275,6 @@ namespace vin {
 					case SDLK_PAGEDOWN:
 						camera_.angleDelta(0.1f);
 						break;
-					case SDLK_g:
-						//tilesGraphic_.setGrid(!tilesGraphic_.isGrid());
-						break;
-					case SDLK_x:
-						tilesGraphic_.setXYCoords(!tilesGraphic_.isXYCoords());
-						break;
-					case SDLK_h:
-						tilesGraphic_.setHexCoords(!tilesGraphic_.isHexCoords());
-						break;
-					case SDLK_r:
-						clearAndGenerateMap();
 					break;
 				}
 			}

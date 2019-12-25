@@ -38,7 +38,7 @@ namespace vin {
 		void clear();
 
 	private:
-		std::unordered_multimap<SDL_Keycode, Action> callbacks_;
+		std::unordered_multimap<SDL_Keycode, Action> actions_;
 	};
 
 } // Namespace vin.
