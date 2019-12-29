@@ -96,6 +96,13 @@ namespace vin {
 						sdl::Window::quit();
 				}
 				break;
+			case SDL_DROPFILE: { // In case if dropped file
+				std::string dropFile{windowEvent.drop.file};
+				hexImage_ = HexData::getInstance().loadSprite(dropFile);
+				logger()->warn(dropFile);
+				//SDL_free(windowEvent.drop.file).
+				break;
+			}
 			case SDL_KEYDOWN:
 				actionManager_.update(windowEvent.key.keysym.sym);
 				switch (windowEvent.key.keysym.sym) {
@@ -129,6 +136,12 @@ namespace vin {
 		}
 
 		if (ImGui::MenuItem("New map")) {}
+		
+		bool popup = false;
+		if (ImGui::MenuItem("Add hex image")) {
+			popup = true;
+		}			
+		
 		if (ImGui::BeginMenu("Open"))
 		{
 			for (const auto& file : jsonFiles_) {
@@ -182,11 +195,13 @@ namespace vin {
 		}
 
 		ImGui::EndMenu();
+
+		if (popup) {
+			ImGui::OpenPopup("Deleteee");
+		}
 	}
 
 	void VinlandWindow::addEditInMenuBar() {
-		ImGui::PushItemWidth(600);
-
 		if (!ImGui::BeginMenu("Edit", true)) {
 			return;
 		}
@@ -196,7 +211,6 @@ namespace vin {
 		ImGui::MenuItem(generateMapAction_);
 		ImGui::Separator();
 		ImGui::EndMenu();
-		ImGui::PopItemWidth();
 	}
 
 	void VinlandWindow::addViewInMenuBar() {
@@ -226,19 +240,43 @@ namespace vin {
 	}
 
 	void VinlandWindow::showMenuBar() {
-		ImGui::BeginMenuBar();
-		
+		if (!ImGui::BeginMenuBar()) {
+			return;
+		}
 		
 		addFileInMenuBar();
 		addEditInMenuBar();
 		addViewInMenuBar();
 		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(50.f, 50.f));
 		//ImGui::PopStyleVar();
+		showAddHexImagePopup();
 
 		ImGui::EndMenuBar();
 	}
 
-    void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
+	void VinlandWindow::showAddHexImagePopup() {
+		if (ImGui::BeginPopupModal("Deleteee", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
+			ImGui::Separator();
+
+			static bool flatHex = false;
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{0, 0});
+			ImGui::Checkbox("Flat hex", &flatHex);
+			ImGui::PopStyleVar();
+
+			ImGui::Image(hexImage_, {300, 300});
+			ImGui::Image(hexImage_, {100, 100});
+
+			if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+			ImGui::SetItemDefaultFocus();
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+			ImGui::EndPopup();
+		}
+	}
+
+	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
 		beginMain();
 
 		showMenuBar();
@@ -299,7 +337,7 @@ namespace vin {
 		glEnable(GL_MULTISAMPLE);
 
         sdl::ImGuiWindow::initPreLoop();
-		setShowDemoWindow(false);
+		setShowDemoWindow(true);
 		initData();
 	}
 	

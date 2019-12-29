@@ -14,7 +14,7 @@ message HexTile {
     string image = 1;
     bool flat = 2;
     int32 size = 3;    
-	repeated HexSide sides = 4;
+    repeated HexSide sides = 4;
 }
 
 message HexTiles {
