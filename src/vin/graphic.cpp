@@ -26,7 +26,7 @@ namespace vin {
 			return batch.getBatchView(GL_TRIANGLES);
 		}
 
-		sdl::BatchView<Vertex> addIndexedHexagonImage(sdl::Batch<Vertex>& batch, Vec2 center, float radius, const SpriteView& sprite, float startAngle) {
+		sdl::BatchView<Vertex> addIndexedHexagonImage(sdl::Batch<Vertex>& batch, Vec2 center, float radius, const sdl::TextureView& sprite, float startAngle) {
 			batch.startBatchView();
 			batch.startAdding();
 
@@ -99,12 +99,12 @@ namespace vin {
 
 	}
 
-	Graphic::BatchData::BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex)
-		: batchView_{batchView}, matrixIndex_{matrixIndex} {
+	Graphic::BatchData::BatchData(BatchView&& batchView, int matrixIndex)
+		: batchView{batchView}, matrixIndex{matrixIndex} {
 	}
-
-	Graphic::BatchData::BatchData(TextureView texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex)
-		: texture_{texture}, batchView_{batchView}, matrixIndex_{matrixIndex} {
+	
+	Graphic::BatchData::BatchData(BatchView&& batchView, const sdl::TextureView& texture, int matrixIndex)
+		: texture{texture}, batchView{batchView}, matrixIndex{matrixIndex} {
 	}
 
 	Graphic::Graphic() {
@@ -137,8 +137,8 @@ namespace vin {
 		addCircle(center, radius, color, 6, startAngle);
 	}
 
-	void Graphic::addHexagonImage(Vec2 center, float radius, const SpriteView& sprite, float startAngle) {
-		batches_.emplace_back(sprite, addIndexedHexagonImage(batch_, center, radius, sprite, startAngle), currentMatrix_);
+	void Graphic::addHexagonImage(Vec2 center, float radius, const sdl::TextureView& sprite, float startAngle) {
+		batches_.emplace_back(addIndexedHexagonImage(batch_, center, radius, sprite, startAngle), sprite, currentMatrix_);
 	}
 
 	void Graphic::addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle) {
@@ -162,17 +162,17 @@ namespace vin {
 	}
 
 	void Graphic::draw(Shader& shader, const BatchData& batchData) {
-		if (const auto& texture = batchData.texture_; texture) {
+		if (const auto& texture = batchData.texture; texture) {
 			shader.setTextureId(1);
-			texture.bind();
+			glBindTexture(GL_TEXTURE_2D, texture);
 		} else {
 			shader.setTextureId(-1);
 		}
-		if (currentMatrix_ != batchData.matrixIndex_) {
-			currentMatrix_ = batchData.matrixIndex_;
+		if (currentMatrix_ != batchData.matrixIndex) {
+			currentMatrix_ = batchData.matrixIndex;
 			shader.setMatrix(matrixes_[currentMatrix_]);
 		}
-		batch_.draw(batchData.batchView_);
+		batch_.draw(batchData.batchView);
 	}
 
 	void Graphic::clearDraw() {

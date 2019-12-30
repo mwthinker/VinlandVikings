@@ -34,7 +34,7 @@ namespace ImGui {
 			return ImGui::GetIO().MouseClicked[1];
 		}
 
-		void addImageQuad(ImDrawList* drawList, const vin::SpriteView& sprite,
+		void addImageQuad(ImDrawList* drawList, const sdl::TextureView& sprite,
 			const ImVec2& pos, ImVec2& size, float angle, const ImColor& color) {
 
 			ImVec2 delta = {size.x * std::cos(angle), size.y * std::sin(angle)};
@@ -62,7 +62,7 @@ namespace ImGui {
 			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
 		}
 
-		void addCenteredImageQuad(ImDrawList* drawList, const vin::SpriteView& sprite,
+		void addCenteredImageQuad(ImDrawList* drawList, const sdl::TextureView& sprite,
 			const ImVec2& pos, ImVec2& size, float angle, const ImColor& color) {
 
 			ImVec2 delta = {size.x * std::cos(angle), size.y * std::sin(angle)};
@@ -113,12 +113,12 @@ namespace ImGui {
 		ImGui::GetWindowDrawList()->AddRectFilled({0, 0}, {size.x, height}, color);
 	}
 
-	IMGUI_API void Image(const vin::SpriteView& sprite, const ImVec2& size, const ImVec4& tint_col,
+	IMGUI_API void Image(const sdl::TextureView& sprite, const ImVec2& size, const ImVec4& tint_col,
 		const ImVec4& border_col) {
 		Image((ImTextureID)(intptr_t) sprite, size);
 	}
 
-	IMGUI_API void Image(const vin::SpriteView& sprite, const ImVec2& pos, ImVec2& size, float rotate, const ImColor& color) {
+	IMGUI_API void Image(const sdl::TextureView& sprite, const ImVec2& pos, ImVec2& size, float rotate, const ImColor& color) {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		drawList->PushTextureID((ImTextureID)(intptr_t) sprite);
 		drawList->PrimReserve(6, 4);
@@ -126,12 +126,12 @@ namespace ImGui {
 		drawList->PopTextureID();
 	}
 
-	IMGUI_API bool ImageButton(const vin::SpriteView& sprite, const ImVec2& size, const ImVec4& tint_col,
+	IMGUI_API bool ImageButton(const sdl::TextureView& sprite, const ImVec2& size, const ImVec4& tint_col,
 		const ImVec4& border_col) {
 		return ImageButton((ImTextureID)(intptr_t) sprite, size);
 	}
 
-	IMGUI_API void ImageBackground(const vin::SpriteView& sprite) {
+	IMGUI_API void ImageBackground(const sdl::TextureView& sprite) {
 		ImVec2 size = ImGui::GetWindowSize();
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		drawList->PushTextureID((ImTextureID)(intptr_t) sprite);
@@ -140,8 +140,8 @@ namespace ImGui {
 		drawList->PopTextureID();
 	}
 
-	IMGUI_API bool ManButton(const char* idStr, int& nbr, int max, const vin::SpriteView& noMan,
-		const vin::SpriteView& man,	const ImVec2& size, ImColor color) {
+	IMGUI_API bool ManButton(const char* idStr, int& nbr, int max, const sdl::TextureView& noMan,
+		const sdl::TextureView& man,	const ImVec2& size, ImColor color) {
 		
 		ImVec2 p = GetCursorScreenPos();
 

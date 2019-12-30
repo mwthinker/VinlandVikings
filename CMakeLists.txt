@@ -71,7 +71,6 @@ set(SOURCES
 	src/vin/tilesgraphic.h
 	src/vin/tile.h
 	src/vin/tile.cpp
-	src/vin/textureview.h
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h

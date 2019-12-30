@@ -5,11 +5,12 @@
 #include "shader.h"
 #include "logger.h"
 #include "vertex.h"
-#include "textureview.h"
 
 #include <sdl/sprite.h>
 #include <sdl/batch.h>
 #include <sdl/vertexarrayobject.h>
+#include <sdl/textureview.h>
+
 #include <array>
 #include <functional>
 
@@ -29,27 +30,27 @@ namespace vin {
 
 		void addCircle(Vec2 center, float radius, Color color, const int iterations = 40, float startAngle = 0);
 
+		void addHexagonImage(Vec2 center, float radius, const sdl::TextureView& sprite, float startAngle = 0);
+		
+		void addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle = 0);
+
 		void draw(Shader& shader);
 
 		void clearDraw();
 
-		void addHexagonImage(Vec2 center, float radius, const SpriteView& sprite, float startAngle = 0);
-		void addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle = 0);
-
     private:
-		class BatchData {
-		public:
-			BatchData() = default;
-			BatchData(sdl::BatchView<Vertex>&& batchView, int matrixIndex);
-			BatchData(TextureView texture, sdl::BatchView<Vertex>&& batchView, int matrixIndex);
-
-			TextureView texture_;
-			sdl::BatchView<Vertex> batchView_;
-			int matrixIndex_ = 0;
-		};
-
 		using Batch = sdl::Batch<Vertex>;
 		using BatchView = sdl::BatchView<Vertex>;
+
+		struct BatchData {
+			BatchData() = default;
+			BatchData(BatchView&& batchView, int matrixIndex);
+			BatchData(BatchView&& batchView, const sdl::TextureView& texture, int matrixIndex);
+
+			BatchView batchView;
+			GLuint texture{};
+			int matrixIndex{};
+		};
 
 		void bind(Shader& shader);
 
@@ -61,8 +62,8 @@ namespace vin {
 		std::vector<Mat4> matrixes_;
 		sdl::VertexArrayObject vao_;
 		int currentMatrix_{};
-		bool initiated_ = false;
-    };	
+		bool initiated_{};
+    };
 
 } // Namespace vin.
 

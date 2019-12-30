@@ -3,8 +3,8 @@
 
 #include "hex/hexagon.h"
 #include "heximage.h"
-#include "textureview.h"
 
+#include <sdl/textureview.h>
 #include <sdl/sound.h>
 #include <sdl/sprite.h>
 #include <sdl/font.h>
@@ -28,7 +28,7 @@ namespace vin {
 		void save();
 
 		const sdl::Font& loadFont(const std::string& file, int fontSize);
-		SpriteView loadSprite(const std::string& file);
+		sdl::TextureView loadSprite(const std::string& file);
 
 		const std::string& getLoadedFilename() const;
 

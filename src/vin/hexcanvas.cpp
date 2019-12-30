@@ -54,7 +54,7 @@ namespace vin {
 
 	}
 
-	void HexagonImage(const vin::SpriteView& image, ImVec2 pos, ImVec2 size, float angle) {
+	void HexagonImage(const sdl::TextureView& image, ImVec2 pos, ImVec2 size, float angle) {
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		ImGui::Image(image, ImVec2{pos.x, pos.y}, size, angle, WHITE);
 	}

@@ -59,7 +59,7 @@ namespace vin {
 		void save();
 
 		const sdl::Font& loadFont(const std::string& file, int fontSize);
-		SpriteView loadSprite(const std::string& file);
+		sdl::TextureView loadSprite(const std::string& file);
 
 		const sdl::Font& getDefaultFont(int size);
 
@@ -106,7 +106,7 @@ namespace vin {
 		return impl_->loadFont(file, fontSize);
 	}
 	
-	SpriteView HexData::loadSprite(const std::string& file) {
+	sdl::TextureView HexData::loadSprite(const std::string& file) {
 		return impl_->loadSprite(file);
 	}
 
@@ -168,7 +168,7 @@ namespace vin {
 		return font;
 	}
 
-	SpriteView HexData::Impl::loadSprite(const std::string& file) {
+	sdl::TextureView HexData::Impl::loadSprite(const std::string& file) {
 		size_t size = images_.size();
 		auto& image = images_[file];
 		
@@ -180,7 +180,7 @@ namespace vin {
 			image.dx = static_cast<float>(surface.getWidth());
 			image.dy = static_cast<float>(surface.getHeight());
 		}
-		return SpriteView{image.texture, 0, 0, 1, 1};
+		return sdl::TextureView{image.texture, 0, 0, 1, 1};
 	}	
 
 	std::vector<HexImage> HexData::Impl::loadHexImages() {
@@ -207,7 +207,7 @@ namespace vin {
 			float x = (image.dx - width) / 2.f / image.dx;
 			float y = (image.dy - height) / 2.f / image.dy;
 
-			SpriteView sprite{image.texture, x, y, width / image.dx, height / image.dy};
+			sdl::TextureView sprite{image.texture, x, y, width / image.dx, height / image.dy};
 			hexImages.emplace_back(filename, sprite, hexSides, flat);
 		}
 		return hexImages;

@@ -28,7 +28,7 @@ namespace vin {
 
 	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color);
 
-	void HexagonImage(const vin::SpriteView& image, ImVec2 pos, ImVec2 size, float angle);
+	void HexagonImage(const sdl::TextureView& image, ImVec2 pos, ImVec2 size, float angle);
 
 	class HexCanvas {
 	public:
@@ -51,7 +51,7 @@ namespace vin {
 			currentTile_.sides = {};
 		}
 
-		SpriteView currentHexSprite() const {
+		sdl::TextureView currentHexSprite() const {
 			return currentTile_.sprite.sprite;
 		}
 

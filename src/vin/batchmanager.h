@@ -2,11 +2,11 @@
 #define VINLANDVIKINGS_VIN_BATCHMANAGER_H
 
 #include "vertex.h"
-#include "textureview.h"
 #include "shader.h"
 
 #include <sdl/logger.h>
 #include <sdl/batch.h>
+#include <sdl/textureview.h>
 
 #include <functional>
 #include <unordered_map>
@@ -34,10 +34,10 @@ namespace vin {
 
 	struct BatchConfig {
 		SubBatch subBatch;
-		TextureView texture;
+		sdl::TextureView texture;
 	};
 
-	BatchConfig createHexagonImage(Vec2 center, float radius, const SpriteView& sprite, float startAngle = 0);
+	BatchConfig createHexagonImage(Vec2 center, float radius, const sdl::TextureView& sprite, float startAngle = 0);
 
 	BatchConfig createHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle = 0);
 

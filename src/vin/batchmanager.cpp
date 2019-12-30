@@ -21,7 +21,7 @@ namespace vin {
 	void BatchManager::draw(Shader& shader) {
 	}
 
-	BatchConfig createHexagonImage(Vec2 center, float radius, const SpriteView& sprite, float startAngle) {
+	BatchConfig createHexagonImage(Vec2 center, float radius, const sdl::TextureView& sprite, float startAngle) {
 		BatchConfig batchConfig;
 		if (sprite) {
 			Vec2 texSize = Vec2{sprite.getWidth(), sprite.getHeight()} *0.5f;

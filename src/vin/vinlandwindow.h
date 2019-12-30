@@ -61,7 +61,7 @@ namespace vin {
 		Page page_{Page::START};
 		TileLexicon tileLexicon_;
 		HexImagesMap hexTypes_;
-		SpriteView hexImage_;
+		sdl::TextureView hexImage_;
 
 		std::vector<std::string> jsonFiles_;
 		ActionManager actionManager_;

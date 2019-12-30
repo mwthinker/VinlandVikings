@@ -8,7 +8,7 @@
 namespace vin {
 
 	struct HexSprite {
-		SpriteView sprite{};
+		sdl::TextureView sprite{};
 		int rotations{};
 	};	
 
