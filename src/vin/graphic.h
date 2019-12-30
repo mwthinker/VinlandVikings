@@ -60,7 +60,7 @@ namespace vin {
 		std::vector<BatchData> batches_;
 		std::vector<Mat4> matrixes_;
 		sdl::VertexArrayObject vao_;
-		int currentMatrix_{0};
+		int currentMatrix_{};
 		bool initiated_ = false;
     };	
 
