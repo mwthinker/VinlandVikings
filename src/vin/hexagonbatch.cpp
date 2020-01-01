@@ -41,7 +41,7 @@ namespace vin {
 	HexagonBatch::HexagonBatch() : batch_(GL_DYNAMIC_DRAW) {
 	}
 
-	void HexagonBatch::init(const sdl::ImGuiShader& shader) {
+	void HexagonBatch::init(const sdl::Shader& shader) {
 		shader.useProgram();
 		vao_.generate();
 		vao_.bind();
@@ -51,7 +51,7 @@ namespace vin {
 		sdl::logger()->info("[BatchTriangles] {} Mib\n", batch_.getVboSizeInMiB());
 	}
 
-	void HexagonBatch::draw(const sdl::ImGuiShader& shader) const {
+	void HexagonBatch::draw(const sdl::Shader& shader) const {
 		shader.useProgram();
 		vao_.bind();
 		batch_.draw(GL_TRIANGLES);

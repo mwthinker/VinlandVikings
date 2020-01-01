@@ -8,13 +8,13 @@
 #include "hex/hexagon.h"
 #include "hex/tileboard.h"
 #include "heximage.h"
-#include "shader.h"
 #include "graphic.h"
 #include "camera.h"
 #include "tilesgraphic.h"
 #include "hex/mapgenerator.h"
 #include "tilelexicon.h"
 
+#include <sdl/shader.h>
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 
@@ -28,7 +28,7 @@ namespace vin {
 
 	class HexCanvas {
 	public:
-		HexCanvas();
+		HexCanvas(const sdl::Shader& shader);
 
 		void drawCanvas(const std::chrono::high_resolution_clock::duration& deltaTime);
 
@@ -85,14 +85,14 @@ namespace vin {
 		hex::Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
 		hex::Hexi getHexFromMouse() const;
 
+		const sdl::Shader& shader_;
 		sdl::Texture whiteSquare_;
 		float zoom_ = 1.f;
 		bool hasFocus_ = false;;
 		bool isHovering_ = false;;
 		bool activateHexagon_;
 		hex::TileBoard tileBoard_;
-		HexagonBatch hexagonBatch_;
-		Shader shader_;
+		HexagonBatch hexagonBatch_;		
 		Graphic graphic_;
 		Mat2 hexToWorldModel_;
 

@@ -18,7 +18,7 @@ namespace vin {
 		batches_[batchConfig.texture] = batchConfig.subBatch;
 	}
 
-	void BatchManager::draw(Shader& shader) {
+	void BatchManager::draw(sdl::Shader& shader) {
 	}
 
 	BatchConfig createHexagonImage(Vec2 center, float radius, const sdl::TextureView& sprite, float startAngle) {
@@ -27,11 +27,11 @@ namespace vin {
 			Vec2 texSize = Vec2{sprite.getWidth(), sprite.getHeight()} *0.5f;
 			Vec2 texPos = Vec2{sprite.getX(), sprite.getY()} +texSize;
 
-			Vertex centerVertex{center, texPos, WHITE};
+			sdl::Vertex centerVertex{center, texPos, WHITE};
 			batchConfig.subBatch.pushBack(centerVertex);
 
 			for (int i = 0; i < 6; ++i) {
-				auto v = Vertex{hex::getHexCorner(center, radius, i), texPos + texSize * hex::getHexCorner(i, startAngle), WHITE};
+				auto v = sdl::Vertex{hex::getHexCorner(center, radius, i), texPos + texSize * hex::getHexCorner(i, startAngle), WHITE};
 				batchConfig.subBatch.pushBack(v);
 			}
 			for (int i = 1; i <= 6; ++i) {
@@ -92,10 +92,10 @@ namespace vin {
 
 	BatchConfig createRectangle(Vec2 pos, Vec2 size, Color color) {
 		BatchConfig batchConfig;
-		batchConfig.subBatch.pushBack(Vertex{pos, {0.f, 0.f}, color});
-		batchConfig.subBatch.pushBack(Vertex{pos + Vec2{size.x, 0.f}, {0.f, 0.f}, color});
-		batchConfig.subBatch.pushBack(Vertex{pos + size, {0.f, 0.f}, color});
-		batchConfig.subBatch.pushBack(Vertex{pos + Vec2{0.f, size.y}, {0.f, 0.f}, color});
+		batchConfig.subBatch.pushBack(sdl::Vertex{pos, {0.f, 0.f}, color});
+		batchConfig.subBatch.pushBack(sdl::Vertex{pos + Vec2{size.x, 0.f}, {0.f, 0.f}, color});
+		batchConfig.subBatch.pushBack(sdl::Vertex{pos + size, {0.f, 0.f}, color});
+		batchConfig.subBatch.pushBack(sdl::Vertex{pos + Vec2{0.f, size.y}, {0.f, 0.f}, color});
 		
 		batchConfig.subBatch.pushBackIndex(0); 
 		batchConfig.subBatch.pushBackIndex(1);

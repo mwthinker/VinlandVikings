@@ -62,8 +62,6 @@ set(SOURCES
 	src/vin/hexcanvas.h
 	src/vin/logger.h
 	src/vin/main.cpp
-	src/vin/shader.cpp
-	src/vin/shader.h
 	src/vin/tilelexicon.cpp
 	src/vin/tilelexicon.h
 	src/vin/random.h
@@ -74,7 +72,6 @@ set(SOURCES
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h
-	src/vin/vertex.h
 )
 
 find_package(Threads REQUIRED)

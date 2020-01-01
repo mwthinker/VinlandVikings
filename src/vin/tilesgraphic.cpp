@@ -115,7 +115,7 @@ namespace vin {
 		dirty_ = true;
 	}
 
-	void TilesGraphic::draw(Shader& shader) {
+	void TilesGraphic::draw(const sdl::Shader& shader) {
 		if (dirty_) {
 			logger()->info("State dirty");
 			graphic_.clearDraw();
@@ -135,7 +135,7 @@ namespace vin {
 		graphic_.draw(shader);
 	}
 
-	void TilesGraphic::drawColor(Shader& shader) {
+	void TilesGraphic::drawColor(const sdl::Shader& shader) {
 		if (color_.toImU32() != 0) {
 			for (const auto& [hex, hexTile] : hexImages_) {
 				auto pos = hexToWorld(hex);
@@ -144,7 +144,7 @@ namespace vin {
 		}
 	}
 
-	void TilesGraphic::drawGrid(Shader& shader) {
+	void TilesGraphic::drawGrid(const sdl::Shader& shader) {
 		if (grid_) {
 			for (const auto& [hex, hexTile] : hexImages_) {
 				auto pos = hexToWorld(hex);
@@ -153,7 +153,7 @@ namespace vin {
 		}
 	}
 
-	void TilesGraphic::drawHexCoord(Shader& shader) {
+	void TilesGraphic::drawHexCoord(const sdl::Shader& shader) {
 		if (hexCoord_) {
 			graphic_.addHexagon(hexToWorld(hex::HEXI_ZERO), hexDimension_.innerSize * 0.8f, hexDimension_.outerSize, WHITE, hexDimension_.angle);
 			graphic_.addHexagon(hexToWorld(hex::HEXI_Q), hexDimension_.innerSize, hexDimension_.outerSize, RED, hexDimension_.angle);
@@ -162,14 +162,14 @@ namespace vin {
 		}
 	}
 
-	void TilesGraphic::drawWorld(Shader& shader) {
+	void TilesGraphic::drawWorld(const sdl::Shader& shader) {
 		for (const auto& [hex, tile] : hexImages_) {
 			auto pos = hexToWorld(hex);
 			graphic_.addHexagonImage(pos, hexDimension_.outerSize, tile.sprite.sprite, tile.sprite.rotations * PI / 3 + hexDimension_.angle);
 		}
 	}
 
-	void TilesGraphic::drawXYCoord(Shader& shader) {
+	void TilesGraphic::drawXYCoord(const sdl::Shader& shader) {
 		if (xyCoord_) {
 			graphic_.addRectangle({0.f, 0.f}, {2.0f, 0.05f}, RED);
 			graphic_.addRectangle({0.f, 0.f}, {0.05f, 2.0f}, GREEN);

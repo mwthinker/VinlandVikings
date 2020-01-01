@@ -7,13 +7,13 @@
 #include "hex/hexagon.h"
 #include "hex/tileboard.h"
 #include "heximage.h"
-#include "shader.h"
 #include "graphic.h"
 #include "camera.h"
 #include "tilesgraphic.h"
 #include "hex/mapgenerator.h"
 #include "tilelexicon.h"
 
+#include <sdl/shader.h>
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 

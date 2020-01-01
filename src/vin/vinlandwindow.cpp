@@ -62,7 +62,7 @@ namespace vin {
 
 	}
 
-	VinlandWindow::VinlandWindow() {
+	VinlandWindow::VinlandWindow() : hexCanvas_{getShader()} {
 		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid", [&]() {
 			hexCanvas_.setGrid(!hexCanvas_.isGrid());
 		}});

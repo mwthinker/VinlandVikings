@@ -1,9 +1,10 @@
 #ifndef VINLANDVIKINGS_VIN_BATCHMANAGER_H
 #define VINLANDVIKINGS_VIN_BATCHMANAGER_H
 
-#include "vertex.h"
-#include "shader.h"
+#include "types.h"
 
+#include <sdl/vertex.h>
+#include <sdl/shader.h>
 #include <sdl/logger.h>
 #include <sdl/batch.h>
 #include <sdl/textureview.h>
@@ -13,9 +14,9 @@
 
 namespace vin {
 
-	using SubBatch = sdl::SubBatch<Vertex>;
-	using Batch = sdl::Batch<Vertex>;
-	using BatchView = sdl::BatchView<Vertex>;	
+	using SubBatch = sdl::SubBatch<sdl::Vertex>;
+	using Batch = sdl::Batch<sdl::Vertex>;
+	using BatchView = sdl::BatchView<sdl::Vertex>;
 
 	struct BatchConfig;
 
@@ -25,7 +26,7 @@ namespace vin {
 
 		void add(const BatchConfig& batchConfig);
 
-		void draw(Shader& shader);
+		void draw(sdl::Shader& shader);
 
 	private:
 		Batch batch_{GL_DYNAMIC_DRAW};

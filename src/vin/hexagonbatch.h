@@ -4,7 +4,7 @@
 #include "types.h"
 
 #include <sdl/batch.h>
-#include <sdl/imguishader.h>
+#include <sdl/shader.h>
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 
@@ -18,9 +18,9 @@ namespace vin {
 
         virtual ~HexagonBatch() = default;
 
-		void init(const sdl::ImGuiShader& shader);
+		void init(const sdl::Shader& shader);
 
-		void draw(const sdl::ImGuiShader& shader) const;
+		void draw(const sdl::Shader& shader) const;
 
 		void uploadToGraphicCard();
 

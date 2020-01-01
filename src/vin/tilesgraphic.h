@@ -42,16 +42,16 @@ namespace vin {
 
 		void clear();
 
-		void draw(Shader& shader);
+		void draw(const sdl::Shader& shader);
 
 		void setMatrix(const Mat4& mat);
 
 	private:
-		void drawColor(Shader& shader);
-		void drawGrid(Shader& shader);
-		void drawHexCoord(Shader& shader);
-		void drawWorld(Shader& shader);
-		void drawXYCoord(Shader& shader);
+		void drawColor(const sdl::Shader& shader);
+		void drawGrid(const sdl::Shader& shader);
+		void drawHexCoord(const sdl::Shader& shader);
+		void drawWorld(const sdl::Shader& shader);
+		void drawXYCoord(const sdl::Shader& shader);
 
 		hex::Hexi worldToHex(Vec2 pos) const;
 		Vec2 hexToWorld(hex::Hexi pos) const;
@@ -61,7 +61,7 @@ namespace vin {
 		bool grid_{true};
 		bool hexCoord_{false};
 		bool xyCoord_{false};
-		Color color_{};
+		Color color_;
 
 		HexDimension hexDimension_;
 		Mat2 hexToWorld_{1};

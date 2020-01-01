@@ -2,10 +2,10 @@
 #define VINLANDVIKINGS_VIN_GRAPHIC_H
 
 #include "types.h"
-#include "shader.h"
 #include "logger.h"
-#include "vertex.h"
 
+#include <sdl/shader.h>
+#include <sdl/vertex.h>
 #include <sdl/sprite.h>
 #include <sdl/batch.h>
 #include <sdl/vertexarrayobject.h>
@@ -34,13 +34,13 @@ namespace vin {
 		
 		void addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle = 0);
 
-		void draw(Shader& shader);
+		void draw(const sdl::Shader& shader);
 
 		void clearDraw();
 
     private:
-		using Batch = sdl::Batch<Vertex>;
-		using BatchView = sdl::BatchView<Vertex>;
+		using Batch = sdl::Batch<sdl::Vertex>;
+		using BatchView = sdl::BatchView<sdl::Vertex>;
 
 		struct BatchData {
 			BatchData() = default;
@@ -52,9 +52,9 @@ namespace vin {
 			int matrixIndex{};
 		};
 
-		void bind(Shader& shader);
+		void bind(const sdl::Shader& shader);
 
-		void draw(Shader& shader, const BatchData& batchData);
+		void draw(const sdl::Shader& shader, const BatchData& batchData);
 		
 		Batch batch_{GL_DYNAMIC_DRAW};
 		BatchView lastView_;
