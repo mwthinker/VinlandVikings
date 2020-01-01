@@ -31,8 +31,8 @@ namespace vin {
 			batch.startAdding();
 
 			if (sprite) {
-				Vec2 texSize = Vec2{sprite.getWidth(), sprite.getHeight()} *0.5f;
-				Vec2 texPos = Vec2{sprite.getX(), sprite.getY()} +texSize;
+				Vec2 texSize = Vec2{sprite.getWidth(), sprite.getHeight()} * 0.5f;
+				Vec2 texPos = Vec2{sprite.getX(), sprite.getY()} + texSize;
 
 				Vertex centerVertex{center, texPos, WHITE};
 				batch.pushBack(centerVertex);

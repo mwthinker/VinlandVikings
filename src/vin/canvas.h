@@ -25,10 +25,6 @@
 
 namespace vin {
 
-	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color);
-
-	void HexagonImage(const sdl::TextureView& image, ImVec2 pos, ImVec2 size, float angle);
-
 	struct ViewPort {
 		Vec2 pos;
 		Vec2 size;

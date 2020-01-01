@@ -156,40 +156,6 @@ namespace vin {
 			}
 			ImGui::EndMenu();
 		}
-		/*
-		ImGui::Separator();
-		if (ImGui::BeginMenu("Options"))
-		{
-			static bool enabled = true;
-			ImGui::MenuItem("Enabled", "", &enabled);
-			ImGui::BeginChild("child", ImVec2(0, 60), true);
-			for (int i = 0; i < 10; i++)
-				ImGui::Text("Scrolling Text %d", i);
-			ImGui::EndChild();
-			static float f = 0.5f;
-			static int n = 0;
-			static bool b = true;
-			ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-			ImGui::InputFloat("Input", &f, 0.1f);
-			ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-			ImGui::Checkbox("Check", &b);
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Colors"))
-		{
-			float sz = ImGui::GetTextLineHeight();
-			for (int i = 0; i < ImGuiCol_COUNT; i++)
-			{
-				const char* name = ImGui::GetStyleColorName((ImGuiCol) i);
-				ImVec2 p = ImGui::GetCursorScreenPos();
-				ImGui::GetWindowDrawList()->AddRectFilled(p, ImVec2(p.x + sz, p.y + sz), ImGui::GetColorU32((ImGuiCol) i));
-				ImGui::Dummy(ImVec2(sz, sz));
-				ImGui::SameLine();
-				ImGui::MenuItem(name);
-			}
-			ImGui::EndMenu();
-		}
-		*/
 		if (ImGui::MenuItem("Quit", "Alt+F4")) {
 			quit();
 		}
@@ -255,18 +221,23 @@ namespace vin {
 	}
 
 	void VinlandWindow::showAddHexImagePopup() {
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
 		if (ImGui::BeginPopupModal("Deleteee", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
 			ImGui::Separator();
 
-			static bool flatHex = false;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{0, 0});
+			static bool flatHex = true;
 			ImGui::Checkbox("Flat hex", &flatHex);
-			ImGui::PopStyleVar();
+			static float slider = 100;
+			ImGui::SliderFloat("Pixel size in %", &slider, 1, 100);
 
-			ImGui::Image(hexImage_, {300, 300});
-			ImGui::Image(hexImage_, {100, 100});
+			sdl::TextureView view{hexImage_,
+				(1 - slider / 100.f) / 2.f, (1 - slider / 100.f) / 2.f,
+				slider / 100.f, slider / 100.f};
+			ImGui::Separator();
+			ImGui::Hexagon(view, {500, 500}, flatHex);
+			ImGui::Separator();
 
 			if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
 			ImGui::SetItemDefaultFocus();
@@ -274,6 +245,7 @@ namespace vin {
 			if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
 			ImGui::EndPopup();
 		}
+		ImGui::PopStyleVar();
 	}
 
 	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {

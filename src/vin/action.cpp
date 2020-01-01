@@ -18,14 +18,7 @@ namespace vin {
 			return newValue;
 		}
 
-		/*
-		std::string addKey(const std::string& str, SDL_Keycode code, int pos = DEFAULT_POS) {
-			return str + "   "s + SDL_GetKeyName(code) + "   "s;
-		}
-		*/
-
 	}
-
 
 	Action::Action(SDL_Keycode key, const std::string& menuName, const Callback& callback) :
 		callback_{callback}, key_{key}, menuName_{addKey(menuName, key)} {

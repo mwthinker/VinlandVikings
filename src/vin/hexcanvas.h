@@ -24,11 +24,7 @@
 
 #include <unordered_set>
 
-namespace vin {
-
-	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color);
-
-	void HexagonImage(const sdl::TextureView& image, ImVec2 pos, ImVec2 size, float angle);
+namespace vin {	
 
 	class HexCanvas {
 	public:

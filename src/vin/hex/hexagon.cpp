@@ -2,34 +2,6 @@
 
 namespace vin::hex {
 
-	namespace {
-
-		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
-
-		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		
-		/*
-		void addImageQuad(ImDrawList* drawList, const sdl::Sprite& sprite,
-			const ImVec2& pos, ImVec2& size, const ImColor& color) {
-
-			auto [texW, texH] = sprite.getTexture().getSize();
-
-			ImVec2 a = {pos.x, pos.y};
-			ImVec2 b = {pos.x + size.x, pos.y};
-			ImVec2 c = {pos.x + size.x, pos.y + size.y};
-			ImVec2 d = {pos.x, pos.y + size.y};
-
-			ImVec2 uv_c = {sprite.getX() / texW, sprite.getY() / texH};
-			ImVec2 uv_d = {(sprite.getX() + sprite.getWidth()) / texW, sprite.getY() / texH};
-			ImVec2 uv_a = {(sprite.getX() + sprite.getWidth()) / texW, (sprite.getY() + sprite.getHeight()) / texH};
-			ImVec2 uv_b = {sprite.getX() / texW, (sprite.getY() + sprite.getHeight()) / texH};
-
-			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
-		}
-		*/
-
-	}
-
 	ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {
 		auto rad = PI / 3 * nbr;
 		return {center.x + size * std::cos(rad), center.y + size * std::sin(rad)};
@@ -56,9 +28,9 @@ namespace vin::hex {
 	}
 
 	Hexi hexRound(Hexf h) {
-		auto q = (int)round(h.q());
-		auto r = (int)round(h.r());
-		auto s = (int)round(h.s());
+		auto q = static_cast<int>(std::round(h.q()));
+		auto r = static_cast<int>(std::round(h.r()));
+		auto s = static_cast<int>(std::round(h.s()));
 		auto q_diff = std::abs(q - h.q());
 		auto r_diff = std::abs(r - h.r());
 		auto s_diff = std::abs(s - h.s());

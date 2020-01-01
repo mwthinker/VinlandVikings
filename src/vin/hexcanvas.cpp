@@ -54,24 +54,6 @@ namespace vin {
 
 	}
 
-	void HexagonImage(const sdl::TextureView& image, ImVec2 pos, ImVec2 size, float angle) {
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-		ImGui::Image(image, ImVec2{pos.x, pos.y}, size, angle, WHITE);
-	}
-
-	void addHexagon(ImDrawList* drawList, ImVec2 center, float innerSize, float outerSize, ImU32 color) {
-		auto v1 = hex::getHexCorner(center, innerSize, 0);
-		auto v2 = hex::getHexCorner(center, outerSize, 0);
-		for (int i = 0; i < 6; ++i) {
-			auto v3 = hex::getHexCorner(center, outerSize, (i + 1) % 6);
-			auto v4 = hex::getHexCorner(center, innerSize, (i + 1) % 6);
-			drawList->AddTriangleFilled(v1, v2, v4, color);
-			drawList->AddTriangleFilled(v4, v2, v3, color);
-			v1 = v4;
-			v2 = v3;
-		}
-	}
-
 	HexCanvas::HexCanvas() :
 		hexToWorldModel_{hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize)},
 		tilesGraphic_{HEX_DIMENSION, hexToWorldModel_} {
