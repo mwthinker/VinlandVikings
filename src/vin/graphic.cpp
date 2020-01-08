@@ -6,7 +6,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/component_wise.hpp>
 
-namespace sdl_graphic = sdl::graphic::indexed;
+namespace sdlg = sdl::graphic::indexed;
 
 namespace vin {	
 
@@ -41,7 +41,7 @@ namespace vin {
 	}
 
 	void Graphic::addRectangle(Vec2 pos, Vec2 size, Color color) {
-		batches_.emplace_back(sdl_graphic::addRectangle(batch_, pos, size, color), currentMatrix_);
+		batches_.emplace_back(sdlg::addRectangle(batch_, pos, size, color), currentMatrix_);
 	}
 
 	void Graphic::addFilledHexagon(Vec2 center, float radius, Color color, float startAngle) {
@@ -49,15 +49,15 @@ namespace vin {
 	}
 
 	void Graphic::addHexagonImage(Vec2 center, float radius, const sdl::TextureView& sprite, float startAngle) {
-		batches_.emplace_back(sdl_graphic::addHexagonImage(batch_, center, radius, sprite, startAngle), sprite, currentMatrix_);
+		batches_.emplace_back(sdlg::addHexagonImage(batch_, center, radius, sprite, startAngle), sprite, currentMatrix_);
 	}
 
 	void Graphic::addHexagon(Vec2 center, float innerRadius, float outerRadius, Color color, float startAngle) {
-		batches_.emplace_back(sdl_graphic::addHexagon(batch_, center, innerRadius, outerRadius, color, startAngle), currentMatrix_);
+		batches_.emplace_back(sdlg::addHexagon(batch_, center, innerRadius, outerRadius, color, startAngle), currentMatrix_);
 	}
 
 	void Graphic::addCircle(Vec2 center, float radius, Color color, const int iterations, float startAngle) {
-		batches_.emplace_back(sdl_graphic::addCircle(batch_, center, radius, color, iterations, startAngle), currentMatrix_);
+		batches_.emplace_back(sdlg::addCircle(batch_, center, radius, color, iterations, startAngle), currentMatrix_);
 	}
 
 	void Graphic::bind(const sdl::Shader& shader) {

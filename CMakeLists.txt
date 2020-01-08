@@ -95,8 +95,9 @@ include(FetchContent)
 FetchContent_Declare(CppSdl2
 	GIT_REPOSITORY
 		https://github.com/mwthinker/CppSdl2.git
-	#GIT_TAG
-	#	origin/imgui
+	GIT_TAG
+		#origin/imgui
+		b53105620d59e6df05974fd41db8982469b47e4a
 )
 FetchContent_MakeAvailable(CppSdl2)
 
@@ -104,9 +105,9 @@ FetchContent_MakeAvailable(CppSdl2)
 FetchContent_Declare(VinlandVikingsData
 	GIT_REPOSITORY
 		git@github.com:mwthinker/VinlandVikingsData.git
-		#https://github.com/mwthinker/VinlandVikingsData.git
 	GIT_TAG
-		origin/VinlandVikingsData
+		#origin/VinlandVikingsData
+		95aa2a31a1b924dc697be5daeec61b1526b0cca7
 )
 FetchContent_MakeAvailable(VinlandVikingsData)
 FetchContent_GetProperties(VinlandVikingsData
