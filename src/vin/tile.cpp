@@ -3,7 +3,8 @@
 namespace vin {
 
 	Tile::Tile(const HexSprite& hexSprite, const hex::HexSides& hexSides)
-		: sprite{hexSprite}, sides{hexSides} {
+		: sprite{hexSprite}
+		, sides{hexSides} {
 
 		assert(hexSprite.rotations >= 0);
 	}

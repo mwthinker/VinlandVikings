@@ -1,9 +1,8 @@
 #include "imguiextra.h"
 
 #include "types.h"
-#include "vertex.h"
 
-#include <sdl/sprite.h>
+#include <sdl/vertex.h>
 #include <sdl/sprite.h>
 #include <utility>
 #include <glm/gtx/rotate_vector.hpp>
@@ -92,7 +91,7 @@ namespace ImGui {
 			drawList->PrimQuadUV(a, b, c, d, uv_a, uv_b, uv_c, uv_d, color);
 		}
 			
-		void primWriteVtx(ImDrawList* drawList, const vin::Vertex& vertex) {
+		void primWriteVtx(ImDrawList* drawList, const sdl::Vertex& vertex) {
 			drawList->PrimWriteVtx({vertex.pos.x, vertex.pos.y}, {vertex.tex.x, vertex.tex.y}, vertex.color.toImU32());
 		}
 
@@ -107,11 +106,11 @@ namespace ImGui {
 				drawList->PrimWriteIdx(drawList->_VtxCurrentIdx + (i % 6) + 1);
 			}
 
-			vin::Vertex centerVertex{center, texPos, vin::WHITE};		
+			sdl::Vertex centerVertex{center, texPos, vin::WHITE};
 			primWriteVtx(drawList, centerVertex);
 
 			for (int i = 0; i < 6; ++i) {
-				auto v = vin::Vertex{vin::hex::getHexCorner(center, radius, i, 0), texPos + texSize * vin::hex::getHexCorner(i, startAngle), vin::WHITE};
+				auto v = sdl::Vertex{vin::hex::getHexCorner(center, radius, i, 0), texPos + texSize * vin::hex::getHexCorner(i, startAngle), vin::WHITE};
 				primWriteVtx(drawList, v);
 			}
 		}

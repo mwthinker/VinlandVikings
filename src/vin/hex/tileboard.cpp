@@ -20,7 +20,8 @@ namespace vin::hex {
 	TileBoard::TileBoard() {
     }
 
-	TileBoard::TileBoard(TileBoard&& map) noexcept : hexes_{std::move(map.hexes_)} {
+	TileBoard::TileBoard(TileBoard&& map) noexcept
+		: hexes_{std::move(map.hexes_)} {
     }
 
 	TileBoard& TileBoard::operator=(TileBoard&& map) noexcept {

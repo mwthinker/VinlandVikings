@@ -54,9 +54,10 @@ namespace vin {
 
 	}
 
-	HexCanvas::HexCanvas(const sdl::Shader& shader) : shader_{shader},
-		hexToWorldModel_{hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize)},
-		tilesGraphic_{HEX_DIMENSION, hexToWorldModel_} {
+	HexCanvas::HexCanvas(const sdl::Shader& shader)
+		: shader_{shader}
+		, hexToWorldModel_{hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize)}
+		, tilesGraphic_{HEX_DIMENSION, hexToWorldModel_} {
 
 		auto hexes = hex::shape::createHex(10);
 		

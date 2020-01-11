@@ -20,8 +20,10 @@ namespace vin {
 
 	}
 
-	Action::Action(SDL_Keycode key, const std::string& menuName, const Callback& callback) :
-		callback_{callback}, key_{key}, menuName_{addKey(menuName, key)} {
+	Action::Action(SDL_Keycode key, const std::string& menuName, const Callback& callback)
+		: callback_{callback}
+		, key_{key}
+		, menuName_{addKey(menuName, key)} {
 	}
 
 	void Action::update(const SDL_Keycode& key) {

@@ -11,11 +11,14 @@ namespace sdlg = sdl::graphic::indexed;
 namespace vin {	
 
 	Graphic::BatchData::BatchData(BatchView&& batchView, int matrixIndex)
-		: batchView{batchView}, matrixIndex{matrixIndex} {
+		: batchView{batchView}
+		, matrixIndex{matrixIndex} {
 	}
 	
 	Graphic::BatchData::BatchData(BatchView&& batchView, const sdl::TextureView& texture, int matrixIndex)
-		: texture{texture}, batchView{batchView}, matrixIndex{matrixIndex} {
+		: texture{texture}
+		, batchView{batchView}
+		, matrixIndex{matrixIndex} {
 	}
 
 	Graphic::Graphic() {

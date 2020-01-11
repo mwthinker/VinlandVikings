@@ -62,7 +62,9 @@ namespace vin {
 
 	}
 
-	VinlandWindow::VinlandWindow() : hexCanvas_{getShader()} {
+	VinlandWindow::VinlandWindow()
+		: hexCanvas_{getShader()} {
+		
 		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid", [&]() {
 			hexCanvas_.setGrid(!hexCanvas_.isGrid());
 		}});
@@ -85,7 +87,7 @@ namespace vin {
 
 	void VinlandWindow::eventUpdate(const SDL_Event& windowEvent) {
 		sdl::ImGuiWindow::eventUpdate(windowEvent);
-		hexCanvas_.eventUpdate(windowEvent);		
+		hexCanvas_.eventUpdate(windowEvent);
 
 		switch (windowEvent.type) {
 			case SDL_WINDOWEVENT:

@@ -88,8 +88,6 @@ source_group(TREE
 
 add_subdirectory(Config)
 
-set(CppSdl2ImGui TRUE BOOL "Must use ImGui")
-
 include(FetchContent)
 # Load external github projects
 FetchContent_Declare(CppSdl2
@@ -97,7 +95,7 @@ FetchContent_Declare(CppSdl2
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
 		#origin/imgui
-		b53105620d59e6df05974fd41db8982469b47e4a
+		7264619fe735b2e57d49fd0eb1c7ba2c032011b1
 )
 FetchContent_MakeAvailable(CppSdl2)
 

@@ -28,7 +28,8 @@ namespace vin {
 	}
 
 	TilesGraphic::TilesGraphic(const HexDimension& dimension, const Mat2& hexToWorld)
-		: hexDimension_{dimension}, hexToWorld_{hexToWorld} {
+		: hexDimension_{dimension}
+		, hexToWorld_{hexToWorld} {
 	}
 
 	hex::Hexi TilesGraphic::worldToHex(Vec2 pos) const {

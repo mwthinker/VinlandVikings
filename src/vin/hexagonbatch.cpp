@@ -38,7 +38,8 @@ namespace vin {
 		}
     }
 
-	HexagonBatch::HexagonBatch() : batch_(GL_DYNAMIC_DRAW) {
+	HexagonBatch::HexagonBatch()
+		: batch_{GL_DYNAMIC_DRAW} {
 	}
 
 	void HexagonBatch::init(const sdl::Shader& shader) {
