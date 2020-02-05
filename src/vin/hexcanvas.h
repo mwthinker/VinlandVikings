@@ -2,7 +2,6 @@
 #define VINLANDVIKINGS_VIN_HEXCANVAS_H
 
 #include "types.h"
-#include "canvas.h"
 #include "hexagonbatch.h"
 #include "hex/hexsideskey.h"
 #include "hex/hexagon.h"
@@ -20,19 +19,20 @@
 
 #include "logger.h"
 
-#include <imgui.h>
-
 #include <unordered_set>
 
 namespace vin {	
+
+	struct ViewPort {
+		Vec2 pos;
+		Vec2 size;
+	};
 
 	class HexCanvas {
 	public:
 		HexCanvas(const sdl::Shader& shader);
 
 		void drawCanvas(const std::chrono::high_resolution_clock::duration& deltaTime);
-
-		void drawImgui();
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
@@ -70,6 +70,7 @@ namespace vin {
 		bool isGrid() const;
 
 		void clearAndGenerateMap();
+		void updateCanvasSize(const Vec2& pos, const Vec2& size);
 
 	private:
 		void addTileMapToGraphic();
@@ -78,7 +79,6 @@ namespace vin {
 		Vec2 hexToWorld(hex::Hexi pos) const;
 
 		void addMouseHexToGraphic();
-		void updateCanvasSize();
 
 		Vec2 screenDeltaPosToWorld(Vec2 pos);
 
@@ -88,11 +88,9 @@ namespace vin {
 		const sdl::Shader& shader_;
 		sdl::Texture whiteSquare_;
 		float zoom_ = 1.f;
-		bool hasFocus_ = false;;
-		bool isHovering_ = false;;
 		bool activateHexagon_;
 		hex::TileBoard tileBoard_;
-		HexagonBatch hexagonBatch_;		
+		HexagonBatch hexagonBatch_;
 		Graphic graphic_;
 		Mat2 hexToWorldModel_;
 

@@ -29,19 +29,14 @@ namespace vin {
 
 		~VinlandWindow();
 
-		void beginMain();
-
-		void endMain();
-
-        enum class Page { START, EDITOR };
+		enum class Page { START, EDITOR };
 	private:
 		void initPreLoop() override;
 
 		void initOpenGl() override;
 
 		void imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) override;
-
-        void imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) override;
+		void imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) override;
 
 		void eventUpdate(const SDL_Event& windowEvent) override;
 

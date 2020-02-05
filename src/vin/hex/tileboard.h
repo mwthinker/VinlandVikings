@@ -26,9 +26,9 @@ namespace vin::hex {
 		TileBoard(const TileBoard& map) = delete;
 		TileBoard& operator=(const TileBoard& map) = delete;
 
-		TileBoard(TileBoard&& map) noexcept;
+		TileBoard(TileBoard&& map) = default;
 
-		TileBoard& operator=(TileBoard&& map) noexcept;
+		TileBoard& operator=(TileBoard&& map) = default;
 
 		TileBoard(const std::vector<Hexi>& hexes);
 

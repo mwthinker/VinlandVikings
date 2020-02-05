@@ -8,9 +8,9 @@
 namespace vin {
 
 	struct HexSprite {
-		sdl::TextureView sprite{};
+		sdl::TextureView sprite;
 		int rotations{};
-	};	
+	};
 
 	struct Tile {
 		Tile() = default;

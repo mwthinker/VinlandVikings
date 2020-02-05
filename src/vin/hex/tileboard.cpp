@@ -20,15 +20,6 @@ namespace vin::hex {
 	TileBoard::TileBoard() {
     }
 
-	TileBoard::TileBoard(TileBoard&& map) noexcept
-		: hexes_{std::move(map.hexes_)} {
-    }
-
-	TileBoard& TileBoard::operator=(TileBoard&& map) noexcept {
-        hexes_ = std::move(map.hexes_);
-        return *this;
-    }
-
 	TileBoard::TileBoard(const std::vector<Hexi>& hexes) {
         for (const auto& hex : hexes) {
 			hexes_.insert({hex, HEXSIDES_NONE});

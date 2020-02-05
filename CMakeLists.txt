@@ -42,8 +42,6 @@ set(SOURCES
 	src/vin/batchmanager.h
 	src/vin/camera.cpp
 	src/vin/camera.h
-	src/vin/canvas.cpp
-	src/vin/canvas.h
 	src/vin/graphic.cpp
 	src/vin/graphic.h
 	
@@ -95,14 +93,15 @@ FetchContent_Declare(CppSdl2
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
 		#origin/imgui
-		7264619fe735b2e57d49fd0eb1c7ba2c032011b1
+		29bb7c6c423794b5fe94a8bd404f920d55181c8b
 )
 FetchContent_MakeAvailable(CppSdl2)
 
 # Load data.
 FetchContent_Declare(VinlandVikingsData
 	GIT_REPOSITORY
-		git@github.com:mwthinker/VinlandVikingsData.git
+		#git@github.com:mwthinker/VinlandVikingsData.git
+		https://github.com/mwthinker/VinlandVikingsData.git
 	GIT_TAG
 		#origin/VinlandVikingsData
 		95aa2a31a1b924dc697be5daeec61b1526b0cca7

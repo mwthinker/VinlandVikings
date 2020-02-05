@@ -68,27 +68,11 @@ namespace vin {
 		tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
 	}
 
-	void HexCanvas::updateCanvasSize() {
-		auto pos = ImGui::GetWindowPos();
-		auto size = ImGui::GetWindowSize();
-		const auto& s = ImGui::GetIO().DisplaySize;
-		viewPort_ = {{pos.x, s.y - size.y - pos.y}, {size.x, size.y}};
+	void HexCanvas::updateCanvasSize(const Vec2& pos, const Vec2& size) {
+		viewPort_ = {pos, size};
 
 		glViewport(viewPort_);
 		projection_ = ortho(viewPort_, zoom_);
-
-		isHovering_ = ImGui::IsWindowHovered();
-	}
-
-	void HexCanvas::drawImgui() {
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 10.1f);
-		ImGui::PushStyleColor(ImGuiCol_Border, RED.toImU32());
-		ImGui::BeginChild("Canvas", ImVec2{0, 0}, true);
-
-		updateCanvasSize();
-		ImGui::EndChild();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar();
 	}
 
 	void HexCanvas::addTileMapToGraphic() {
@@ -156,9 +140,7 @@ namespace vin {
 		graphic_.pushMatrix(projection_ * camera_.getView() * model);
 
 		tilesGraphic_.setMatrix(projection_ * camera_.getView() * model);
-		if (isHovering_) {
-			addMouseHexToGraphic();
-		}
+		addMouseHexToGraphic();
 		graphic_.pushMatrix(projection_);
 
 		//graphic_.addRectangle({-1.f, -1.f}, {2.f, 2.f}, RED); // Bottom
@@ -227,14 +209,12 @@ namespace vin {
 	void HexCanvas::eventUpdate(const SDL_Event& windowEvent) {
 		switch (windowEvent.type) {
 			case SDL_MOUSEWHEEL:
-				if (isHovering_) {
-					if (windowEvent.wheel.y > 0) { // scroll up
-						zoom_ *= 1.1f;
-					} else if (windowEvent.wheel.y < 0) { // scroll down						
-						zoom_ *= 1 / 1.1f;
-					}
-					zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+				if (windowEvent.wheel.y > 0) { // scroll up
+					zoom_ *= 1.1f;
+				} else if (windowEvent.wheel.y < 0) { // scroll down
+					zoom_ *= 1 / 1.1f;
 				}
+				zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
 				break;
 			case SDL_KEYDOWN:
 			{
@@ -263,33 +243,31 @@ namespace vin {
 			}
 			break;
 			case SDL_MOUSEMOTION:
-				if (isHovering_) {
-					sdlMousePos = {windowEvent.motion.x, windowEvent.motion.y};
-					if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {
-						auto result = screenDeltaPosToWorld({windowEvent.motion.xrel, windowEvent.motion.yrel * viewPort_.size.x / viewPort_.size.y});
-						camera_.move(result);
-					}
+			{
+				sdlMousePos = {windowEvent.motion.x, windowEvent.motion.y};
+				if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {
+					auto result = screenDeltaPosToWorld({windowEvent.motion.xrel, windowEvent.motion.yrel * viewPort_.size.x / viewPort_.size.y});
+					camera_.move(result);
 				}
-				break;
+			}
+			break;
 			case SDL_MOUSEBUTTONUP:
-				if (isHovering_) {
-					switch (windowEvent.button.button) {
-						case SDL_BUTTON_LEFT:
-						{
-							if (activateHexagon_) {
-								const auto& button = windowEvent.button;
-								hex::Hexi pos = getHexFromMouse(button.windowID, button.x, button.y);
-								//logger()->info("(q, r, s): {}", hex);
-								if (tileBoard_.put(pos, currentTile_.sides)) {
-									tilesGraphic_.fillTile(pos, currentTile_);
-								}
+				switch (windowEvent.button.button) {
+					case SDL_BUTTON_LEFT:
+					{
+						if (activateHexagon_) {
+							const auto& button = windowEvent.button;
+							hex::Hexi pos = getHexFromMouse(button.windowID, button.x, button.y);
+							//logger()->info("(q, r, s): {}", hex);
+							if (tileBoard_.put(pos, currentTile_.sides)) {
+								tilesGraphic_.fillTile(pos, currentTile_);
 							}
-							break;
 						}
-						case SDL_BUTTON_MIDDLE:
-							currentTile_.rotateLeft();
-							break;
+						break;
 					}
+					case SDL_BUTTON_MIDDLE:
+						currentTile_.rotateLeft();
+						break;
 				}
 				break;
 		}

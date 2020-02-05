@@ -35,6 +35,12 @@ namespace vin {
 	static const Color CYAN = {0.f, 1.f, 1.f, 1.f};
 	static const Color ORANGE = {1.f, 0.6471f, 0.f, 1.f};
 
+	
+	template <class T>
+	Vec2 castFloat(const T& t) {
+		return {static_cast<float>(t.x), static_cast<float>(t.y)};
+	}
+
 } // Namespace vin.
 
 template <>
@@ -99,7 +105,7 @@ struct fmt::formatter<vin::Color> {
 
 	template <typename FormatContext>
 	auto format(const vin::Color& color, FormatContext& ctx) {
-		return format_to(ctx.out(), "{}", static_cast<vin::Vec4>(color));
+		return format_to(ctx.out(), "{0:#x}", color.toImU32());
 	}
 };
 

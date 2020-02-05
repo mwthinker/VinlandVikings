@@ -1,5 +1,4 @@
 #include "vinlandwindow.h"
-#include "canvas.h"
 #include "logger.h"
 #include "imguiextra.h"
 
@@ -13,8 +12,6 @@ namespace vin {
 	namespace {
 
 		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
-		
-		const ImGuiWindowFlags ImGuiNoWindow2 = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 
 		void HelpMarker(const std::string& text) {
 			if (ImGui::IsItemHovered()) {
@@ -87,7 +84,8 @@ namespace vin {
 
 	void VinlandWindow::eventUpdate(const SDL_Event& windowEvent) {
 		sdl::ImGuiWindow::eventUpdate(windowEvent);
-		hexCanvas_.eventUpdate(windowEvent);
+
+		auto& io = ImGui::GetIO();
 
 		switch (windowEvent.type) {
 			case SDL_WINDOWEVENT:
@@ -105,7 +103,23 @@ namespace vin {
 				//SDL_free(windowEvent.drop.file).
 				break;
 			}
+			case SDL_MOUSEBUTTONUP: [[fallthrough]];
+			case SDL_MOUSEBUTTONDOWN: [[fallthrough]];
+			case SDL_MOUSEMOTION: [[fallthrough]];
+			case SDL_MOUSEWHEEL:
+				if (!io.WantCaptureMouse) {
+					hexCanvas_.eventUpdate(windowEvent);
+				}
+				break;
+			case SDL_KEYUP:
+				if (!io.WantCaptureKeyboard) {
+					hexCanvas_.eventUpdate(windowEvent);
+				}
+				break;
 			case SDL_KEYDOWN:
+				if (!io.WantCaptureKeyboard) {
+					hexCanvas_.eventUpdate(windowEvent);
+				}
 				actionManager_.update(windowEvent.key.keysym.sym);
 				switch (windowEvent.key.keysym.sym) {
 					case SDLK_ESCAPE:
@@ -119,50 +133,40 @@ namespace vin {
 		}
 	}
 
-	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
-		hexCanvas_.drawCanvas(deltaTime);
-	}
-
 	void VinlandWindow::addFileInMenuBar() {
-		static bool menuActive = false;
-		if (bool tmp = menuActive; menuActive = ImGui::BeginMenu("File", true))
-		{
-			if (menuActive != tmp) {
+		bool popup = false;
+		ImGui::Menu("File", [&]() {
+			if (static bool firstTime = true; firstTime) {
+				firstTime = false;
 				jsonFiles_ = listJsonFiles();
 				for (auto str : jsonFiles_) {
 					std::cout << str << "\n";
 				}
 			}
-		} else {
-			return;
-		}
 
-		if (ImGui::MenuItem("New map")) {}
-		
-		bool popup = false;
-		if (ImGui::MenuItem("Add hex image")) {
-			popup = true;
-		}			
-		
-		if (ImGui::BeginMenu("Open"))
-		{
-			for (const auto& file : jsonFiles_) {
-				bool selectedFile = (file == HexData::getInstance().getLoadedFilename());
-				if (ImGui::MenuItem(file.c_str(), nullptr, selectedFile)) {
-					if (!selectedFile) {
-						logger()->info("[VinlandWindow] {}", file);
-						HexData::getInstance().load(file);
-						initData();
+			if (ImGui::MenuItem("New map")) {}
+			
+			if (ImGui::MenuItem("Add hex image")) {
+				popup = true;
+			}
+
+			ImGui::Menu("Open", [&]() {
+				for (const auto& file : jsonFiles_) {
+					bool selectedFile = (file == HexData::getInstance().getLoadedFilename());
+					if (ImGui::MenuItem(file.c_str(), nullptr, selectedFile)) {
+						if (!selectedFile) {
+							logger()->info("[VinlandWindow] {}", file);
+							HexData::getInstance().load(file);
+							initData();
+						}
 					}
 				}
+			});
+			
+			if (ImGui::MenuItem("Quit", "Alt+F4")) {
+				quit();
 			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::MenuItem("Quit", "Alt+F4")) {
-			quit();
-		}
-
-		ImGui::EndMenu();
+		});
 
 		if (popup) {
 			ImGui::OpenPopup("Deleteee");
@@ -170,62 +174,52 @@ namespace vin {
 	}
 
 	void VinlandWindow::addEditInMenuBar() {
-		if (!ImGui::BeginMenu("Edit", true)) {
-			return;
-		}
-		if (ImGui::MenuItem("Undo")) {}
-		if (ImGui::MenuItem("Redo")) {}
-		ImGui::MenuItem(clearAction_);
-		ImGui::MenuItem(generateMapAction_);
-		ImGui::Separator();
-		ImGui::EndMenu();
+		ImGui::Menu("Edit", true, [&]() {
+			if (ImGui::MenuItem("Undo")) {}
+			if (ImGui::MenuItem("Redo")) {}
+			
+			ImGui::MenuItem(clearAction_);
+			ImGui::MenuItem(generateMapAction_);
+			ImGui::Separator();
+		});
 	}
 
 	void VinlandWindow::addViewInMenuBar() {
-		if (!ImGui::BeginMenu("View", true)) {
-			return;
-		}
+		ImGui::Menu("View", true, [&]() {
+			ImGui::Menu("Zoom", [&]() {
+				if (ImGui::MenuItem("Zoom in")) {
+					hexCanvas_.zoomIn();
+				}
+				if (ImGui::MenuItem("Zoom out")) {
+					hexCanvas_.zoomOut();
+				}
+				ImGui::EndMenu();
+			});
+			ImGui::Separator();
 
-		if (ImGui::BeginMenu("Zoom")) {
-			if (ImGui::MenuItem("Zoom in")) {
-				hexCanvas_.zoomIn();
-			}
-			if (ImGui::MenuItem("Zoom out")) {
-				hexCanvas_.zoomOut();
-			}
-			ImGui::EndMenu();
-		}
-		ImGui::Separator();
-		
-		
-		ImGui::Checkbox(gridAction_, hexCanvas_.isGrid());	
-		ImGui::Checkbox(xyCoordsAction_, hexCanvas_.isXYCoords());
-		ImGui::Checkbox(hexCoordsAction_, hexCanvas_.isHexCoords());
+			ImGui::Checkbox(gridAction_, hexCanvas_.isGrid());
+			ImGui::Checkbox(xyCoordsAction_, hexCanvas_.isXYCoords());
+			ImGui::Checkbox(hexCoordsAction_, hexCanvas_.isHexCoords());
 
-		ImGui::Separator();
-		ImGui::EndMenu();
+			ImGui::Separator();
+		});
 		
 	}
 
 	void VinlandWindow::showMenuBar() {
-		if (!ImGui::BeginMenuBar()) {
-			return;
-		}
-		
-		addFileInMenuBar();
-		addEditInMenuBar();
-		addViewInMenuBar();
-		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(50.f, 50.f));
-		//ImGui::PopStyleVar();
-		showAddHexImagePopup();
-
-		ImGui::EndMenuBar();
+		ImGui::MenuBar([&]() {
+			addFileInMenuBar();
+			addEditInMenuBar();
+			addViewInMenuBar();
+			//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(50.f, 50.f));
+			//ImGui::PopStyleVar();
+			showAddHexImagePopup();
+		});
 	}
 
 	void VinlandWindow::showAddHexImagePopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
-		if (ImGui::BeginPopupModal("Deleteee", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
-		{
+		ImGui::PopupModal("Deleteee", nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
 			ImGui::Separator();
 
@@ -238,38 +232,57 @@ namespace vin {
 				(1 - slider / 100.f) / 2.f, (1 - slider / 100.f) / 2.f,
 				slider / 100.f, slider / 100.f};
 			ImGui::Separator();
-			ImGui::Hexagon(view, {500, 500}, flatHex);
+			ImGui::Hexagon(view, 500.f, flatHex);
 			ImGui::Separator();
 
-			if (ImGui::Button("OK", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+			if (ImGui::Button("OK", {120, 0})) { ImGui::CloseCurrentPopup(); }
 			ImGui::SetItemDefaultFocus();
 			ImGui::SameLine();
-			if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
-			ImGui::EndPopup();
-		}
+			if (ImGui::Button("Cancel", {120, 0})) { ImGui::CloseCurrentPopup(); }
+		});
 		ImGui::PopStyleVar();
 	}
 
+	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
+		hexCanvas_.drawCanvas(deltaTime);
+	}
+
 	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
-		beginMain();
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, {1.f, 1.f, 1.f, 0.f});
 
-		showMenuBar();
+		ImGui::SetNextWindowPos({0.f, 0.f});
+		auto [width, height] = sdl::Window::getSize();
+		ImGui::SetNextWindowSize({(float) width, 300.f});
 
-		ImGui::Text("KEYS:");
-		ImGui::Text("ARROWS - Move window");
-		ImGui::Text("PAGE_DOWN/UP - Tilt camera");
-		ImGui::NewLine();
+		ImGui::Window("Main", nullptr, ImGuiNoWindow, [&]() {
+			showMenuBar();
 
-		ImGui::Text("MOUSE:");
-		ImGui::Text("Drag MIDDLE - Move window");
-		ImGui::Text("Push MIDDLE - Rotate card");
-		ImGui::Text("Left - Place card");
-		//ImGui::Text("Left/right click - Replace with Next/Previous tile");
-		drawHexTypesButtons();
+			ImGui::Text("KEYS:");
+			ImGui::Text("ARROWS - Move window");
+			ImGui::Text("PAGE_DOWN/UP - Tilt camera");
+			ImGui::NewLine();
 
-		hexCanvas_.drawImgui();
-		endMain();
-    }
+			ImGui::Text("MOUSE:");
+			ImGui::Text("Drag MIDDLE - Move window");
+			ImGui::Text("Push MIDDLE - Rotate card");
+			ImGui::Text("Left - Place card");
+			
+			drawHexTypesButtons();
+		});
+
+		if (auto canvasHeight = static_cast<float>(height) - 300.f;
+			canvasHeight > 0) {
+			
+			hexCanvas_.updateCanvasSize({0.f, 0.f}, {width, canvasHeight});
+		}
+
+		
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar(3);
+	}
 
 	void VinlandWindow::drawHexTypesButtons() {
 		ImGuiStyle& style = ImGui::GetStyle();
@@ -340,26 +353,6 @@ namespace vin {
 		}
 
 		hexCanvas_.setDeck(hexImages);
-	}
-
-	void VinlandWindow::beginMain() {
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, {1.f, 1.f, 1.f, 0.f});
-
-		ImGui::SetNextWindowPos({0.f, 0.f});
-		auto [width, height] = sdl::Window::getSize();
-		ImGui::SetNextWindowSize({(float) width, (float) height});
-
-		ImGui::Begin("Main", nullptr, ImGuiNoWindow);
-	}
-
-	void VinlandWindow::endMain() {
-		ImGui::End();
-
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(3);
 	}
 
 } // Namespace vin.
