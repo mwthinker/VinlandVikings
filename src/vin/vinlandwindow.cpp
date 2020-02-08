@@ -15,11 +15,11 @@ namespace vin {
 
 		void HelpMarker(const std::string& text) {
 			if (ImGui::IsItemHovered()) {
-				ImGui::BeginTooltip();
-				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-				ImGui::TextUnformatted(text.c_str());
-				ImGui::PopTextWrapPos();
-				ImGui::EndTooltip();
+				ImGui::Tooltip([&]() {
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+					ImGui::TextUnformatted(text.c_str());
+					ImGui::PopTextWrapPos();
+				});
 			}
 		}
 
@@ -278,14 +278,13 @@ namespace vin {
 			
 			hexCanvas_.updateCanvasSize({0.f, 0.f}, {width, canvasHeight});
 		}
-
 		
 		ImGui::PopStyleColor();
 		ImGui::PopStyleVar(3);
 	}
 
 	void VinlandWindow::drawHexTypesButtons() {
-		ImGuiStyle& style = ImGui::GetStyle();
+		auto& style = ImGui::GetStyle();
 		
 		const int buttonsCount = static_cast<int>(hexTypes_.size());
 		const float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;

@@ -75,10 +75,10 @@ namespace ImGui {
 			float x = p.x;
 			if (nbr != 0) {
 				x = p.x + size.x * (i -1);
-				Helper::AddImageQuad(man, {x - delta.x, p.y - delta.y}, scaledSize, 0.f, color);
+				Helper::AddImageQuad(man, {x - delta.x, p.y - delta.y}, scaledSize, color);
 			} else {
-				Helper::AddImageQuad(man, {x - delta.x, p.y - delta.y}, scaledSize, 0.f, color);
-				Helper::AddImageQuad(noMan, {x - delta.x, p.y - delta.y}, scaledSize, 0.f, color);
+				Helper::AddImageQuad(man, {x - delta.x, p.y - delta.y}, scaledSize, color);
+				Helper::AddImageQuad(noMan, {x - delta.x, p.y - delta.y}, scaledSize, color);
 			}
 		}
 
