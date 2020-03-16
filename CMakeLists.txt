@@ -13,6 +13,8 @@ endif()
 project(VinlandVikings
 	DESCRIPTION
 		"A editor for the board game Vinland Vikings"
+	VERSION
+		0.1.0
 	LANGUAGES
 		CXX
 )
@@ -104,7 +106,7 @@ FetchContent_Declare(VinlandVikingsData
 		https://github.com/mwthinker/VinlandVikingsData.git
 	GIT_TAG
 		#origin/VinlandVikingsData
-		95aa2a31a1b924dc697be5daeec61b1526b0cca7
+		e2dfd5decc6daf8555ec02dbfa43dd873d67765e
 )
 FetchContent_MakeAvailable(VinlandVikingsData)
 FetchContent_GetProperties(VinlandVikingsData
@@ -131,10 +133,7 @@ set_target_properties(
 # Copy data to build folder.
 file(COPY ${VinlandVikingsData_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${VinlandVikingsData_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-#file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-#file(COPY data/. DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(VinlandVikings ${SOURCES})
 

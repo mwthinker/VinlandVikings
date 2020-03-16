@@ -180,7 +180,7 @@ namespace vin {
 			image.dy = static_cast<float>(surface.getHeight());
 		}
 		return sdl::TextureView{image.texture, 0, 0, 1, 1};
-	}	
+	}
 
 	std::vector<HexImage> HexData::Impl::loadHexImages() {
 		std::vector<HexImage> hexImages;
