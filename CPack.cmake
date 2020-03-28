@@ -77,8 +77,7 @@ if (MSVC)
 		set(CPACK_GENERATOR ${CPACK_GENERATOR} WIX)
 		set(CPACK_WIX_PRODUCT_GUID "bf1ee6e4-389a-4567-ad2c-61a4d3c71d65")
 		set(CPACK_WIX_UPGRADE_GUID "bf1ee6e4-389a-4567-ad2c-61a4d3c71d66")
-		
-		set(CPACK_PACKAGE_ICON "${CMAKE_BINARY_DIR}/installer/vinlandvikings.png")
+
 		set(CPACK_WIX_UI_DIALOG "${CMAKE_BINARY_DIR}/installer/install_dialog.png")
 		set(CPACK_WIX_UI_BANNER "${CMAKE_BINARY_DIR}/installer/install_banner.png")
 		

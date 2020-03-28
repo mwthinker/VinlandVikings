@@ -91,4 +91,10 @@ namespace vin::hex {
 		return true;
 	}
 
+	void TileBoard::remove(const Hexi& pos) {
+		if (auto it = hexes_.find(pos); it != hexes_.end()) {
+			it->second = HEXSIDES_NONE;
+		}
+	}
+
 } // Namespace vin::hex.

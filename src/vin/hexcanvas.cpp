@@ -52,6 +52,8 @@ namespace vin {
 		constexpr float ZOOM_MIN = 0.02f;
 		constexpr float ZOOM_MAX = 3.0f;
 
+		const sdl::Color CLEAR_COLOR{0.6f, 0.6f, 0.6f, 0.6f};
+
 	}
 
 	HexCanvas::HexCanvas(const sdl::Shader& shader)
@@ -65,7 +67,7 @@ namespace vin {
 		for (const auto& [hex, tile] : tileBoard_) {
 			tilesGraphic_.fillGrid(hex, RED);
 		}
-		tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
+		tilesGraphic_.fill(CLEAR_COLOR);
 	}
 
 	void HexCanvas::updateCanvasSize(const Vec2& pos, const Vec2& size) {
@@ -124,6 +126,15 @@ namespace vin {
 
 		auto pos = hexToWorld(hex);
 		int rotation = currentTile_.sprite.rotations;
+		auto tile = currentTile_;
+		for (int i = 0; i < 6; ++i) {
+			if (tileBoard_.isAllowed(hex, tile.sides)) {
+				graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, currentTile_.sprite.sprite, rotation * PI / 3 + HEX_DIMENSION.angle);
+				currentTile_ = tile;
+				return;
+			}
+			tile.rotateLeft();
+		}
 		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, currentTile_.sprite.sprite, rotation * PI / 3 + HEX_DIMENSION.angle);
 		if (!tileBoard_.isAllowed(hex, currentTile_.sides)) {
 			graphic_.addFilledHexagon(pos, HEX_DIMENSION.outerSize, Color{1.f, 0, 0, 0.4f}, rotation * PI / 3 + HEX_DIMENSION.angle);
@@ -158,7 +169,7 @@ namespace vin {
 
 	void HexCanvas::clear() {
 		tileBoard_.clear();
-		tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
+		tilesGraphic_.fill(CLEAR_COLOR);
 	}
 
 	void HexCanvas::zoomIn() {
@@ -201,7 +212,8 @@ namespace vin {
 			tiles.push_back(hexImage.getHexSides());
 		}
 		tileBoard_.clear();
-		tilesGraphic_.fill(sdl::Color{0.6f, 0.6f, 0.6f, 0.6f});
+		tilesGraphic_.clear();
+		tilesGraphic_.fill(CLEAR_COLOR);
 		hexMapGenerator_.fill(tileBoard_, tiles, {0, 0});
 		addTileMapToGraphic();
 	}
@@ -252,22 +264,39 @@ namespace vin {
 			}
 			break;
 			case SDL_MOUSEBUTTONUP:
+				hex::Hexi hex = getHexFromMouse(windowEvent.button.windowID, windowEvent.button.x, windowEvent.button.y);
 				switch (windowEvent.button.button) {
 					case SDL_BUTTON_LEFT:
 					{
 						if (activateHexagon_) {
-							const auto& button = windowEvent.button;
-							hex::Hexi pos = getHexFromMouse(button.windowID, button.x, button.y);
 							//logger()->info("(q, r, s): {}", hex);
-							if (tileBoard_.put(pos, currentTile_.sides)) {
-								tilesGraphic_.fillTile(pos, currentTile_);
+							if (tileBoard_.put(hex, currentTile_.sides)) {
+								tilesGraphic_.fillTile(hex, currentTile_);
 							}
 						}
 						break;
 					}
 					case SDL_BUTTON_MIDDLE:
-						currentTile_.rotateLeft();
+					{
+						auto tile = currentTile_;
+						for (int i = 1; i <= 6; ++i) {
+							tile.rotateLeft();
+							if (tileBoard_.isAllowed(hex, tile.sides)) {
+								currentTile_.rotateLeft(i);
+								break;
+							}
+						}
+						// All rotation failed, allow to rotate anyway.
+						tile.rotateLeft();
 						break;
+					}
+					case SDL_BUTTON_RIGHT:
+					{
+						tilesGraphic_.clearTile(hex);
+						tilesGraphic_.fillTile(hex, CLEAR_COLOR);
+						tileBoard_.remove(hex);
+						break;
+					}
 				}
 				break;
 		}

@@ -42,6 +42,8 @@ namespace vin::hex {
 
 		void clear();
 
+		void remove(const Hexi& pos);
+
 		bool put(const Hexi& pos, const HexSides& sides);
 
 		bool isInside(const Hexi& hex) const;

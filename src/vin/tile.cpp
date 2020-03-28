@@ -16,9 +16,9 @@ namespace vin {
 
 	//void Tile::rotateRight() {}
 
-	void Tile::rotateLeft() {
-		hex::rotate(sides, 1);
-		sprite.rotations = (sprite.rotations + 1) % 6;
+	void Tile::rotateLeft(int nbr) {
+		hex::rotate(sides, nbr);
+		sprite.rotations = (sprite.rotations + nbr) % 6;
 	}
 
 	bool Tile::rotateUntilEqual(const hex::HexSides& otherSides) {

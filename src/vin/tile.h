@@ -19,7 +19,7 @@ namespace vin {
 
 		Tile(const HexImage& hexImage, int rotation = 0);
 
-		void rotateLeft();
+		void rotateLeft(int nbr = 1);
 		
 		bool rotateUntilEqual(const hex::HexSides& otherSides);
 
