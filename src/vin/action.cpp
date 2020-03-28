@@ -1,4 +1,5 @@
 #include "action.h"
+#include "logger.h"
 
 #include <cassert>
 
@@ -28,6 +29,7 @@ namespace vin {
 
 	void Action::update(const SDL_Keycode& key) {
 		if (key_ == key && callback_) {
+			logger()->info("[Action] Call callback based on key {}", menuName_);
 			callback_();
 		}
 	}

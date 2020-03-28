@@ -212,7 +212,6 @@ namespace vin {
 			tiles.push_back(hexImage.getHexSides());
 		}
 		tileBoard_.clear();
-		tilesGraphic_.clear();
 		tilesGraphic_.fill(CLEAR_COLOR);
 		hexMapGenerator_.fill(tileBoard_, tiles, {0, 0});
 		addTileMapToGraphic();

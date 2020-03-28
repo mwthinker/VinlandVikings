@@ -61,6 +61,10 @@ namespace vin {
 		std::vector<std::string> jsonFiles_;
 		ActionManager actionManager_;
 		
+		Action zoomIn_;
+		Action zoomOut_;
+		Action undo_;
+		Action redo_;
 		Action gridAction_;
 		Action clearAction_;
 		Action xyCoordsAction_;

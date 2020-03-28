@@ -57,11 +57,27 @@ namespace vin {
 			return listFiles(".*.([Pp][Nn][Gg]|[Jj][Pp][Ee]?[Gg]|[Bb][Mm][Pp])");
 		}
 
+		const std::string ICONFILE = "icon.ico";
+
 	}
 
 	VinlandWindow::VinlandWindow()
 		: hexCanvas_{getShader()} {
 		
+		setIcon(ICONFILE);
+		
+		zoomIn_ = actionManager_.add(Action{SDLK_KP_PLUS, "Zoom in", [&]() {
+			hexCanvas_.zoomIn();
+		}});
+		zoomOut_ = actionManager_.add(Action{SDLK_KP_MINUS, "Zoom out", [&]() {
+			hexCanvas_.zoomOut();
+		}});
+		undo_ = actionManager_.add(Action{SDLK_z, "Undo", [&]() {
+			logger()->info("[VinlandWindow] Undo");
+		}});
+		redo_ = actionManager_.add(Action{SDLK_y, "Redo", [&]() {
+			logger()->info("[VinlandWindow] Redo");
+		}});
 		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid", [&]() {
 			hexCanvas_.setGrid(!hexCanvas_.isGrid());
 		}});
@@ -175,9 +191,8 @@ namespace vin {
 
 	void VinlandWindow::addEditInMenuBar() {
 		ImGui::Menu("Edit", true, [&]() {
-			if (ImGui::MenuItem("Undo")) {}
-			if (ImGui::MenuItem("Redo")) {}
-			
+			ImGui::MenuItem(undo_);
+			ImGui::MenuItem(redo_);
 			ImGui::MenuItem(clearAction_);
 			ImGui::MenuItem(generateMapAction_);
 			ImGui::Separator();
@@ -187,13 +202,8 @@ namespace vin {
 	void VinlandWindow::addViewInMenuBar() {
 		ImGui::Menu("View", true, [&]() {
 			ImGui::Menu("Zoom", [&]() {
-				if (ImGui::MenuItem("Zoom in")) {
-					hexCanvas_.zoomIn();
-				}
-				if (ImGui::MenuItem("Zoom out")) {
-					hexCanvas_.zoomOut();
-				}
-				ImGui::EndMenu();
+				ImGui::MenuItem(zoomIn_);
+				ImGui::MenuItem(zoomOut_);
 			});
 			ImGui::Separator();
 
