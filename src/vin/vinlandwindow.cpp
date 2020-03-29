@@ -333,7 +333,9 @@ namespace vin {
 		glEnable(GL_MULTISAMPLE);
 
         sdl::ImGuiWindow::initPreLoop();
+#if IMGUI_DEMO_WINDOW
 		setShowDemoWindow(true);
+#endif
 		initData();
 	}
 	

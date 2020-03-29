@@ -137,10 +137,27 @@ file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT
 
 add_executable(VinlandVikings ${SOURCES})
 
+option(ImGuiDemoWindow "Hide terminal" OFF)
+if (ImguiDemoWindow)
+	target_compile_definitions(VinlandVikings
+		PUBLIC
+			IMGUI_DEMO_WINDOW
+	)
+endif ()
+
 if (MSVC)
 	target_compile_definitions(VinlandVikings
 		PUBLIC
 			_CRT_SECURE_NO_WARNINGS
+	)
+	
+	message(STATUS "Hide terminal: -DHideTerminal=1")
+	option(HideTerminal "Hide terminal" OFF)
+	set_target_properties(VinlandVikings PROPERTIES WIN32_EXECUTABLE ${HideTerminal})
+
+	target_sources(VinlandVikings
+		PRIVATE
+			${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
 	)
 endif ()
 

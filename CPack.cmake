@@ -13,6 +13,11 @@ install(DIRECTORY ${VinlandVikingsData_SOURCE_DIR}/images/
 	COMPONENT data
 )
 
+install(DIRECTORY ${VinlandVikingsData_SOURCE_DIR}/installer/
+	DESTINATION .
+	COMPONENT data
+)
+
 # Replace the USE_APPLICATION_JSON file, use default saving place.
 #install(FILES ${CMAKE_SOURCE_DIR}/data/package/USE_APPLICATION_JSON
 #	DESTINATION .

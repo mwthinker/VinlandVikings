@@ -129,12 +129,13 @@ namespace vin {
 		clear();
 
 		logger()->info("[HexData] Current working directory {}", std::filesystem::current_path().string());
-		if (std::filesystem::exists("USE_APPLICATION_JSON")) {
+		jsonPath_ = jsonFile;
+		/*if (std::filesystem::exists("USE_APPLICATION_JSON")) {
 			jsonPath_ = jsonFile;
 		} else {
 			// Find default path to save/load file from.
 			jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + jsonFile;
-		}
+		}*/
 
 		std::ifstream input{jsonPath_, std::ios::in | std::ios::binary};
 		if (!input.is_open()) {
