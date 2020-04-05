@@ -12,14 +12,17 @@
 #include "tilesgraphic.h"
 #include "hex/mapgenerator.h"
 #include "tilelexicon.h"
+//#include "command.h"
+#include "logger.h"
 
 #include <sdl/shader.h>
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 
-#include "logger.h"
-
 #include <unordered_set>
+#include <list>
+#include <queue>
+#include <stack>
 
 namespace vin {	
 
@@ -30,6 +33,8 @@ namespace vin {
 
 	class HexCanvas {
 	public:
+		friend class ClearCommand;
+		
 		HexCanvas(const sdl::Shader& shader);
 
 		void drawCanvas(const std::chrono::high_resolution_clock::duration& deltaTime);
@@ -72,7 +77,12 @@ namespace vin {
 		void clearAndGenerateMap();
 		void updateCanvasSize(const Vec2& pos, const Vec2& size);
 
+		void redo();
+		void undo();
+
 	private:
+		using Command = std::function<bool()>;
+
 		void addTileMapToGraphic();
 
 		hex::Hexi worldToHex(Vec2 pos) const;
@@ -85,6 +95,10 @@ namespace vin {
 		hex::Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
 		hex::Hexi getHexFromMouse() const;
 
+		void pushCommand(const Command& command);
+
+		void clearFutureCommands();
+		
 		const sdl::Shader& shader_;
 		sdl::Texture whiteSquare_;
 		float zoom_ = 1.f;
@@ -103,12 +117,19 @@ namespace vin {
 		TileLexicon tileLexicon_;
 
 		Vec2 sdlMousePos{};
-
 		Camera camera_;
 
 		ViewPort viewPort_{Vec2{0, 0}, Vec2{0 ,0}};
 		Mat4 projection_;
 		std::vector<HexImage> deck_;
+
+		struct State {
+			hex::TileBoard tileBoard;
+			std::unordered_map<hex::Hexi, Tile> tileMap;
+		};
+
+		std::stack<State> future_;
+		std::stack<State> history_;
 	};
 
 } // Namespace vin.

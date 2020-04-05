@@ -46,6 +46,15 @@ namespace vin {
 
 		void setMatrix(const Mat4& mat);
 
+		const std::unordered_map<hex::Hexi, Tile>& getMap() {
+			return hexImages_;
+		}
+
+		void fill(const std::unordered_map<hex::Hexi, Tile>& map) {
+			hexImages_ = map;
+			dirty_ = true;
+		}
+
 	private:
 		void drawColor(const sdl::Shader& shader);
 		void drawGrid(const sdl::Shader& shader);

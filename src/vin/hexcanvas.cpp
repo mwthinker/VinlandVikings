@@ -53,7 +53,7 @@ namespace vin {
 		constexpr float ZOOM_MAX = 3.0f;
 
 		const sdl::Color CLEAR_COLOR{0.6f, 0.6f, 0.6f, 0.6f};
-
+		
 	}
 
 	HexCanvas::HexCanvas(const sdl::Shader& shader)
@@ -168,30 +168,47 @@ namespace vin {
 	}
 
 	void HexCanvas::clear() {
-		tileBoard_.clear();
-		tilesGraphic_.fill(CLEAR_COLOR);
+		pushCommand([this]() {
+			tilesGraphic_.fill(CLEAR_COLOR);
+			return tileBoard_.clear();
+		});
 	}
 
 	void HexCanvas::zoomIn() {
-		zoom_ *= 1.25f;
-		zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+		pushCommand([this]() {
+			zoom_ *= 1.25f;
+			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+			return false;
+		});
 	}
 
 	void HexCanvas::zoomOut() {
-		zoom_ *= 1 / 1.25f;
-		zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+		pushCommand([this]() {
+			zoom_ *= 1 / 1.25f;
+			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+			return false;
+		});
 	}
 
 	void HexCanvas::setHexCoords(bool activate) {
-		tilesGraphic_.setHexCoords(activate);
+		pushCommand([this, activate]() {
+			tilesGraphic_.setHexCoords(activate);
+			return false;
+		});
 	}
 
 	void HexCanvas::setXYCoords(bool activate) {
-		tilesGraphic_.setXYCoords(activate);
+		pushCommand([this, activate]() {
+			tilesGraphic_.setXYCoords(activate);
+			return false;
+		});
 	}
 
 	void HexCanvas::setGrid(bool activate) {
-		tilesGraphic_.setGrid(activate);
+		pushCommand([this, activate]() {
+			tilesGraphic_.setGrid(activate);
+			return false;
+		});
 	}
 
 	bool HexCanvas::isHexCoords() const {
@@ -207,14 +224,57 @@ namespace vin {
 	}
 
 	void HexCanvas::clearAndGenerateMap() {
-		std::vector<hex::HexSides> tiles;
-		for (const auto& hexImage : deck_) {
-			tiles.push_back(hexImage.getHexSides());
+		pushCommand([this]() {
+			std::vector<hex::HexSides> tiles;
+			if (tiles.empty()) {
+				for (const auto& hexImage : deck_) {
+					tiles.push_back(hexImage.getHexSides());
+				}
+			}
+			tileBoard_.clear();
+			tilesGraphic_.fill(CLEAR_COLOR);
+			hexMapGenerator_.fill(tileBoard_, tiles, {0, 0});
+			addTileMapToGraphic();
+			return true;
+		});
+	}
+
+	void HexCanvas::clearFutureCommands() {
+		while (!future_.empty()) {
+			future_.pop();
 		}
-		tileBoard_.clear();
-		tilesGraphic_.fill(CLEAR_COLOR);
-		hexMapGenerator_.fill(tileBoard_, tiles, {0, 0});
-		addTileMapToGraphic();
+	}
+
+	void HexCanvas::redo() {
+		if (!future_.empty()) {
+			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+			history_.push(State{tileBoard_, tilesGraphic_.getMap()});
+			auto& state = future_.top();
+			tileBoard_ = state.tileBoard;
+			tilesGraphic_.fill(state.tileMap);
+			future_.pop();
+		}
+	}
+
+	void HexCanvas::undo() {
+		if (!history_.empty()) {
+			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+			future_.emplace(State{tileBoard_, tilesGraphic_.getMap()});
+			auto& state = history_.top();
+			tileBoard_ = state.tileBoard;
+			tilesGraphic_.fill(state.tileMap);
+			history_.pop();
+		}
+	}
+
+	void HexCanvas::pushCommand(const Command& command) {
+		hex::TileBoard copy = tileBoard_;
+		auto map = tilesGraphic_.getMap();
+		if (command()) {
+			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+			clearFutureCommands();
+			history_.push(State{copy, map});
+		}
 	}
 
 	void HexCanvas::eventUpdate(const SDL_Event& windowEvent) {
@@ -231,6 +291,9 @@ namespace vin {
 			{
 				constexpr float STEP = 10.f;
 				switch (windowEvent.key.keysym.sym) {
+					case SDLK_a:
+						logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+						break;
 					case SDLK_LEFT:
 						camera_.move({-STEP,0});
 						break;
@@ -269,9 +332,13 @@ namespace vin {
 					{
 						if (activateHexagon_) {
 							//logger()->info("(q, r, s): {}", hex);
-							if (tileBoard_.put(hex, currentTile_.sides)) {
-								tilesGraphic_.fillTile(hex, currentTile_);
-							}
+							pushCommand([this, hex]() {
+								if (tileBoard_.put(hex, currentTile_.sides)) {
+									tilesGraphic_.fillTile(hex, currentTile_);
+									return true;
+								}
+								return false;
+							});
 						}
 						break;
 					}
@@ -291,9 +358,11 @@ namespace vin {
 					}
 					case SDL_BUTTON_RIGHT:
 					{
-						tilesGraphic_.clearTile(hex);
-						tilesGraphic_.fillTile(hex, CLEAR_COLOR);
-						tileBoard_.remove(hex);
+						pushCommand([this, hex]() {
+							tilesGraphic_.clearTile(hex);
+							tilesGraphic_.fillTile(hex, CLEAR_COLOR);
+							return tileBoard_.remove(hex);
+						});
 						break;
 					}
 				}

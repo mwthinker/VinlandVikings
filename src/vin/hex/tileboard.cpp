@@ -77,24 +77,35 @@ namespace vin::hex {
 		return it->second;
 	}
 
-    void TileBoard::clear() {
+    bool TileBoard::clear() {
+		bool dirty = false;
         for (auto& hexTile : hexes_) {
+			if (!dirty && hexTile.second != HEXSIDES_NONE) {
+				dirty = true;
+			}
 			hexTile.second = HEXSIDES_NONE;
         }
+		return dirty;
 	}
 
 	bool TileBoard::put(const Hexi& pos, const HexSides& sides) {
 		if (!isAllowed(pos, sides)) {
 			return false;
 		}
+		bool dirty = hexes_[pos] != sides;
 		hexes_[pos] = sides;
-		return true;
+		return dirty;
 	}
 
-	void TileBoard::remove(const Hexi& pos) {
+	bool TileBoard::remove(const Hexi& pos) {
 		if (auto it = hexes_.find(pos); it != hexes_.end()) {
-			it->second = HEXSIDES_NONE;
+			if (it->second != HEXSIDES_NONE) {
+				it->second = HEXSIDES_NONE;
+				return true;
+			}
+			return false;
 		}
+		return false;
 	}
 
 } // Namespace vin::hex.

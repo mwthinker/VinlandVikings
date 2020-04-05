@@ -34,7 +34,7 @@ namespace vin {
 
 		std::vector<std::string> listFiles(const std::string& regexStr) {
 			std::vector<std::string> files;
-			try {				
+			try {
 				std::regex jsonRegex{regexStr};
 				for (auto p : fs::recursive_directory_iterator("images")) {
 					auto pathStr = p.path().string();
@@ -74,9 +74,11 @@ namespace vin {
 		}});
 		undo_ = actionManager_.add(Action{SDLK_z, "Undo", [&]() {
 			logger()->info("[VinlandWindow] Undo");
+			hexCanvas_.undo();
 		}});
 		redo_ = actionManager_.add(Action{SDLK_y, "Redo", [&]() {
 			logger()->info("[VinlandWindow] Redo");
+			hexCanvas_.redo();
 		}});
 		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid", [&]() {
 			hexCanvas_.setGrid(!hexCanvas_.isGrid());

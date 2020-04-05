@@ -23,12 +23,12 @@ namespace vin::hex {
 
 		TileBoard();
 
-		TileBoard(const TileBoard& map) = delete;
-		TileBoard& operator=(const TileBoard& map) = delete;
+		TileBoard(const TileBoard& map) = default;
+		TileBoard& operator=(const TileBoard& map) = default;
 
-		TileBoard(TileBoard&& map) = default;
+		TileBoard(TileBoard&& map) noexcept = default;
 
-		TileBoard& operator=(TileBoard&& map) = default;
+		TileBoard& operator=(TileBoard&& map) noexcept = default;
 
 		TileBoard(const std::vector<Hexi>& hexes);
 
@@ -39,10 +39,10 @@ namespace vin::hex {
 				hexes_[hex] = HEXSIDES_NONE;
 			}
 		}
+		
+		bool clear();
 
-		void clear();
-
-		void remove(const Hexi& pos);
+		bool remove(const Hexi& pos);
 
 		bool put(const Hexi& pos, const HexSides& sides);
 
