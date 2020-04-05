@@ -66,6 +66,15 @@ namespace vin {
 		
 		setIcon(ICONFILE);
 		
+		load_ = actionManager_.add(Action{SDLK_o, SDLK_LCTRL, "Load", [&]() {
+			logger()->info("[VinlandWindow] Load");
+		}});
+		save_ = actionManager_.add(Action{SDLK_s, SDLK_LCTRL, "Save", [&]() {
+			logger()->info("[VinlandWindow] Save");
+		}});
+		saveAs_ = actionManager_.add(Action{"Save as", [&]() {
+			logger()->info("[VinlandWindow] Save as");
+		}});
 		zoomIn_ = actionManager_.add(Action{SDLK_KP_PLUS, "Zoom in", [&]() {
 			hexCanvas_.zoomIn();
 		}});
@@ -180,6 +189,10 @@ namespace vin {
 					}
 				}
 			});
+
+			ImGui::MenuItem(load_);
+			ImGui::MenuItem(save_);
+			ImGui::MenuItem(saveAs_);
 			
 			if (ImGui::MenuItem("Quit", "Alt+F4")) {
 				quit();
@@ -187,7 +200,7 @@ namespace vin {
 		});
 
 		if (popup) {
-			ImGui::OpenPopup("Deleteee");
+			ImGui::OpenPopup("Add hexagon image");
 		}
 	}
 
@@ -218,20 +231,36 @@ namespace vin {
 		
 	}
 
+	void VinlandWindow::addHelpInMenuBar() {
+		bool popup = false;
+		ImGui::Menu("Help", true, [&]() {
+			if (ImGui::MenuItem("About VinlandVikings")) {
+				popup = true;
+			}
+		});
+
+		if (popup) {
+			ImGui::OpenPopup("About");
+		}
+
+	}
+
 	void VinlandWindow::showMenuBar() {
 		ImGui::MenuBar([&]() {
 			addFileInMenuBar();
 			addEditInMenuBar();
 			addViewInMenuBar();
+			addHelpInMenuBar();
 			//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(50.f, 50.f));
 			//ImGui::PopStyleVar();
 			showAddHexImagePopup();
+			showHelpPopup();
 		});
 	}
 
 	void VinlandWindow::showAddHexImagePopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
-		ImGui::PopupModal("Deleteee", nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
+		ImGui::PopupModal("Add hexagon image", nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
 			ImGui::Separator();
 
@@ -255,23 +284,9 @@ namespace vin {
 		ImGui::PopStyleVar();
 	}
 
-	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
-		hexCanvas_.drawCanvas(deltaTime);
-	}
-
-	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
-		ImGui::PushStyleColor(ImGuiCol_WindowBg, {1.f, 1.f, 1.f, 0.f});
-
-		ImGui::SetNextWindowPos({0.f, 0.f});
-		auto [width, height] = sdl::Window::getSize();
-		ImGui::SetNextWindowSize({(float) width, 300.f});
-
-		ImGui::Window("Main", nullptr, ImGuiNoWindow, [&]() {
-			showMenuBar();
-
+	void VinlandWindow::showHelpPopup() {
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
+		ImGui::PopupModal("About", nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("KEYS:");
 			ImGui::Text("ARROWS - Move window");
 			ImGui::Text("PAGE_DOWN/UP - Tilt camera");
@@ -281,18 +296,43 @@ namespace vin {
 			ImGui::Text("Drag MIDDLE - Move window");
 			ImGui::Text("Push MIDDLE - Rotate card");
 			ImGui::Text("Left - Place card");
+
+			if (ImGui::Button("OK", {120, 0})) { ImGui::CloseCurrentPopup(); }
+			ImGui::SetItemDefaultFocus();
+		});
+		ImGui::PopStyleVar();
+	}
+
+	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
+		hexCanvas_.drawCanvas(deltaTime);
+	}
+
+	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
+		//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+		//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+		//ImGui::PushStyleColor(ImGuiCol_WindowBg, {1.f, 1.f, 1.f, 0.f});
+
+		ImGui::SetNextWindowPos({0.f, 0.f});
+		auto [width, height] = sdl::Window::getSize();
+
+		float hexWindowHeight = 200.f;
+		ImGui::SetNextWindowSize({(float) width, hexWindowHeight});
+
+		ImGui::Window("Main", nullptr, ImGuiNoWindow, [&]() {
+			showMenuBar();
 			
 			drawHexTypesButtons();
 		});
 
-		if (auto canvasHeight = static_cast<float>(height) - 300.f;
+		if (auto canvasHeight = static_cast<float>(height) - hexWindowHeight;
 			canvasHeight > 0) {
 			
 			hexCanvas_.updateCanvasSize({0.f, 0.f}, {width, canvasHeight});
 		}
 		
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(3);
+		//ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 	}
 
 	void VinlandWindow::drawHexTypesButtons() {

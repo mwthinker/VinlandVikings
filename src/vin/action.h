@@ -13,12 +13,15 @@ namespace vin {
 
 		Action() = default;
 
+		Action(const std::string& menuName, const Callback& callback);
 		Action(SDL_Keycode key, const std::string& menuName, const Callback& callback);
 		Action(SDL_Keycode key1, SDL_Keycode key2, const std::string& menuName, const Callback& callback);
 
 		void update(const SDL_Keycode& key);
 
 		const char* getMenuName() const;
+		const char* getShortcut() const;
+		const char* getCheckboxMenuName() const;
 
 		void operator()();
 
@@ -31,6 +34,8 @@ namespace vin {
 		SDL_Keycode key_{};
 		SDL_Keycode key2_{};
 		std::string menuName_;
+		std::string checkboxMenuName_;
+		std::string shortcut_;
 	};
 
 	class ActionManager {

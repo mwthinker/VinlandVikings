@@ -45,10 +45,12 @@ namespace vin {
 		void showMenuBar();
 
 		void showAddHexImagePopup();
-		
+		void showHelpPopup();
+
 		void addFileInMenuBar();
 		void addEditInMenuBar();
 		void addViewInMenuBar();
+		void addHelpInMenuBar();
 
 		void initData();
 
@@ -61,6 +63,9 @@ namespace vin {
 		std::vector<std::string> jsonFiles_;
 		ActionManager actionManager_;
 		
+		Action load_;
+		Action save_;
+		Action saveAs_;
 		Action zoomIn_;
 		Action zoomOut_;
 		Action undo_;

@@ -22,7 +22,7 @@ namespace ImGui {
 	}
 
 	bool Checkbox(vin::Action& action, bool active) {
-		if (Checkbox(action.getMenuName(), &active)) {
+		if (Checkbox(action.getCheckboxMenuName(), &active)) {
 			action();
 			return true;
 		}
@@ -30,7 +30,7 @@ namespace ImGui {
 	}
 
 	bool MenuItem(vin::Action& action) {
-		if (MenuItem(action.getMenuName())) {
+		if (MenuItem(action.getMenuName(), action.getShortcut())) {
 			action();
 			return true;
 		}

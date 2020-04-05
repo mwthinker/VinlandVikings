@@ -14,22 +14,39 @@ namespace vin {
 		}
 
 		std::string addKey(const std::string& str, SDL_Keycode code1, SDL_Keycode code2) {
-			return fmt::format("{:<15} {:>3}+{}", str, SDL_GetKeyName(code1), SDL_GetKeyName(code2));;
+			return fmt::format("{:<15} {:>3}+{}", str, SDL_GetKeyName(code1), SDL_GetKeyName(code2));
 		}
 
+		std::string shortcut(SDL_Keycode code) {
+			return fmt::format("{}", SDL_GetKeyName(code));
+		}
+
+		std::string shortcut(SDL_Keycode code1, SDL_Keycode code2) {
+			return fmt::format("{}+{}", SDL_GetKeyName(code1), SDL_GetKeyName(code2));
+		}
+
+	}
+
+	Action::Action(const std::string& menuName, const Callback& callback)
+		: callback_{callback}
+		, menuName_{menuName} {
 	}
 
 	Action::Action(SDL_Keycode key, const std::string& menuName, const Callback& callback)
 		: callback_{callback}
 		, key_{key}
-		, menuName_{addKey(menuName, key)} {
+		, menuName_{menuName}
+		, shortcut_{shortcut(key)}
+		, checkboxMenuName_{addKey(menuName, key)} {
 	}
 
 	Action::Action(SDL_Keycode key1, SDL_Keycode key2, const std::string& menuName, const Callback& callback)
 		: callback_{callback}
 		, key_{key1}
 		, key2_{key2}
-		, menuName_{addKey(menuName, key1, key2)} {
+		, menuName_{menuName}
+		, shortcut_{shortcut(key1, key2)}
+		, checkboxMenuName_{addKey(menuName, key1, key2)} {
 	}
 
 	void Action::update(const SDL_Keycode& key) {
@@ -44,6 +61,14 @@ namespace vin {
 
 	const char* Action::getMenuName() const {
 		return menuName_.c_str();
+	}
+
+	const char* Action::getShortcut() const {
+		return shortcut_.c_str();
+	}
+
+	const char* Action::getCheckboxMenuName() const {
+		return checkboxMenuName_.c_str();
 	}
 
 	void Action::operator()() {
