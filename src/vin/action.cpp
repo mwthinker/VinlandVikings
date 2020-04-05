@@ -9,14 +9,12 @@ namespace vin {
 
 	namespace {
 
-		constexpr int DEFAULT_POS = 19;
+		std::string addKey(const std::string& str, SDL_Keycode code) {
+			return fmt::format("{:<15} {:>3} ", str, SDL_GetKeyName(code));
+		}
 
-		std::string addKey(const std::string& str, SDL_Keycode code, int pos = DEFAULT_POS) {
-			assert(pos > 0);
-			std::string newValue(pos + 2, ' ');
-			newValue.replace(0, str.size(), str);
-			newValue.replace(pos, 1, SDL_GetKeyName(code));
-			return newValue;
+		std::string addKey(const std::string& str, SDL_Keycode code1, SDL_Keycode code2) {
+			return fmt::format("{:<15} {:>3}+{}", str, SDL_GetKeyName(code1), SDL_GetKeyName(code2));;
 		}
 
 	}
@@ -27,10 +25,20 @@ namespace vin {
 		, menuName_{addKey(menuName, key)} {
 	}
 
+	Action::Action(SDL_Keycode key1, SDL_Keycode key2, const std::string& menuName, const Callback& callback)
+		: callback_{callback}
+		, key_{key1}
+		, key2_{key2}
+		, menuName_{addKey(menuName, key1, key2)} {
+	}
+
 	void Action::update(const SDL_Keycode& key) {
 		if (key_ == key && callback_) {
-			logger()->info("[Action] Call callback based on key {}", menuName_);
-			callback_();
+			auto state = SDL_GetKeyboardState(nullptr);
+			if (key2_ == 0 || state[SDL_GetScancodeFromKey(key2_)] == 1) {
+				logger()->info("[Action] Call callback based on key {}", menuName_);
+				callback_();
+			}
 		}
 	}
 
@@ -46,6 +54,10 @@ namespace vin {
 
 	SDL_Keycode Action::getKey() const {
 		return key_;
+	}
+
+	std::pair<SDL_Keycode, SDL_Keycode> Action::getKeyPair() const {
+		return {key_, key2_};
 	}
 
 	const Action& ActionManager::add(const Action& action) {

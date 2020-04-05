@@ -72,11 +72,11 @@ namespace vin {
 		zoomOut_ = actionManager_.add(Action{SDLK_KP_MINUS, "Zoom out", [&]() {
 			hexCanvas_.zoomOut();
 		}});
-		undo_ = actionManager_.add(Action{SDLK_z, "Undo", [&]() {
+		undo_ = actionManager_.add(Action{SDLK_z, SDLK_LCTRL, "Undo", [&]() {
 			logger()->info("[VinlandWindow] Undo");
 			hexCanvas_.undo();
 		}});
-		redo_ = actionManager_.add(Action{SDLK_y, "Redo", [&]() {
+		redo_ = actionManager_.add(Action{SDLK_y, SDLK_LCTRL, "Redo", [&]() {
 			logger()->info("[VinlandWindow] Redo");
 			hexCanvas_.redo();
 		}});

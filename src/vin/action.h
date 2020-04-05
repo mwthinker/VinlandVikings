@@ -14,6 +14,7 @@ namespace vin {
 		Action() = default;
 
 		Action(SDL_Keycode key, const std::string& menuName, const Callback& callback);
+		Action(SDL_Keycode key1, SDL_Keycode key2, const std::string& menuName, const Callback& callback);
 
 		void update(const SDL_Keycode& key);
 
@@ -23,9 +24,12 @@ namespace vin {
 
 		SDL_Keycode getKey() const;
 
+		std::pair<SDL_Keycode, SDL_Keycode> getKeyPair() const;
+
 	private:
 		Callback callback_;
 		SDL_Keycode key_{};
+		SDL_Keycode key2_{};
 		std::string menuName_;
 	};
 
