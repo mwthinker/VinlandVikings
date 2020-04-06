@@ -137,13 +137,14 @@ file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT
 
 add_executable(VinlandVikings ${SOURCES})
 
-if (WIN32)
-	execute_process(COMMAND cmd /C "git -C ${CMAKE_CURRENT_SOURCE_DIR} rev-parse HEAD" OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
-else ()
-	execute_process(COMMAND bash -c "git -C ${CMAKE_CURRENT_SOURCE_DIR} rev-parse HEAD" OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
-endif ()
+include(${CMAKE_CURRENT_SOURCE_DIR}/auxiliary.cmake)
+
+extract_git_hash()
+create_guid()
+
 message(STATUS "GIT_HASH: ${GIT_HASH}")
 message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
+message(STATUS "GUID: ${GUID}")
 
 target_compile_definitions(VinlandVikings
 	PUBLIC

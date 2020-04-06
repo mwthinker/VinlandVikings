@@ -80,7 +80,7 @@ if (MSVC)
 	option(USE_WIX_GENERATOR "Use WIX generator" OFF)
 	if (USE_WIX_GENERATOR)
 		set(CPACK_GENERATOR ${CPACK_GENERATOR} WIX)
-		set(CPACK_WIX_PRODUCT_GUID "bf1ee6e4-389a-4567-ad2c-61a4d3c71d69")
+		set(CPACK_WIX_PRODUCT_GUID "${GUID]")
 		set(CPACK_WIX_UPGRADE_GUID "bf1ee6e4-389a-4567-ad2c-61a4d3c71d66")
 
 		set(CPACK_WIX_UI_DIALOG "${CMAKE_BINARY_DIR}/installer/install_dialog.png")
