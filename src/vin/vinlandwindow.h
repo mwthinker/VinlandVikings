@@ -46,6 +46,7 @@ namespace vin {
 
 		void showAddHexImagePopup();
 		void showHelpPopup();
+		void showAboutPopup();
 
 		void addFileInMenuBar();
 		void addEditInMenuBar();

@@ -46,6 +46,13 @@ namespace vin {
 			auto projection = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);
 			return glm::scale(projection, Vec3{zoom, zoom, 1});
 		}
+		
+		template <class T>
+		void popAll(std::stack<T>& stack) {
+			while (!stack.empty()) {
+				stack.pop();
+			}
+		}
 
 		constexpr HexDimension HEX_DIMENSION;
 
@@ -161,6 +168,10 @@ namespace vin {
 
 	void HexCanvas::setDeck(const std::vector<HexImage>& deck) {
 		deck_ = deck;
+
+		logger()->info("[HexCanvas] Remove all history and future commands");
+		popAll(future_);
+		popAll(history_);
 	}
 
 	void HexCanvas::setTileLexicon(const TileLexicon& tileLexicon) {
@@ -178,6 +189,7 @@ namespace vin {
 		pushCommand([this]() {
 			zoom_ *= 1.25f;
 			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+			logger()->info("[HexCanvas] Zoom value: {}", zoom_);
 			return false;
 		});
 	}
@@ -186,6 +198,7 @@ namespace vin {
 		pushCommand([this]() {
 			zoom_ *= 1 / 1.25f;
 			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+			logger()->info("[HexCanvas] Zoom value: {}", zoom_);
 			return false;
 		});
 	}
@@ -239,12 +252,6 @@ namespace vin {
 		});
 	}
 
-	void HexCanvas::clearFutureCommands() {
-		while (!future_.empty()) {
-			future_.pop();
-		}
-	}
-
 	void HexCanvas::redo() {
 		if (!future_.empty()) {
 			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
@@ -272,7 +279,7 @@ namespace vin {
 		auto map = tilesGraphic_.getMap();
 		if (command()) {
 			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
-			clearFutureCommands();
+			popAll(future_);
 			history_.push(State{copy, map});
 		}
 	}

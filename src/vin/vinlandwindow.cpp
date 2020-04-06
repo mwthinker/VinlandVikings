@@ -59,6 +59,10 @@ namespace vin {
 
 		const std::string ICONFILE = "icon.ico";
 
+		constexpr const char* POPUP_ADDHEXIMAGE = "Add Hex Image";
+		constexpr const char* POPUP_HELP = "Help";
+		constexpr const char* POPUP_ABOUT = "About";
+
 	}
 
 	VinlandWindow::VinlandWindow()
@@ -200,7 +204,7 @@ namespace vin {
 		});
 
 		if (popup) {
-			ImGui::OpenPopup("Add hexagon image");
+			ImGui::OpenPopup(POPUP_ADDHEXIMAGE);
 		}
 	}
 
@@ -232,17 +236,23 @@ namespace vin {
 	}
 
 	void VinlandWindow::addHelpInMenuBar() {
-		bool popup = false;
-		ImGui::Menu("Help", true, [&]() {
+		bool popupHelp = false;
+		bool popupAbout = false;
+		ImGui::Menu("Help ", true, [&]() {
+			if (ImGui::MenuItem("Help  ")) {
+				popupHelp = true;
+			}
 			if (ImGui::MenuItem("About VinlandVikings")) {
-				popup = true;
+				popupAbout = true;
 			}
 		});
 
-		if (popup) {
-			ImGui::OpenPopup("About");
+		if (popupHelp) {
+			ImGui::OpenPopup(POPUP_HELP);
 		}
-
+		if (popupAbout) {
+			ImGui::OpenPopup(POPUP_ABOUT);
+		}
 	}
 
 	void VinlandWindow::showMenuBar() {
@@ -254,13 +264,14 @@ namespace vin {
 			//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(50.f, 50.f));
 			//ImGui::PopStyleVar();
 			showAddHexImagePopup();
+			showAboutPopup();
 			showHelpPopup();
 		});
 	}
 
 	void VinlandWindow::showAddHexImagePopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
-		ImGui::PopupModal("Add hexagon image", nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
+		ImGui::PopupModal(POPUP_ADDHEXIMAGE, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
 			ImGui::Separator();
 
@@ -286,7 +297,7 @@ namespace vin {
 
 	void VinlandWindow::showHelpPopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
-		ImGui::PopupModal("About", nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
+		ImGui::PopupModal(POPUP_HELP, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("KEYS:");
 			ImGui::Text("ARROWS - Move window");
 			ImGui::Text("PAGE_DOWN/UP - Tilt camera");
@@ -302,6 +313,22 @@ namespace vin {
 		});
 		ImGui::PopStyleVar();
 	}
+	
+	void VinlandWindow::showAboutPopup() {
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
+		ImGui::PopupModal(POPUP_ABOUT, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
+			ImGui::Text("VinlanbVikings");
+			ImGui::NewLine();
+						
+			ImGui::Text("Version: v%s", PROJECT_VERSION);
+			ImGui::Text("Git Hash: %s", GIT_VERSION);
+
+			if (ImGui::Button("OK", {120, 0})) { ImGui::CloseCurrentPopup(); }
+			ImGui::SetItemDefaultFocus();
+		});
+		ImGui::PopStyleVar();
+	}
+
 
 	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
 		hexCanvas_.drawCanvas(deltaTime);

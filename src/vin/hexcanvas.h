@@ -33,8 +33,6 @@ namespace vin {
 
 	class HexCanvas {
 	public:
-		friend class ClearCommand;
-		
 		HexCanvas(const sdl::Shader& shader);
 
 		void drawCanvas(const std::chrono::high_resolution_clock::duration& deltaTime);
@@ -96,12 +94,10 @@ namespace vin {
 		hex::Hexi getHexFromMouse() const;
 
 		void pushCommand(const Command& command);
-
-		void clearFutureCommands();
 		
 		const sdl::Shader& shader_;
 		sdl::Texture whiteSquare_;
-		float zoom_ = 1.f;
+		float zoom_ = 0.048f;
 		bool activateHexagon_;
 		hex::TileBoard tileBoard_;
 		HexagonBatch hexagonBatch_;

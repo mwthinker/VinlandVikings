@@ -14,7 +14,7 @@ project(VinlandVikings
 	DESCRIPTION
 		"A editor for the board game Vinland Vikings"
 	VERSION
-		0.1.0
+		0.2.0
 	LANGUAGES
 		CXX
 )
@@ -137,8 +137,23 @@ file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT
 
 add_executable(VinlandVikings ${SOURCES})
 
-option(ImGuiDemoWindow "Hide terminal" OFF)
-if (ImguiDemoWindow)
+if (WIN32)
+	execute_process(COMMAND cmd /C "git -C ${CMAKE_CURRENT_SOURCE_DIR} rev-parse HEAD" OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
+else ()
+	execute_process(COMMAND bash -c "git -C ${CMAKE_CURRENT_SOURCE_DIR} rev-parse HEAD" OUTPUT_VARIABLE GIT_HASH OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif ()
+message(STATUS "GIT_HASH: ${GIT_HASH}")
+message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
+
+target_compile_definitions(VinlandVikings
+	PUBLIC
+		GIT_VERSION="${GIT_HASH}"
+		PROJECT_VERSION="${PROJECT_VERSION}"
+)
+
+option(ImGuiDemoWindow "Add ImGui Demo Window" OFF)
+if (ImGuiDemoWindow)
+	message(STATUS "ImGui Demo Window: Activated")
 	target_compile_definitions(VinlandVikings
 		PUBLIC
 			IMGUI_DEMO_WINDOW
