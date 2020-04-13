@@ -3,10 +3,10 @@
 namespace vin {
 
 	HexImage::HexImage(const std::string& filename, const sdl::TextureView& sprite,
-		const hex::HexSides& hexSides, bool flat, int rotations)
+		const hex::Tile& tile, bool flat, int rotations)
 		: filename_{filename}
 		, sprite_{sprite}
-		, hexSides_{hexSides}
+		, tile_{tile}
 		, flat_{flat}
 		, rotations_{rotations} {
 	}
@@ -19,8 +19,8 @@ namespace vin {
 		return sprite_;
 	}
 
-	const hex::HexSides& HexImage::getHexSides() const {
-		return hexSides_;
+	const hex::Tile& HexImage::getTile() const {
+		return tile_;
 	}
 
 	bool HexImage::isFlat() const {

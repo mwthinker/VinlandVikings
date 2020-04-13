@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "hexagonbatch.h"
-#include "hex/hexsideskey.h"
+#include "hex/tilekey.h"
 #include "hex/hexagon.h"
 #include "hex/tileboard.h"
 #include "heximage.h"
@@ -39,7 +39,7 @@ namespace vin {
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
-		void activateHexagon(const Tile& tile) {
+		void activateHexagon(const SpriteTile& tile) {
 			currentTile_ = tile;
 			activateHexagon_ = true;
 		}
@@ -47,7 +47,7 @@ namespace vin {
 		void inactivateHexagon() {
 			activateHexagon_ = false;
 			currentTile_.sprite.rotations = 0;
-			currentTile_.sides = {};
+			currentTile_.tile = {};
 		}
 
 		sdl::TextureView currentHexSprite() const {
@@ -104,7 +104,7 @@ namespace vin {
 		Graphic graphic_;
 		Mat2 hexToWorldModel_;
 
-		Tile currentTile_;
+		SpriteTile currentTile_;
 
 		TilesGraphic tilesGraphic_;
 		hex::MapGenerator hexMapGenerator_;
@@ -121,7 +121,7 @@ namespace vin {
 
 		struct State {
 			hex::TileBoard tileBoard;
-			std::unordered_map<hex::Hexi, Tile> tileMap;
+			std::unordered_map<hex::Hexi, SpriteTile> tileMap;
 		};
 
 		std::stack<State> future_;

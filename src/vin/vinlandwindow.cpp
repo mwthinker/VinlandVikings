@@ -23,8 +23,8 @@ namespace vin {
 			}
 		}
 
-		bool isFullWater(const hex::HexSides& hexSides) {
-			for (const auto& side : hexSides) {
+		bool isFullWater(const hex::Tile& tile) {
+			for (const auto& side : tile) {
 				if (side != hex::HexSide::WATER) {
 					return false;
 				}
@@ -421,7 +421,7 @@ namespace vin {
 		hexCanvas_.setTileLexicon(tileLexicon_);
 
 		for (const auto& image : hexImages) {
-			hexTypes_[image.getHexSides()].hexImages_.push_back(image);
+			hexTypes_[image.getTile()].hexImages_.push_back(image);
 		}
 
 		int size = static_cast<int>(hexImages.size());

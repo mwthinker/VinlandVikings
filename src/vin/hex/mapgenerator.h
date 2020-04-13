@@ -19,7 +19,7 @@ namespace vin::hex {
 	public:
 		MapGenerator();
 
-		void fill(hex::TileBoard& map, std::vector<hex::HexSides> tiles, hex::Hexi start);
+		void fill(hex::TileBoard& map, std::vector<hex::Tile> tiles, hex::Hexi start);
 
 	private:
 		template <class T>

@@ -73,7 +73,7 @@ namespace vin {
 		return xyCoord_;
 	}
 
-	void TilesGraphic::fillTile(hex::Hexi hex, const Tile& tile) {
+	void TilesGraphic::fillTile(hex::Hexi hex, const SpriteTile& tile) {
 		hexImages_[hex] = tile;
 		dirty_ = true;
 	}
@@ -91,7 +91,7 @@ namespace vin {
 		dirty_ = true;
 	}
 
-	void TilesGraphic::fill(const Tile& tile) {
+	void TilesGraphic::fill(const SpriteTile& tile) {
 		for (auto& [hex, mapTile]: hexImages_) {
 			mapTile = tile;
 		}

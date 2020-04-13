@@ -2,7 +2,7 @@
 #define VINLANDVIKINGS_VIN_TILELEXICON_H
 
 #include "tilelexicon.h"
-#include "tile.h"
+#include "spritetile.h"
 #include "hex/hash.h"
 
 #include <vector>
@@ -10,7 +10,7 @@
 
 namespace vin {
 
-	using Tiles = std::vector<Tile>;
+	using SpriteTiles = std::vector<SpriteTile>;
 
 	class TileLexicon {
 	public:
@@ -20,15 +20,15 @@ namespace vin {
 
 		void add(const HexImage& hexImage);
 
-		Tiles getInvariantTiles(hex::HexSidesInvariantKey key) const;
+		SpriteTiles getInvariantTiles(hex::TileInvariantKey key) const;
 
-		Tiles getTiles(hex::HexSidesKey key) const;
+		SpriteTiles getTiles(hex::TileKey key) const;
 
 		void clear();
 
 	private:
-		using HexImageMap = std::unordered_map<hex::HexSidesKey, Tiles>;
-		using HexImageInvariantMap = std::unordered_map<hex::HexSidesInvariantKey, Tiles>;
+		using HexImageMap = std::unordered_map<hex::TileKey, SpriteTiles>;
+		using HexImageInvariantMap = std::unordered_map<hex::TileInvariantKey, SpriteTiles>;
 
 		HexImageMap map_;
 		HexImageInvariantMap invariantMap_;

@@ -31,11 +31,11 @@ namespace vin {
 		void setXYCoords(bool xyCoord);
 		bool isXYCoords() const;
 
-		void fillTile(hex::Hexi hex, const Tile& tile);
+		void fillTile(hex::Hexi hex, const SpriteTile& tile);
 		void fillTile(hex::Hexi hex, const Color& color);
 
 		void fill(const Color& color);
-		void fill(const Tile& tile);
+		void fill(const SpriteTile& tile);
 		void fillGrid(hex::Hexi hex, const Color& color);
 
 		void clearTile(hex::Hexi hex);
@@ -46,11 +46,19 @@ namespace vin {
 
 		void setMatrix(const Mat4& mat);
 
-		const std::unordered_map<hex::Hexi, Tile>& getMap() {
+		const std::unordered_map<hex::Hexi, SpriteTile>& getMap() {
 			return hexImages_;
 		}
 
-		void fill(const std::unordered_map<hex::Hexi, Tile>& map) {
+		SpriteTile getTile(const hex::Hexi& hex) const {
+			auto it = hexImages_.find(hex);
+			if (it != hexImages_.end()) {
+				return it->second;
+			}
+			return SpriteTile{};
+		}
+
+		void fill(const std::unordered_map<hex::Hexi, SpriteTile>& map) {
 			hexImages_ = map;
 			dirty_ = true;
 		}
@@ -76,7 +84,7 @@ namespace vin {
 		Mat2 hexToWorld_{1};
 		Mat4 worldToScreen_{1};
 		Graphic graphic_;
-		std::unordered_map<hex::Hexi, Tile> hexImages_;
+		std::unordered_map<hex::Hexi, SpriteTile> hexImages_;
 	};
 	
 } // Namespace vin.

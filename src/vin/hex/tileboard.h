@@ -3,8 +3,8 @@
 
 #include "hexagon.h"
 #include "../types.h"
-#include "hexsides.h"
-#include "hexsideskey.h"
+#include "tile.h"
+#include "tilekey.h"
 #include "hash.h"
 
 #include <vector>
@@ -18,7 +18,7 @@ namespace vin::hex {
 
 	class TileBoard {
 	public:
-		using Map = std::unordered_map<Hexi, HexSides>;
+		using Map = std::unordered_map<Hexi, Tile>;
 		using const_iterator = Map::const_iterator;
 
 		TileBoard();
@@ -44,7 +44,7 @@ namespace vin::hex {
 
 		bool remove(const Hexi& pos);
 
-		bool put(const Hexi& pos, const HexSides& sides);
+		bool put(const Hexi& pos, const Tile& tile);
 
 		bool isInside(const Hexi& hex) const;
 
@@ -58,11 +58,11 @@ namespace vin::hex {
 			return hexes_.end();
 		}
 
-		bool isNeighborsMatching(const Hexi& pos, const HexSides& sides) const;
+		bool isNeighborsMatching(const Hexi& pos, const Tile& tile) const;
 
-		bool isAllowed(const Hexi& pos, const HexSides& sides) const;
+		bool isAllowed(const Hexi& pos, const Tile& tile) const;
 
-		HexSides getTile(Hexi hex) const;
+		Tile getTile(Hexi hex) const;
 
 	private:
 		Map hexes_;

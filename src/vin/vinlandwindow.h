@@ -3,7 +3,7 @@
 
 #include "hexcanvas.h"
 #include "hexdata.h"
-#include "hex/hexsideskey.h"
+#include "hex/tilekey.h"
 #include "tilelexicon.h"
 #include "action.h"
 
@@ -21,7 +21,7 @@ namespace vin {
 		std::vector<HexImage> hexImages_;
 	};
 
-	using HexImagesMap = std::map<hex::HexSidesInvariantKey, HexImageTypeVector>;
+	using HexImagesMap = std::map<hex::TileInvariantKey, HexImageTypeVector>;
 
 	class VinlandWindow : public sdl::ImGuiWindow {
 	public:

@@ -1,6 +1,6 @@
 #include "tileboard.h"
 #include "../types.h"
-#include "hexsideskey.h"
+#include "tilekey.h"
 
 namespace vin::hex {	
 
@@ -39,7 +39,7 @@ namespace vin::hex {
 		return it->second == HEXSIDES_NONE;
 	}
 
-	bool TileBoard::isAllowed(const Hexi& pos, const HexSides& sides) const {
+	bool TileBoard::isAllowed(const Hexi& pos, const Tile& tile) const {
 		if (!isInside(pos)) {
 			return false;
 		}
@@ -48,13 +48,13 @@ namespace vin::hex {
 			return false;
 		}
 
-		return isNeighborsMatching(pos, sides);
+		return isNeighborsMatching(pos, tile);
 	}
 
-    bool TileBoard::isNeighborsMatching(const Hexi& pos, const HexSides& sides) const {
+    bool TileBoard::isNeighborsMatching(const Hexi& pos, const Tile& tile) const {
         for (int i = 0; i < 6; ++i) {
             Hexi neighborPos = CUBE_DIRECTIONS[i] + pos;
-			HexSides neighbor = getTile(neighborPos);
+			Tile neighbor = getTile(neighborPos);
 
             int oppositeSide = (i + 3) % 6;
             HexSide neighborSide = neighbor[oppositeSide];
@@ -62,14 +62,14 @@ namespace vin::hex {
                 continue;
             }
 
-            if (sides[i] != neighborSide) {
+            if (tile[i] != neighborSide) {
                 return false;
             }
         }
         return true;
 	}
 
-	HexSides TileBoard::getTile(Hexi hex) const {
+	Tile TileBoard::getTile(Hexi hex) const {
 		auto it = hexes_.find(hex);
 		if (it == hexes_.end()) {
 			return HEXSIDES_NONE;
@@ -88,12 +88,12 @@ namespace vin::hex {
 		return dirty;
 	}
 
-	bool TileBoard::put(const Hexi& pos, const HexSides& sides) {
-		if (!isAllowed(pos, sides)) {
+	bool TileBoard::put(const Hexi& pos, const Tile& tile) {
+		if (!isAllowed(pos, tile)) {
 			return false;
 		}
-		bool dirty = hexes_[pos] != sides;
-		hexes_[pos] = sides;
+		bool dirty = hexes_[pos] != tile;
+		hexes_[pos] = tile;
 		return dirty;
 	}
 

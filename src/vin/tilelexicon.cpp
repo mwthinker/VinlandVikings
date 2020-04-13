@@ -10,15 +10,15 @@ namespace vin {
 	}
 
 	void TileLexicon::add(const HexImage& hexImage) {
-		invariantMap_[hexImage.getHexSides()].emplace_back(hexImage);
+		invariantMap_[hexImage.getTile()].emplace_back(hexImage);
 		for (int i = 0; i < 6; ++i) {
 			HexSprite sprite{hexImage.getImage(), i};
-			auto sides = rotateCopy(hexImage.getHexSides(), i);
+			auto sides = rotateCopy(hexImage.getTile(), i);
 			map_[sides].emplace_back(sprite, sides);
 		}
 	}
 
-	Tiles TileLexicon::getInvariantTiles(hex::HexSidesInvariantKey key) const {
+	SpriteTiles TileLexicon::getInvariantTiles(hex::TileInvariantKey key) const {
 		auto it = invariantMap_.find(key);
 		if (it == invariantMap_.end()) {
 			return {};
@@ -26,7 +26,7 @@ namespace vin {
 		return it->second;
 	}
 
-	Tiles TileLexicon::getTiles(hex::HexSidesKey key) const {
+	SpriteTiles TileLexicon::getTiles(hex::TileKey key) const {
 		auto it = map_.find(key);
 		if (it == map_.end()) {
 			return {};

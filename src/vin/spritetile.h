@@ -3,7 +3,7 @@
 
 #include "heximage.h"
 #include "hex/hex.h"
-#include "hex/hexsides.h"
+#include "hex/tile.h"
 
 namespace vin {
 
@@ -12,21 +12,21 @@ namespace vin {
 		int rotations{};
 	};
 
-	struct Tile {
-		Tile() = default;
+	struct SpriteTile {
+		SpriteTile() = default;
 
-		Tile(const HexSprite& hexSprite, const hex::HexSides& hexSides);
+		SpriteTile(const HexSprite& hexSprite, const hex::Tile& tile);
 
-		Tile(const HexImage& hexImage, int rotation = 0);
+		SpriteTile(const HexImage& hexImage, int rotation = 0);
 
 		void rotateLeft(int nbr = 1);
 		
-		bool rotateUntilEqual(const hex::HexSides& otherSides);
+		bool rotateUntilEqual(const hex::Tile& otherSides);
 
 		//void rotateRight();
 
 		HexSprite sprite;
-		hex::HexSides sides{};
+		hex::Tile tile;
 	};
 
 } // Namespace vin.

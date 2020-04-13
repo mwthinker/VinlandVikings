@@ -31,8 +31,8 @@ set(SOURCES
 	src/vin/hex/hex.h
 	src/vin/hex/hexagon.cpp
 	src/vin/hex/hexagon.h
-	src/vin/hex/hexsides.h
-	src/vin/hex/hexsideskey.h
+	src/vin/hex/tile.h
+	src/vin/hex/tilekey.h
 	src/vin/hex/tileboard.cpp
 	src/vin/hex/tileboard.h
 	src/vin/hex/mapgenerator.cpp
@@ -67,8 +67,8 @@ set(SOURCES
 	src/vin/random.h
 	src/vin/tilesgraphic.cpp
 	src/vin/tilesgraphic.h
-	src/vin/tile.h
-	src/vin/tile.cpp
+	src/vin/spritetile.h
+	src/vin/spritetile.cpp
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h

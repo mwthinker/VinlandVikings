@@ -5,7 +5,7 @@ namespace vin::hex {
 	MapGenerator::MapGenerator() {
 	}
 
-	void MapGenerator::fill(hex::TileBoard& board, std::vector<hex::HexSides> deck, hex::Hexi start) {
+	void MapGenerator::fill(hex::TileBoard& board, std::vector<hex::Tile> deck, hex::Hexi start) {
 		shuffle(deck);
 
 		if (deck.empty()) {
@@ -27,7 +27,7 @@ namespace vin::hex {
 			auto emptyNeighbors = findAllEmptyNeighbors(board, tiles);
 			shuffle(emptyNeighbors);
 			for (const auto& pos : emptyNeighbors) {
-				auto it = std::remove_if(deck.begin(), deck.end(), [&](hex::HexSides tile) {
+				auto it = std::remove_if(deck.begin(), deck.end(), [&](hex::Tile tile) {
 					for (int i = 0; i < 6; ++i) {
 						rotate(tile, 1);
 						if (board.put(pos, tile)) {

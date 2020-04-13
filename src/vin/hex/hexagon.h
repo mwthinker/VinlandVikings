@@ -3,7 +3,7 @@
 
 #include "../types.h"
 #include "hex.h"
-#include "hexsides.h"
+#include "tile.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 

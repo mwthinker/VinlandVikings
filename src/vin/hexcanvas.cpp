@@ -133,17 +133,17 @@ namespace vin {
 
 		auto pos = hexToWorld(hex);
 		int rotation = currentTile_.sprite.rotations;
-		auto tile = currentTile_;
+		auto spriteTile = currentTile_;
 		for (int i = 0; i < 6; ++i) {
-			if (tileBoard_.isAllowed(hex, tile.sides)) {
+			if (tileBoard_.isAllowed(hex, spriteTile.tile)) {
 				graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, currentTile_.sprite.sprite, rotation * PI / 3 + HEX_DIMENSION.angle);
-				currentTile_ = tile;
+				currentTile_ = spriteTile;
 				return;
 			}
-			tile.rotateLeft();
+			spriteTile.rotateLeft();
 		}
 		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, currentTile_.sprite.sprite, rotation * PI / 3 + HEX_DIMENSION.angle);
-		if (!tileBoard_.isAllowed(hex, currentTile_.sides)) {
+		if (!tileBoard_.isAllowed(hex, currentTile_.tile)) {
 			graphic_.addFilledHexagon(pos, HEX_DIMENSION.outerSize, Color{1.f, 0, 0, 0.4f}, rotation * PI / 3 + HEX_DIMENSION.angle);
 		}
 	}
@@ -238,10 +238,10 @@ namespace vin {
 
 	void HexCanvas::clearAndGenerateMap() {
 		pushCommand([this]() {
-			std::vector<hex::HexSides> tiles;
+			std::vector<hex::Tile> tiles;
 			if (tiles.empty()) {
 				for (const auto& hexImage : deck_) {
-					tiles.push_back(hexImage.getHexSides());
+					tiles.push_back(hexImage.getTile());
 				}
 			}
 			tileBoard_.clear();
@@ -340,7 +340,7 @@ namespace vin {
 						if (activateHexagon_) {
 							//logger()->info("(q, r, s): {}", hex);
 							pushCommand([this, hex]() {
-								if (tileBoard_.put(hex, currentTile_.sides)) {
+								if (tileBoard_.put(hex, currentTile_.tile)) {
 									tilesGraphic_.fillTile(hex, currentTile_);
 									return true;
 								}
@@ -354,7 +354,7 @@ namespace vin {
 						auto tile = currentTile_;
 						for (int i = 1; i <= 6; ++i) {
 							tile.rotateLeft();
-							if (tileBoard_.isAllowed(hex, tile.sides)) {
+							if (tileBoard_.isAllowed(hex, tile.tile)) {
 								currentTile_.rotateLeft(i);
 								break;
 							}

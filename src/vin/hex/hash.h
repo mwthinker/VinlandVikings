@@ -2,7 +2,7 @@
 #define VINLANDVIKINGS_VIN_HEX_HASH_H
 
 #include "hex.h"
-#include "hexsideskey.h"
+#include "tilekey.h"
 
 #include <functional>
 
@@ -19,16 +19,16 @@ namespace std {
 	};	
 
 	template <>
-	struct hash<vin::hex::HexSidesKey> {
-		inline size_t operator()(vin::hex::HexSidesKey key) const {
+	struct hash<vin::hex::TileKey> {
+		inline size_t operator()(vin::hex::TileKey key) const {
 			hash<uint64_t> intHash;
 			return intHash(key);
 		}
 	};
 
 	template <>
-	struct hash<vin::hex::HexSidesInvariantKey> {
-		inline size_t operator()(vin::hex::HexSidesInvariantKey key) const {
+	struct hash<vin::hex::TileInvariantKey> {
+		inline size_t operator()(vin::hex::TileInvariantKey key) const {
 			hash<uint64_t> intHash;
 			return intHash(key);
 		}

@@ -37,8 +37,8 @@ namespace vin {
 			return hex::HexSide::NONE;
 		}
 
-		constexpr hex::HexSides convertConfigHexSides(const pb::RepeatedField<pb::int32>& configSides) {
-			hex::HexSides hexSides{};
+		constexpr hex::Tile convertConfigHexSides(const pb::RepeatedField<pb::int32>& configSides) {
+			hex::Tile hexSides{};
 			for (int i = 0; i < 6; ++i) {
 				//hexSides[i] = toVinHexSide(configSides.sides(i));
 			}
@@ -197,9 +197,9 @@ namespace vin {
 				logger()->warn("[HexData] Missing sides in {}, nr of sides is {}", filename, size);
 				continue;
 			}
-			hex::HexSides hexSides{};
+			hex::Tile hexTile{};
 			for (int i = 0; i < 6; ++i) {
-				hexSides[i] = toVinHexSide(tile.sides(i));
+				hexTile[i] = toVinHexSide(tile.sides(i));
 			}
 
 			float width = size;
@@ -208,7 +208,7 @@ namespace vin {
 			float y = (image.dy - height) / 2.f / image.dy;
 
 			sdl::TextureView sprite{image.texture, x, y, width / image.dx, height / image.dy};
-			hexImages.emplace_back(filename, sprite, hexSides, flat);
+			hexImages.emplace_back(filename, sprite, hexTile, flat);
 		}
 		return hexImages;
 	}
