@@ -24,7 +24,7 @@
 #include <queue>
 #include <stack>
 
-namespace vin {	
+namespace vin {
 
 	struct ViewPort {
 		Vec2 pos;
@@ -94,10 +94,12 @@ namespace vin {
 		hex::Hexi getHexFromMouse() const;
 
 		void pushCommand(const Command& command);
+
+		void rotateCurrentTile(hex::Hexi hex);
 		
 		const sdl::Shader& shader_;
 		sdl::Texture whiteSquare_;
-		float zoom_ = 0.048f;
+		float zoom_{0.048f};
 		bool activateHexagon_;
 		hex::TileBoard tileBoard_;
 		HexagonBatch hexagonBatch_;
@@ -109,13 +111,13 @@ namespace vin {
 		TilesGraphic tilesGraphic_;
 		hex::MapGenerator hexMapGenerator_;
 
-		bool lastAllowed_ = false;
+		bool lastAllowed_{};
 		TileLexicon tileLexicon_;
 
 		Vec2 sdlMousePos{};
 		Camera camera_;
 
-		ViewPort viewPort_{Vec2{0, 0}, Vec2{0 ,0}};
+		ViewPort viewPort_{};
 		Mat4 projection_;
 		std::vector<HexImage> deck_;
 

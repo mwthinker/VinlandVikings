@@ -161,7 +161,6 @@ namespace vin {
 		addMouseHexToGraphic();
 		graphic_.pushMatrix(projection_);
 
-		//graphic_.addRectangle({-1.f, -1.f}, {2.f, 2.f}, RED); // Bottom
 		tilesGraphic_.draw(shader_);
 		graphic_.draw(shader_);
 	}
@@ -350,19 +349,8 @@ namespace vin {
 						break;
 					}
 					case SDL_BUTTON_MIDDLE:
-					{
-						auto tile = currentTile_;
-						for (int i = 1; i <= 6; ++i) {
-							tile.rotateLeft();
-							if (tileBoard_.isAllowed(hex, tile.tile)) {
-								currentTile_.rotateLeft(i);
-								break;
-							}
-						}
-						// All rotation failed, allow to rotate anyway.
-						tile.rotateLeft();
+						rotateCurrentTile(hex);
 						break;
-					}
 					case SDL_BUTTON_RIGHT:
 					{
 						pushCommand([this, hex]() {
@@ -374,6 +362,17 @@ namespace vin {
 					}
 				}
 				break;
+		}
+	}
+
+	void HexCanvas::rotateCurrentTile(hex::Hexi hex) {
+		auto tile = currentTile_;
+		for (int i = 1; i <= 6; ++i) {
+			tile.rotateLeft();
+			if (tileBoard_.isAllowed(hex, tile.tile)) {
+				currentTile_.rotateLeft(i);
+				break;
+			}
 		}
 	}
 
