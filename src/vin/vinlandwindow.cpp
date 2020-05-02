@@ -13,6 +13,8 @@ namespace vin {
 
 		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
 
+		constexpr std::string_view IMAGE_TILES_FOLDER = "imageTiles";
+
 		void HelpMarker(const std::string& text) {
 			if (ImGui::IsItemHovered()) {
 				ImGui::Tooltip([&]() {
@@ -36,7 +38,7 @@ namespace vin {
 			std::vector<std::string> files;
 			try {
 				std::regex jsonRegex{regexStr};
-				for (auto p : fs::recursive_directory_iterator("images")) {
+				for (auto p : fs::recursive_directory_iterator(IMAGE_TILES_FOLDER)) {
 					auto pathStr = p.path().string();
 					if (std::regex_match(pathStr, jsonRegex)) {
 						std::replace(pathStr.begin(), pathStr.end(), '\\', '/');
@@ -170,8 +172,8 @@ namespace vin {
 			if (static bool firstTime = true; firstTime) {
 				firstTime = false;
 				jsonFiles_ = listJsonFiles();
-				for (auto str : jsonFiles_) {
-					std::cout << str << "\n";
+				for (const auto& str : jsonFiles_) {
+					logger()->info("[VinlandWindow] Found json file: {}", str);
 				}
 			}
 
@@ -317,7 +319,7 @@ namespace vin {
 	void VinlandWindow::showAboutPopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
 		ImGui::PopupModal(POPUP_ABOUT, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
-			ImGui::Text("VinlanbVikings");
+			ImGui::Text("Vinland Vikings");
 			ImGui::NewLine();
 						
 			ImGui::Text("Version: v%s", PROJECT_VERSION);
@@ -406,6 +408,10 @@ namespace vin {
 		setShowDemoWindow(true);
 #endif
 		initData();
+
+		ImGui::GetIO().Fonts->AddFontFromFileTTF("fonts/Ubuntu-B.ttf", 16);
+		//ImGui::GetIO().Fonts->AddFontFromFileTTF("fonts/Norse-Bold.otf", 16);
+		ImGui::GetIO().FontDefault = nullptr;
 	}
 	
 	void VinlandWindow::initData() {

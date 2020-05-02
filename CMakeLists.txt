@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11...3.14)
+cmake_minimum_required(VERSION 3.16)
 # 3.11 support for FetchContent
 # 3.14 support for Visual Studio 2019
 
@@ -21,6 +21,7 @@ project(VinlandVikings
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4275") # non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
@@ -95,7 +96,7 @@ FetchContent_Declare(CppSdl2
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
 		#origin/CppSdl2
-		f5f946c39e3d26b580187d021ae0593cd60bda56
+		61fa093f6c4604a0b93052e618c8084fee2e7806
 )
 FetchContent_MakeAvailable(CppSdl2)
 
@@ -106,7 +107,7 @@ FetchContent_Declare(VinlandVikingsData
 		https://github.com/mwthinker/VinlandVikingsData.git
 	GIT_TAG
 		#origin/VinlandVikingsData
-		e2dfd5decc6daf8555ec02dbfa43dd873d67765e
+		34934d26bc503d6a471e329860f9902af56202d1
 )
 FetchContent_MakeAvailable(VinlandVikingsData)
 FetchContent_GetProperties(VinlandVikingsData
@@ -131,7 +132,7 @@ set_target_properties(
 )
 
 # Copy data to build folder.
-file(COPY ${VinlandVikingsData_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${VinlandVikingsData_SOURCE_DIR}/imageTiles DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${VinlandVikingsData_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -166,6 +167,13 @@ if (MSVC)
 		PUBLIC
 			_CRT_SECURE_NO_WARNINGS
 	)
+
+	if (MSVC)
+		target_compile_options(VinlandVikings
+			PUBLIC
+				"/permissive-"
+		)
+	endif (MSVC)
 	
 	message(STATUS "Hide terminal: -DHideTerminal=1")
 	option(HideTerminal "Hide terminal" OFF)

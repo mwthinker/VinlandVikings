@@ -19,7 +19,7 @@ struct TerminalConfig {
 	bool showWarnings = false;
 	bool showErrors = false;
 	bool showDebugInfo = false;
-	std::string filename = "images/hexdata.json";
+	std::string filename = "imageTiles/hexdata.json";
 };
 
 int main(int argc, char** argv) {

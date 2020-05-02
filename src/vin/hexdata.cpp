@@ -20,17 +20,17 @@ namespace vin {
 
 	namespace {
 
-		constexpr hex::HexSide toVinHexSide(vin_config::HexSide hexSide) {
+		constexpr hex::HexSide toVinHexSide(proto::HexSide hexSide) {
 			switch (hexSide) {
-				case vin_config::HexSide::NONE:
+				case proto::HexSide::NONE:
 					return hex::HexSide::NONE;
-				case vin_config::HexSide::MOUNTAIN:
+				case proto::HexSide::MOUNTAIN:
 					return hex::HexSide::MOUNTAIN;
-				case vin_config::HexSide::GRASS:
+				case proto::HexSide::GRASS:
 					return hex::HexSide::GRASS;
-				case vin_config::HexSide::WATER:
+				case proto::HexSide::WATER:
 					return hex::HexSide::WATER;
-				case vin_config::HexSide::FOREST:
+				case proto::HexSide::FOREST:
 					return hex::HexSide::FOREST;
 			}
 			assert(false); // Should not be here.
@@ -82,7 +82,7 @@ namespace vin {
 		std::map<std::string, sdl::Sound> sounds_;
 		std::map<std::string, sdl::Font> fonts_;
 		std::map<std::string, Image> images_;
-		vin_config::HexTiles hexTiles_;
+		proto::HexImageTiles hexTiles_;
 	};
 
 	HexData::HexData()
@@ -185,8 +185,8 @@ namespace vin {
 
 	std::vector<HexImage> HexData::Impl::loadHexImages() {
 		std::vector<HexImage> hexImages;
-		for (const auto& tile : hexTiles_.hex_tiles()) {
-			auto filename = "images/" + tile.image();
+		for (const auto& tile : hexTiles_.hex_image_tiles()) {
+			auto filename = "imageTiles/" + tile.image();
 			loadSprite(filename);
 
 			const auto& image = images_[filename];

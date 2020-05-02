@@ -8,8 +8,8 @@ install(DIRECTORY ${VinlandVikingsData_SOURCE_DIR}/fonts/
 	COMPONENT data
 )
 
-install(DIRECTORY ${VinlandVikingsData_SOURCE_DIR}/images/
-	DESTINATION images
+install(DIRECTORY ${VinlandVikingsData_SOURCE_DIR}/imageTiles/
+	DESTINATION imageTiles
 	COMPONENT data
 )
 
