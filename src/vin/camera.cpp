@@ -9,7 +9,7 @@ namespace vin {
 	constexpr Vec3 UP{0.0f, 1.0f, 0.0f};
 
 	Mat4 Camera::getView() const {
-		//logger()->info("eye: {}", eye);
+		//spdlog::info("eye: {}", eye);
 		return glm::lookAt(getEye(), getCenter(), UP);
 	}
 
@@ -41,7 +41,7 @@ namespace vin {
 	void Camera::angleDelta(float delta) {
 		angle_ += delta;
 		angle_ = std::clamp(angle_, 0.f, PI / 2 - PI / 9);
-		logger()->info("angle_: {}", angle_);
+		spdlog::info("angle_: {}", angle_);
 	}
 
 } // Namespace vin.

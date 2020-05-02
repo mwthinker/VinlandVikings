@@ -46,7 +46,7 @@ namespace vin {
 					}
 				}
 			} catch (std::exception& e) {
-				logger()->warn(e.what());
+				spdlog::warn(e.what());
 			}
 			return files;
 		}
@@ -73,13 +73,13 @@ namespace vin {
 		setIcon(ICONFILE);
 		
 		load_ = actionManager_.add(Action{SDLK_o, SDLK_LCTRL, "Load", [&]() {
-			logger()->info("[VinlandWindow] Load");
+			spdlog::info("[VinlandWindow] Load");
 		}});
 		save_ = actionManager_.add(Action{SDLK_s, SDLK_LCTRL, "Save", [&]() {
-			logger()->info("[VinlandWindow] Save");
+			spdlog::info("[VinlandWindow] Save");
 		}});
 		saveAs_ = actionManager_.add(Action{"Save as", [&]() {
-			logger()->info("[VinlandWindow] Save as");
+			spdlog::info("[VinlandWindow] Save as");
 		}});
 		zoomIn_ = actionManager_.add(Action{SDLK_KP_PLUS, "Zoom in", [&]() {
 			hexCanvas_.zoomIn();
@@ -88,11 +88,11 @@ namespace vin {
 			hexCanvas_.zoomOut();
 		}});
 		undo_ = actionManager_.add(Action{SDLK_z, SDLK_LCTRL, "Undo", [&]() {
-			logger()->info("[VinlandWindow] Undo");
+			spdlog::info("[VinlandWindow] Undo");
 			hexCanvas_.undo();
 		}});
 		redo_ = actionManager_.add(Action{SDLK_y, SDLK_LCTRL, "Redo", [&]() {
-			logger()->info("[VinlandWindow] Redo");
+			spdlog::info("[VinlandWindow] Redo");
 			hexCanvas_.redo();
 		}});
 		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid", [&]() {
@@ -132,7 +132,7 @@ namespace vin {
 			case SDL_DROPFILE: { // In case if dropped file
 				std::string dropFile{windowEvent.drop.file};
 				hexImage_ = HexData::getInstance().loadSprite(dropFile);
-				logger()->warn(dropFile);
+				spdlog::warn(dropFile);
 				//SDL_free(windowEvent.drop.file).
 				break;
 			}
@@ -173,7 +173,7 @@ namespace vin {
 				firstTime = false;
 				jsonFiles_ = listJsonFiles();
 				for (const auto& str : jsonFiles_) {
-					logger()->info("[VinlandWindow] Found json file: {}", str);
+					spdlog::info("[VinlandWindow] Found json file: {}", str);
 				}
 			}
 
@@ -188,7 +188,7 @@ namespace vin {
 					bool selectedFile = (file == HexData::getInstance().getLoadedFilename());
 					if (ImGui::MenuItem(file.c_str(), nullptr, selectedFile)) {
 						if (!selectedFile) {
-							logger()->info("[VinlandWindow] {}", file);
+							spdlog::info("[VinlandWindow] {}", file);
 							HexData::getInstance().load(file);
 							initData();
 						}

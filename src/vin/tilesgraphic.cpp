@@ -118,7 +118,7 @@ namespace vin {
 
 	void TilesGraphic::draw(const sdl::Shader& shader) {
 		if (dirty_) {
-			logger()->info("State dirty");
+			spdlog::debug("[TilesGraphic] State dirty");
 			graphic_.clearDraw();
 			graphic_.setMatrix(worldToScreen_);
 			

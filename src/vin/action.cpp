@@ -53,7 +53,7 @@ namespace vin {
 		if (key_ == key && callback_) {
 			auto state = SDL_GetKeyboardState(nullptr);
 			if (key2_ == 0 || state[SDL_GetScancodeFromKey(key2_)] == 1) {
-				logger()->info("[Action] Call callback based on key {}", menuName_);
+				spdlog::info("[Action] Call callback based on key {}", menuName_);
 				callback_();
 			}
 		}

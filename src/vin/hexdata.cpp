@@ -128,7 +128,7 @@ namespace vin {
 	void HexData::Impl::load(const std::string& jsonFile) {
 		clear();
 
-		logger()->info("[HexData] Current working directory {}", std::filesystem::current_path().string());
+		spdlog::info("[HexData] Current working directory {}", std::filesystem::current_path().string());
 		jsonPath_ = jsonFile;
 		/*if (std::filesystem::exists("USE_APPLICATION_JSON")) {
 			jsonPath_ = jsonFile;
@@ -151,7 +151,7 @@ namespace vin {
 		auto status = pbu::JsonStringToMessage(jsonContent, &hexTiles_, parseOptions);
 
 		if (!status.ok()) {
-			logger()->warn("[HexData] Jsonfile {}, protobuf parsing error: {}", jsonFile, status.message().ToString());
+			spdlog::warn("[HexData] Jsonfile {}, protobuf parsing error: {}", jsonFile, status.message().ToString());
 		}
 	}
 
@@ -194,7 +194,7 @@ namespace vin {
 			bool flat = tile.flat();
 
 			if (auto size = tile.sides().size(); size != 6) {
-				logger()->warn("[HexData] Missing sides in {}, nr of sides is {}", filename, size);
+				spdlog::warn("[HexData] Missing sides in {}, nr of sides is {}", filename, size);
 				continue;
 			}
 			hex::Tile hexTile{};

@@ -49,7 +49,7 @@ namespace vin {
 		batch_.bind();
 		shader.setVertexAttribPointer();
 		batch_.uploadToGraphicCard();
-		sdl::logger()->info("[BatchTriangles] {} Mib\n", batch_.getVboSizeInMiB());
+		spdlog::info("[BatchTriangles] {} Mib\n", batch_.getVboSizeInMiB());
 	}
 
 	void HexagonBatch::draw(const sdl::Shader& shader) const {

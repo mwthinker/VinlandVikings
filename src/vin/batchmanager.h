@@ -5,7 +5,6 @@
 
 #include <sdl/vertex.h>
 #include <sdl/shader.h>
-#include <sdl/logger.h>
 #include <sdl/batch.h>
 #include <sdl/textureview.h>
 

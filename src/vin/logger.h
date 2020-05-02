@@ -1,13 +1,11 @@
 #ifndef VINLANDVIKINGS_VIN_LOGGER_H
 #define VINLANDVIKINGS_VIN_LOGGER_H
 
-#include <sdl/logger.h>
+#include <spdlog/spdlog.h>
 
-namespace vin {
+namespace vin::logger {
 	
-	inline static std::shared_ptr<spdlog::logger> logger() {
-		return sdl::logger("vin");
-	}
+	bool init(const std::string& folderPath = "");
 
 } // Namespace vin.
 

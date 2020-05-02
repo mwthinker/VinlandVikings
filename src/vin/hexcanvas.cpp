@@ -93,10 +93,10 @@ namespace vin {
 				if (tile.rotateUntilEqual(sides)) {
 					tilesGraphic_.fillTile(pos, tile);
 				} else {
-					logger()->warn("Something is wrong");
+					spdlog::warn("[HexCanvas] Something is wrong");
 				}
 			} else {
-				logger()->warn("Tile images failed to fill board");
+				spdlog::warn("[HexCanvas] Tile images failed to fill board");
 			}
 		}
 	}
@@ -168,7 +168,7 @@ namespace vin {
 	void HexCanvas::setDeck(const std::vector<HexImage>& deck) {
 		deck_ = deck;
 
-		logger()->info("[HexCanvas] Remove all history and future commands");
+		spdlog::info("[HexCanvas] Remove all history and future commands");
 		popAll(future_);
 		popAll(history_);
 	}
@@ -188,7 +188,7 @@ namespace vin {
 		pushCommand([this]() {
 			zoom_ *= 1.25f;
 			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
-			logger()->info("[HexCanvas] Zoom value: {}", zoom_);
+			spdlog::info("[HexCanvas] Zoom value: {}", zoom_);
 			return false;
 		});
 	}
@@ -197,7 +197,7 @@ namespace vin {
 		pushCommand([this]() {
 			zoom_ *= 1 / 1.25f;
 			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
-			logger()->info("[HexCanvas] Zoom value: {}", zoom_);
+			spdlog::info("[HexCanvas] Zoom value: {}", zoom_);
 			return false;
 		});
 	}
@@ -253,7 +253,7 @@ namespace vin {
 
 	void HexCanvas::redo() {
 		if (!future_.empty()) {
-			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+			spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
 			history_.push(State{tileBoard_, tilesGraphic_.getMap()});
 			auto& state = future_.top();
 			tileBoard_ = state.tileBoard;
@@ -264,7 +264,7 @@ namespace vin {
 
 	void HexCanvas::undo() {
 		if (!history_.empty()) {
-			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+			spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
 			future_.emplace(State{tileBoard_, tilesGraphic_.getMap()});
 			auto& state = history_.top();
 			tileBoard_ = state.tileBoard;
@@ -277,7 +277,7 @@ namespace vin {
 		hex::TileBoard copy = tileBoard_;
 		auto map = tilesGraphic_.getMap();
 		if (command()) {
-			logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+			spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
 			popAll(future_);
 			history_.push(State{copy, map});
 		}
@@ -298,7 +298,7 @@ namespace vin {
 				constexpr float STEP = 10.f;
 				switch (windowEvent.key.keysym.sym) {
 					case SDLK_a:
-						logger()->info("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+						spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
 						break;
 					case SDLK_LEFT:
 						camera_.move({-STEP,0});
@@ -337,7 +337,7 @@ namespace vin {
 					case SDL_BUTTON_LEFT:
 					{
 						if (activateHexagon_) {
-							//logger()->info("(q, r, s): {}", hex);
+							//spdlog::info("(q, r, s): {}", hex);
 							pushCommand([this, hex]() {
 								if (tileBoard_.put(hex, currentTile_.tile)) {
 									tilesGraphic_.fillTile(hex, currentTile_);

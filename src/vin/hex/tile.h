@@ -89,7 +89,7 @@ namespace vin::hex {
 			case HexSide::FOREST:
 				return "FOREST";
 			default:
-				logger()->error("Incorrect side type (toString): {}", (int)side);
+				spdlog::error("Incorrect side type (toString): {}", (int)side);
 				std::exit(1);
 		}
 	}

@@ -61,6 +61,7 @@ set(SOURCES
 	src/vin/imguiextra.h
 	src/vin/hexcanvas.cpp
 	src/vin/hexcanvas.h
+	src/vin/logger.cpp
 	src/vin/logger.h
 	src/vin/main.cpp
 	src/vin/tilelexicon.cpp
@@ -96,7 +97,7 @@ FetchContent_Declare(CppSdl2
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
 		#origin/CppSdl2
-		61fa093f6c4604a0b93052e618c8084fee2e7806
+		e447649230f1389b1c0af06a47223944d1a9f7d5
 )
 FetchContent_MakeAvailable(CppSdl2)
 
