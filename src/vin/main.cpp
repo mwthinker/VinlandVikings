@@ -60,7 +60,9 @@ namespace {
 
 #else
 
-void hideMyConsole();
+	void hideMyConsole() {
+		// Todo!
+	}
 
 #endif
 

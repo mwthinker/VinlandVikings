@@ -9,12 +9,12 @@ namespace vin::hex {
 		shuffle(deck);
 
 		if (deck.empty()) {
-			logger()->warn("[HexMapGenerator] Failed to generate, no tiles provided");
+			spdlog::warn("[HexMapGenerator] Failed to generate, no tiles provided");
 			return;
 		}
 
 		if (!board.put(start, deck.back())) {
-			logger()->warn("[HexMapGenerator] Failed to generate, start position not valid");
+			spdlog::warn("[HexMapGenerator] Failed to generate, start position not valid");
 			return;
 		}
 		deck.pop_back();
