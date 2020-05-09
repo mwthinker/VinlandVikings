@@ -49,12 +49,12 @@ namespace {
 
 	void hideMyConsole() {
 		if (isMyConsole()) {
-			spdlog::info("My console, hide console");
+			spdlog::debug("My console, hide console");
 			if (FreeConsole() != 0) {
 				spdlog::error("FreeConsole(): {}", getLastError());
 			}
 		} else {
-			spdlog::info("Not my console, do not hide console!");
+			spdlog::debug("Not my console, do not hide console!");
 		}
 	}
 
@@ -85,8 +85,6 @@ namespace {
 }
 
 int main(int argc, char** argv) {
-	spdlog::info("Application started");
-	
 	TerminalConfig config;
 	config.logPath = SDL_GetPrefPath("mwthinker", "VinlandVikings");
 
@@ -119,7 +117,7 @@ int main(int argc, char** argv) {
 			fmt::print("{}\n", cli);
 			return 0;
 		}
-	} catch (const std::runtime_error& ex) {
+	} catch (const std::exception& ex) {
 		fmt::print("Incorrect commmand line: {}\n", ex.what());
 		return 1;
 	}
@@ -127,8 +125,9 @@ int main(int argc, char** argv) {
 	if (vin::logger::init(config.logPath)) {
 		hideMyConsole();
 	}
-
 	spdlog::default_logger()->set_level(config.logLevel);
+	spdlog::info("[Main] VinlandVikings Version:  {}", PROJECT_VERSION);
+	spdlog::info("[Main] VinlandVikings Git Hash:  {}", GIT_VERSION);
 
 	auto& hexData = vin::HexData::getInstance();
 	hexData.load(config.filename);

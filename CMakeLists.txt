@@ -90,31 +90,7 @@ source_group(TREE
 
 add_subdirectory(Config)
 
-include(FetchContent)
-# Load external github projects
-FetchContent_Declare(CppSdl2
-	GIT_REPOSITORY
-		https://github.com/mwthinker/CppSdl2.git
-	GIT_TAG
-		#origin/CppSdl2
-		e447649230f1389b1c0af06a47223944d1a9f7d5
-)
-FetchContent_MakeAvailable(CppSdl2)
-
-# Load data.
-FetchContent_Declare(VinlandVikingsData
-	GIT_REPOSITORY
-		#git@github.com:mwthinker/VinlandVikingsData.git
-		https://github.com/mwthinker/VinlandVikingsData.git
-	GIT_TAG
-		#origin/VinlandVikingsData
-		34934d26bc503d6a471e329860f9902af56202d1
-)
-FetchContent_MakeAvailable(VinlandVikingsData)
-FetchContent_GetProperties(VinlandVikingsData
-	SOURCE_DIR
-		VinlandVikingsData_SOURCE_DIR
-)
+include(ExternalFetchContent.cmake)
 
 set(ExternalDependencies
 	CppSdl2
@@ -138,8 +114,6 @@ file(COPY ${VinlandVikingsData_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BIN
 file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(VinlandVikings ${SOURCES})
-
-include(${CMAKE_CURRENT_SOURCE_DIR}/auxiliary.cmake)
 
 extract_git_hash()
 create_guid()
