@@ -94,6 +94,6 @@ namespace vin::hex {
 		}
 	}
 
-} // Namespace vin::hex.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEXSIDES_H
+#endif

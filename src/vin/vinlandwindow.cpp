@@ -430,15 +430,15 @@ namespace vin {
 			hexTypes_[image.getTile()].hexImages_.push_back(image);
 		}
 
+		Deck deck;
+
 		int size = static_cast<int>(hexImages.size());
 		int nbrOfEach = static_cast<int>(100.0 / size);
-		for (int i = 0; i < size; ++i) {
-			for (int j = 0; j < nbrOfEach; ++j) {
-				hexImages.push_back(hexImages[i]);
-			}
+		for (const auto hexImage : hexImages) {
+			deck.push(hexImage.getTile(), nbrOfEach);
 		}
 
-		hexCanvas_.setDeck(hexImages);
+		hexCanvas_.setDeck(deck);
 	}
 
-} // Namespace vin.
+}

@@ -42,4 +42,4 @@ namespace vin::logger {
 		}
 	}
 
-} // Namespace vin.
+}

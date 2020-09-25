@@ -47,6 +47,6 @@ namespace vin {
 
 	BatchConfig createRectangle(Vec2 pos, Vec2 size, Color color);
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_BATCHMANAGER_H
+#endif

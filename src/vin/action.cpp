@@ -104,4 +104,4 @@ namespace vin {
 		actions_.clear();
 	}
 
-} // Namespace vin.
+}

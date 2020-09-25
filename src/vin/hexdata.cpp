@@ -229,4 +229,4 @@ namespace vin {
 		hexTiles_.Clear();
 	}
 
-} // Namespace vin.
+}

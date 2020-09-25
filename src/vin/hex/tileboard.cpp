@@ -108,4 +108,4 @@ namespace vin::hex {
 		return false;
 	}
 
-} // Namespace vin::hex.
+}

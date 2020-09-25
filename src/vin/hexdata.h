@@ -45,4 +45,4 @@ namespace vin {
 
 }
 
-#endif // VINLANDVIKINGS_VIN_HEXDATA_H
+#endif

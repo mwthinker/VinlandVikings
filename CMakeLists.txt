@@ -147,6 +147,7 @@ if (MSVC)
 		target_compile_options(VinlandVikings
 			PUBLIC
 				"/permissive-"
+				"/MP"
 		)
 	endif (MSVC)
 	

@@ -7,6 +7,6 @@ namespace vin::logger {
 	
 	bool init(const std::string& folderPath = "");
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_LOGGER_H
+#endif

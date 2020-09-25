@@ -34,6 +34,6 @@ namespace std {
 		}
 	};
 
-} // Namespace std.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEX_HASH_H
+#endif

@@ -65,6 +65,6 @@ namespace vin {
 		bool initiated_{};
     };
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_GRAPHIC_H
+#endif

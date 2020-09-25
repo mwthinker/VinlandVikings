@@ -106,4 +106,4 @@ namespace vin {
 		return batchConfig;
 	}
 
-} // Namespace vin.
+}

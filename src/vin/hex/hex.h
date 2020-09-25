@@ -79,6 +79,6 @@ namespace vin::hex {
 
 	constexpr Hexi HEXI_S{-1, 1};
 
-} // Namespace vin::hex.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEX_HEX_H
+#endif

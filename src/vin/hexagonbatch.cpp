@@ -162,4 +162,4 @@ namespace vin {
 		addRectangle(createVertex(x1 - dx, y1 + dy, color), createVertex(x1 + dx, y1 - dy, color), createVertex(x2 + dx, y2 - dy, color), createVertex(x2 - dx, y2 + dy, color));
 	}
 
-} // Namespace vin.
+}

@@ -130,6 +130,6 @@ namespace vin {
 		std::stack<State> history_;
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEXCANVAS_H
+#endif

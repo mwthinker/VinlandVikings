@@ -39,4 +39,4 @@ namespace vin {
 		invariantMap_.clear();
 	}
 
-} // Namespace vin.
+}

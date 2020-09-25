@@ -38,6 +38,6 @@ namespace vin {
 		int rotations_ = 0;
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEXIMAGE_H
+#endif

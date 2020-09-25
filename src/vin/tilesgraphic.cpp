@@ -181,4 +181,4 @@ namespace vin {
 		worldToScreen_ = mat;
 	}
 
-} // Namespace vin.
+}

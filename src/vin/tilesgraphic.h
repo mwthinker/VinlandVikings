@@ -87,6 +87,6 @@ namespace vin {
 		std::unordered_map<hex::Hexi, SpriteTile> hexImages_;
 	};
 	
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_TILESGRAPHIC_H
+#endif

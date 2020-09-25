@@ -54,6 +54,6 @@ namespace vin::hex {
 
 	Hexi hexRound(Hexf h);
 
-} // Namespace vin::hex.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEXAGON_H
+#endif

@@ -11,7 +11,8 @@ namespace vin {
 		float angle = 0;// PI / 3;
 	};
 
-} // Namespace vin.
+}
 
 
-#endif // VINLANDVIKINGS_VIN_HEXDIMENSION_H
+#endif
+

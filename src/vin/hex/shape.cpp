@@ -48,4 +48,4 @@ namespace vin::hex::shape {
 		return hexes;
 	}
 
-} // Namespace vin::hex.
+}

@@ -44,4 +44,4 @@ namespace vin {
 		spdlog::info("angle_: {}", angle_);
 	}
 
-} // Namespace vin.
+}

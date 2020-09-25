@@ -34,6 +34,6 @@ namespace vin {
 		HexImageInvariantMap invariantMap_;
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_TILELEXICON_H
+#endif

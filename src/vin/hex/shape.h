@@ -13,6 +13,6 @@ namespace vin::hex::shape {
 
 	std::vector<Hexi> createRectangle(int columns, int rows);
 
-} // Namespace vin::hex.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEX_SHAPE_H
+#endif

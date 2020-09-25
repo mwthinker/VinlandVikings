@@ -376,4 +376,4 @@ namespace vin {
 		}
 	}
 
-} // Namespace vin.
+}

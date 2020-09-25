@@ -31,6 +31,6 @@ namespace vin::hex {
 		std::mt19937 engine_{std::random_device{}()};
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_TILEDECK_H
+#endif

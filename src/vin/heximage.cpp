@@ -31,4 +31,4 @@ namespace vin {
 		return rotations_;
 	}
 
-} // Namespace vin.
+}

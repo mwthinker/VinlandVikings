@@ -29,6 +29,6 @@ namespace vin {
 		hex::Tile tile;
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_TILE_H
+#endif

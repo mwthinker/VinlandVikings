@@ -42,4 +42,4 @@ namespace vin::hex {
 		return {q, r};
 	}
 
-} // Namespace vin::hex.
+}

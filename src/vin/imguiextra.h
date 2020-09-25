@@ -24,6 +24,6 @@ namespace ImGui {
 		const sdl::Color& color2 = {0.5f, 0.5f, 0.5f, 1.f},
 		const vin::Vec2& size = {150.f, 25.f});
 
-} // Namespace ImGui.
+}
 
-#endif // VINLANDVIKINGS_VIN_IMGUIEXTRA_H
+#endif

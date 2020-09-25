@@ -33,6 +33,6 @@ namespace vin {
 		mutable std::mt19937 engine_{std::random_device{}()};
 	};
 
-} // Namespace vin.
+}
 
-#endif // RANDOM_H
+#endif

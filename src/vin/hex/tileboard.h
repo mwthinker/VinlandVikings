@@ -68,6 +68,6 @@ namespace vin::hex {
 		Map hexes_;
 	};
 
-} // Namespace vin::hex.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEXTILEMAP_H
+#endif

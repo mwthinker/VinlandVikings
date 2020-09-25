@@ -89,6 +89,6 @@ namespace vin::hex {
 		return key_;
 	}
 
-} // Namespace vin::hex.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEX_HEXSIDESKEY_H
+#endif

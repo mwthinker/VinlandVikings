@@ -28,6 +28,6 @@ namespace vin {
 		float angle_{0};
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_CAMERA_H
+#endif

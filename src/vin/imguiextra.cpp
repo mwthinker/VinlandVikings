@@ -12,11 +12,11 @@ namespace ImGui {
 	namespace {
 
 		bool isMouseLeftClicked() {
-			return ImGui::GetIO().MouseClicked[0];
+			return ImGui::GetIO().MouseClicked[ImGuiMouseButton_Left];
 		}
 
 		bool isMouseRightClicked() {
-			return ImGui::GetIO().MouseClicked[1];
+			return ImGui::GetIO().MouseClicked[ImGuiMouseButton_Right];
 		}
 
 	}
@@ -108,4 +108,4 @@ namespace ImGui {
 		ImGui::GetWindowDrawList()->AddRectFilled({ x, pos.y }, { x + width, pos.y + size.y }, color2.toImU32());
 	}
 
-} // Namespace ImGui.
+}

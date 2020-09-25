@@ -49,6 +49,6 @@ namespace vin {
         sdl::VertexArrayObject vao_;
     };
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_HEXAGONBATCH_H
+#endif

@@ -41,7 +41,7 @@ namespace vin {
 		return {static_cast<float>(t.x), static_cast<float>(t.y)};
 	}
 
-} // Namespace vin.
+}
 
 template <>
 struct fmt::formatter<vin::Vec2> {
@@ -120,4 +120,4 @@ struct fmt::formatter<vin::Mat4> {
 	}
 };
 
-#endif // VINLANDVIKINGS_VIN_TYPES_H
+#endif

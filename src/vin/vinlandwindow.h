@@ -27,7 +27,7 @@ namespace vin {
 	public:
 		VinlandWindow();
 
-		~VinlandWindow();
+		~VinlandWindow() override;
 
 		enum class Page { START, EDITOR };
 	private:
@@ -78,6 +78,6 @@ namespace vin {
 		Action generateMapAction_;
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_VINLANDWINDOW_H
+#endif

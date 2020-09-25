@@ -31,4 +31,4 @@ namespace vin {
 		return false;
 	}
 
-} // Namespace vin.
+}

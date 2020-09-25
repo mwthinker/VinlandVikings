@@ -50,6 +50,6 @@ namespace vin {
 		std::unordered_multimap<SDL_Keycode, Action> actions_;
 	};
 
-} // Namespace vin.
+}
 
-#endif // VINLANDVIKINGS_VIN_ACTION_H
+#endif
