@@ -427,7 +427,7 @@ namespace vin {
 		hexCanvas_.setTileLexicon(tileLexicon_);
 
 		for (const auto& image : hexImages) {
-			hexTypes_[image.getTile()].hexImages_.push_back(image);
+			hexTypes_[hex::TileInvariantKey{image.getTile()}].hexImages_.push_back(image);
 		}
 
 		Deck deck;
@@ -435,7 +435,7 @@ namespace vin {
 		int size = static_cast<int>(hexImages.size());
 		int nbrOfEach = static_cast<int>(100.0 / size);
 		for (const auto hexImage : hexImages) {
-			deck.push(hexImage.getTile(), nbrOfEach);
+			deck.push(hex::TileInvariantKey{hexImage.getTile()}, nbrOfEach);
 		}
 
 		hexCanvas_.setDeck(deck);

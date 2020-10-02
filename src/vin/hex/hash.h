@@ -21,16 +21,14 @@ namespace std {
 	template <>
 	struct hash<vin::hex::TileKey> {
 		inline size_t operator()(vin::hex::TileKey key) const {
-			hash<uint64_t> intHash;
-			return intHash(key);
+			return hash<uint64_t>()(static_cast<uint64_t>(key));
 		}
 	};
 
 	template <>
 	struct hash<vin::hex::TileInvariantKey> {
 		inline size_t operator()(vin::hex::TileInvariantKey key) const {
-			hash<uint64_t> intHash;
-			return intHash(key);
+			return hash<uint64_t>()(static_cast<uint64_t>(key));
 		}
 	};
 

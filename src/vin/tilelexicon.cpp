@@ -10,11 +10,11 @@ namespace vin {
 	}
 
 	void TileLexicon::add(const HexImage& hexImage) {
-		invariantMap_[hexImage.getTile()].emplace_back(hexImage);
+		invariantMap_[hex::TileInvariantKey{hexImage.getTile()}].emplace_back(hexImage);
 		for (int i = 0; i < 6; ++i) {
 			HexSprite sprite{hexImage.getImage(), i};
 			auto sides = rotateCopy(hexImage.getTile(), i);
-			map_[sides].emplace_back(sprite, sides);
+			map_[hex::TileKey{sides}].emplace_back(sprite, sides);
 		}
 	}
 

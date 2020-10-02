@@ -17,7 +17,7 @@ namespace vin {
 
 		SpriteTile(const HexSprite& hexSprite, const hex::Tile& tile);
 
-		SpriteTile(const HexImage& hexImage, int rotation = 0);
+		explicit SpriteTile(const HexImage& hexImage, int rotation = 0);
 
 		void rotateLeft(int nbr = 1);
 		

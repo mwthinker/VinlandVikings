@@ -21,7 +21,7 @@ project(VinlandVikings
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 if (MSVC)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4275") # non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
@@ -74,6 +74,8 @@ set(SOURCES
 	src/vin/types.h
 	src/vin/vinlandwindow.cpp
 	src/vin/vinlandwindow.h
+
+	ExternalFetchContent.cmake
 )
 
 find_package(Threads REQUIRED)

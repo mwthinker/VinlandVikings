@@ -5,65 +5,53 @@
 
 namespace vin::hex {
 
-	template <class Type>
+	template <typename Type, typename = std::enable_if_t<std::is_arithmetic_v<Type>, Type>>
 	class Hex {
 	public:
-		constexpr Hex() noexcept {
-			IS_ARITHMETIC<Type>();
+		constexpr Hex() = default;
+
+		constexpr Hex(Type q, Type r)
+			: q_{q}
+			, r_{r} {
 		}
 
-		constexpr Hex(Type q, Type r) noexcept : q_{q}, r_{r} {
-			IS_ARITHMETIC<Type>();
-		}
+		constexpr Type q() const { return q_; }
+		constexpr Type r() const { return r_; }
+		constexpr Type s() const { return -q_ - r_; }
 
-		constexpr Hex(const Hex& hex) noexcept = default;
-		constexpr Hex(Hex&&) noexcept = default;
-
-		Hex& operator=(const Hex& hex) noexcept = default;
-		Hex& operator=(Hex&&) noexcept = default;
-
-		constexpr Type q() const noexcept { return q_; }
-		constexpr Type r() const noexcept { return r_; }
-		constexpr Type s() const noexcept { return -q_ - r_; }
-
-		constexpr bool operator==(Hex hex) const noexcept {
+		constexpr bool operator==(Hex hex) const {
 			return q_ == hex.q_ && r_ == hex.r_;
 		}
 
-		constexpr bool operator!=(Hex hex) const noexcept {
+		constexpr bool operator!=(Hex hex) const {
 			return q_ != hex.q_ || r_ != hex.r_;
 		}
 
-		constexpr Hex operator+(Hex hex) const noexcept {
+		constexpr Hex operator+(Hex hex) const {
 			return {q_ + hex.q_, r_ + hex.r_};
 		}
 
-		constexpr Hex operator-(Hex hex) const noexcept {
+		constexpr Hex operator-(Hex hex) const {
 			return {q_ - hex.q_, r_ - hex.r_};
 		}
 
-		constexpr Hex operator-() const noexcept {
+		constexpr Hex operator-() const {
 			return {-q_, -r_};
 		}
 
-		constexpr Hex operator*(Type nbr) const noexcept {
+		constexpr Hex operator*(Type nbr) const {
 			return {q_ * nbr, r_ * nbr};
 		}
 
-		constexpr Hex operator+(Type hex) const noexcept {
+		constexpr Hex operator+(Type hex) const {
 			return {q_ + hex.q_, r_ + hex.r_};
 		}
 
-		constexpr Hex operator-(Type hex) const noexcept {
+		constexpr Hex operator-(Type hex) const {
 			return {q_ - hex.q_, r_ - hex.r_};
 		}
 
 	private:
-		template <class AritmeticType>
-		static constexpr void IS_ARITHMETIC() {
-			static_assert(std::is_arithmetic<AritmeticType>(), "Hex type must be of arithmetic type");
-		}
-
 		Type q_{0};
 		Type r_{0};
 	};

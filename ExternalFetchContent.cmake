@@ -5,11 +5,11 @@ FetchContent_Declare(CppSdl2
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
 		#origin/CppSdl2
-		4b39c8f13ec37c647c78b08f87a94bc190f0047c
+		da5ea8cc71184d2602be181b0f2dcb3e97c61058
 )
 FetchContent_MakeAvailable(CppSdl2)
 
-fetchcontent_declare(CmakeAuxiliary
+Fetchcontent_Declare(CmakeAuxiliary
 	GIT_REPOSITORY
 		https://gist.github.com/mwthinker/e0539b200e3f0ac6da545af4843a6ff6
 )

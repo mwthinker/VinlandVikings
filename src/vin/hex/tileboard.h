@@ -23,13 +23,6 @@ namespace vin::hex {
 
 		TileBoard();
 
-		TileBoard(const TileBoard& map) = default;
-		TileBoard& operator=(const TileBoard& map) = default;
-
-		TileBoard(TileBoard&& map) noexcept = default;
-
-		TileBoard& operator=(TileBoard&& map) noexcept = default;
-
 		TileBoard(const std::vector<Hexi>& hexes);
 
 		template <class iterator>

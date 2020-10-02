@@ -10,21 +10,17 @@ namespace vin::hex {
 
 	class TileKey {
 	public:
-		constexpr TileKey() noexcept = default;
+		constexpr TileKey() = default;
 
-		constexpr TileKey(const TileKey&) noexcept = default;
+		explicit constexpr TileKey(const Tile& tile);
 
-		constexpr TileKey& operator=(const TileKey&) noexcept = default;
+		constexpr bool operator==(TileKey key) const;
 
-		constexpr TileKey(TileKey&&) noexcept = default;
+		constexpr bool operator!=(TileKey key) const;
 
-		constexpr TileKey& operator=(TileKey&&) noexcept = default;
+		constexpr bool operator<(TileKey key) const;
 
-		constexpr TileKey(const Tile& tile) noexcept;
-
-		constexpr bool operator<(const TileKey& key) const noexcept;
-
-		constexpr operator uint64_t() const;
+		explicit constexpr operator uint64_t() const;
 
 	private:
 		uint64_t key_{0};
@@ -32,36 +28,41 @@ namespace vin::hex {
 
 	class TileInvariantKey {
 	public:
-		constexpr TileInvariantKey() noexcept = default;
+		constexpr TileInvariantKey() = default;
 
-		constexpr TileInvariantKey(const TileInvariantKey&) noexcept = default;
+		explicit constexpr operator uint64_t() const;
 
-		constexpr TileInvariantKey& operator=(const TileInvariantKey&) noexcept = default;
+		constexpr bool operator==(TileInvariantKey key) const;
 
-		constexpr TileInvariantKey(TileInvariantKey&&) noexcept = default;
+		constexpr bool operator!=(TileInvariantKey key) const;
 
-		constexpr TileInvariantKey& operator=(TileInvariantKey&&) noexcept = default;
+		explicit TileInvariantKey(Tile sides);
 
-		constexpr operator uint64_t() const;
+		constexpr bool operator<(TileInvariantKey key) const;
 
-		TileInvariantKey(Tile sides) noexcept;
-
-		bool operator<(const TileInvariantKey& key) const noexcept;
 	private:
 		TileKey key_;
 	};
 
 	// Assumes one side is not bigger than one byte.
-	inline constexpr TileKey::TileKey(const Tile& sides) noexcept :
-		key_{((uint64_t) sides[0] << 8)
-		+ ((uint64_t) sides[1] << 8 * 2)
-		+ ((uint64_t) sides[2] << 8 * 3)
-		+ ((uint64_t) sides[3] << 8 * 4)
-		+ ((uint64_t) sides[4] << 8 * 5)
-		+ ((uint64_t) sides[5] << 8 * 6)} {
+	inline constexpr TileKey::TileKey(const Tile& sides) :
+		key_{(static_cast<uint64_t>(sides[0]) << 8)
+		+ (static_cast<uint64_t>(sides[1]) << 8 * 2)
+		+ (static_cast<uint64_t>(sides[2]) << 8 * 3)
+		+ (static_cast<uint64_t>(sides[3]) << 8 * 4)
+		+ (static_cast<uint64_t>(sides[4]) << 8 * 5)
+		+ (static_cast<uint64_t>(sides[5]) << 8 * 6)} {
 	}
 
-	inline constexpr bool TileKey::operator<(const TileKey& key) const noexcept {
+	inline constexpr bool TileKey::operator==(TileKey key) const {
+		return key_ == key.key_;
+	}
+
+	inline constexpr bool TileKey::operator!=(TileKey key) const {
+		return key_ != key.key_;
+	}
+
+	inline constexpr bool TileKey::operator<(TileKey key) const {
 		return key_ < key.key_;
 	}
 
@@ -69,24 +70,32 @@ namespace vin::hex {
 		return key_;
 	}
 
-	inline TileInvariantKey::TileInvariantKey(Tile sides) noexcept {
+	inline TileInvariantKey::TileInvariantKey(Tile sides) {
 		std::array<TileKey, 6> keys{
-			sides,
-			rotateCopy(sides, 1),
-			rotateCopy(sides, 2),
-			rotateCopy(sides, 3),
-			rotateCopy(sides, 4),
-			rotateCopy(sides, 5),
+			TileKey{sides},
+			TileKey{rotateCopy(sides, 1)},
+			TileKey{rotateCopy(sides, 2)},
+			TileKey{rotateCopy(sides, 3)},
+			TileKey{rotateCopy(sides, 4)},
+			TileKey{rotateCopy(sides, 5)},
 		};
 		key_ = *std::min_element(keys.begin(), keys.end());
 	}
 
-	inline bool TileInvariantKey::operator<(const TileInvariantKey& invariantKey) const noexcept {
+	inline constexpr bool TileInvariantKey::operator<(TileInvariantKey invariantKey) const {
 		return key_ < invariantKey.key_;
 	}
 
 	inline constexpr TileInvariantKey::operator uint64_t() const {
-		return key_;
+		return static_cast<uint64_t>(key_);
+	}
+
+	constexpr bool TileInvariantKey::operator==(TileInvariantKey key) const {
+		return key_ == key.key_;
+	}
+
+	constexpr bool TileInvariantKey::operator!=(TileInvariantKey key) const {
+		return key_ != key.key_;
 	}
 
 }

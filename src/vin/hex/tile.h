@@ -44,11 +44,11 @@ namespace vin::hex {
 			return sides_.end();
 		}
 
-		constexpr const_iterator begin() const noexcept {
+		constexpr const_iterator begin() const {
 			return sides_.begin();
 		}
 
-		constexpr const_iterator end() const noexcept {
+		constexpr const_iterator end() const {
 			return sides_.end();
 		}
 
