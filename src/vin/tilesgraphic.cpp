@@ -147,10 +147,10 @@ namespace vin {
 
 	void TilesGraphic::drawHexCoord(const sdl::Shader& shader) {
 		if (hexCoord_) {
-			graphic_.addHexagon(hexToWorld(hex::HEXI_ZERO), hexDimension_.innerSize * 0.8f, hexDimension_.outerSize, WHITE, hexDimension_.angle);
-			graphic_.addHexagon(hexToWorld(hex::HEXI_Q), hexDimension_.innerSize, hexDimension_.outerSize, RED, hexDimension_.angle);
-			graphic_.addHexagon(hexToWorld(hex::HEXI_R), hexDimension_.innerSize, hexDimension_.outerSize, GREEN, hexDimension_.angle);
-			graphic_.addHexagon(hexToWorld(hex::HEXI_S), hexDimension_.innerSize, hexDimension_.outerSize, BLUE, hexDimension_.angle);
+			graphic_.addHexagon(hexToWorld(hex::HexiZero), hexDimension_.innerSize * 0.8f, hexDimension_.outerSize, WHITE, hexDimension_.angle);
+			graphic_.addHexagon(hexToWorld(hex::HexiQ), hexDimension_.innerSize, hexDimension_.outerSize, RED, hexDimension_.angle);
+			graphic_.addHexagon(hexToWorld(hex::HexiR), hexDimension_.innerSize, hexDimension_.outerSize, GREEN, hexDimension_.angle);
+			graphic_.addHexagon(hexToWorld(hex::HexiS), hexDimension_.innerSize, hexDimension_.outerSize, BLUE, hexDimension_.angle);
 		}
 	}
 

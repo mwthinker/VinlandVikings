@@ -7,7 +7,7 @@ namespace vin::hex {
 	std::vector<Hexi> findAllEmptyNeighbors(const TileBoard& board, const std::vector<Hexi>& tiles) {
 		std::vector<Hexi> emptyNeighbors;
 		for (const auto& pos : tiles) {
-			for (const auto& dir : CUBE_DIRECTIONS) {
+			for (const auto& dir : CubeDirections) {
 				auto neighbor = dir + pos;
 				if (board.isEmpty(neighbor)) {
 					emptyNeighbors.push_back(neighbor);
@@ -53,7 +53,7 @@ namespace vin::hex {
 
     bool TileBoard::isNeighborsMatching(const Hexi& pos, const Tile& tile) const {
         for (int i = 0; i < 6; ++i) {
-            Hexi neighborPos = CUBE_DIRECTIONS[i] + pos;
+            Hexi neighborPos = CubeDirections[i] + pos;
 			Tile neighbor = getTile(neighborPos);
 
             int oppositeSide = (i + 3) % 6;

@@ -33,7 +33,7 @@ namespace vin {
 
 	class HexCanvas {
 	public:
-		HexCanvas(const sdl::Shader& shader);
+		explicit HexCanvas(const sdl::Shader& shader);
 
 		void drawCanvas(const std::chrono::high_resolution_clock::duration& deltaTime);
 
@@ -54,7 +54,7 @@ namespace vin {
 			return currentTile_.sprite.sprite;
 		}
 
-		void setDeck(const std::vector<HexImage>& hexImages);
+		void setDeck(const Deck& deck);
 
 		void setTileLexicon(const TileLexicon& tileLexicon);
 
@@ -119,12 +119,14 @@ namespace vin {
 
 		ViewPort viewPort_{};
 		Mat4 projection_;
-		std::vector<HexImage> deck_;
+		Deck deck_;
 
 		struct State {
 			hex::TileBoard tileBoard;
 			std::unordered_map<hex::Hexi, SpriteTile> tileMap;
 		};
+		State state_;
+		//CommandManager<State> commands_{state_};
 
 		std::stack<State> future_;
 		std::stack<State> history_;

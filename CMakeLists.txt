@@ -50,10 +50,10 @@ set(SOURCES
 	
 	src/vin/action.cpp
 	src/vin/action.h
+	src/vin/configuration.cpp
+	src/vin/configuration.h
 	src/vin/hexagonbatch.cpp
 	src/vin/hexagonbatch.h
-	src/vin/hexdata.cpp
-	src/vin/hexdata.h
 	src/vin/hexdimension.h
 	src/vin/heximage.cpp
 	src/vin/heximage.h
@@ -80,6 +80,7 @@ set(SOURCES
 
 find_package(Threads REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On) 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VinlandVikings)
@@ -89,8 +90,6 @@ source_group(TREE
 	FILES
 		${SOURCES}
 )
-
-add_subdirectory(Config)
 
 include(ExternalFetchContent.cmake)
 
@@ -167,7 +166,8 @@ target_link_libraries(VinlandVikings
 	PRIVATE
 		Threads::Threads
 		${ExternalDependencies}
-		Config
+		nlohmann_json
+		nlohmann_json::nlohmann_json
 )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CPack.cmake)

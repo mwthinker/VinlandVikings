@@ -2,7 +2,7 @@
 #define VINLANDVIKINGS_VIN_VINLANDWINDOW_H
 
 #include "hexcanvas.h"
-#include "hexdata.h"
+#include "configuration.h"
 #include "hex/tilekey.h"
 #include "tilelexicon.h"
 #include "action.h"

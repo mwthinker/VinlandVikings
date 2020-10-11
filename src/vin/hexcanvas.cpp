@@ -87,7 +87,7 @@ namespace vin {
 	void HexCanvas::addTileMapToGraphic() {
 		Random random;
 		for (const auto& [pos, sides] : tileBoard_) {
-			auto tiles = tileLexicon_.getInvariantTiles(sides);
+			auto tiles = tileLexicon_.getInvariantTiles(hex::TileInvariantKey{sides});
 			if (tiles.size() > 0) {
 				auto tile = tiles[random.generateInt(0, static_cast<int>(tiles.size() - 1))];
 				if (tile.rotateUntilEqual(sides)) {

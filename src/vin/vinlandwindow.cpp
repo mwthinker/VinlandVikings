@@ -131,7 +131,7 @@ namespace vin {
 				break;
 			case SDL_DROPFILE: { // In case if dropped file
 				std::string dropFile{windowEvent.drop.file};
-				hexImage_ = HexData::getInstance().loadSprite(dropFile);
+				hexImage_ = Configuration::getInstance().loadSprite(dropFile);
 				spdlog::warn(dropFile);
 				//SDL_free(windowEvent.drop.file).
 				break;
@@ -185,11 +185,11 @@ namespace vin {
 
 			ImGui::Menu("Open", [&]() {
 				for (const auto& file : jsonFiles_) {
-					bool selectedFile = (file == HexData::getInstance().getLoadedFilename());
+					bool selectedFile = (file == Configuration::getInstance().getLoadedFilename());
 					if (ImGui::MenuItem(file.c_str(), nullptr, selectedFile)) {
 						if (!selectedFile) {
 							spdlog::info("[VinlandWindow] {}", file);
-							HexData::getInstance().load(file);
+							Configuration::getInstance().load(file);
 							initData();
 						}
 					}
@@ -379,7 +379,7 @@ namespace vin {
 				if (hexImages[index].getImage() == hexCanvas_.currentHexSprite()) {
 					index = (index + 1) % static_cast<int>(hexImages.size());
 				}
-				hexCanvas_.activateHexagon(hexImages[index]);
+				hexCanvas_.activateHexagon(SpriteTile{hexImages[index]});
 			}
 			HelpMarker(hexImages[index].getFilename());
 			const float lastButton_x2 = ImGui::GetItemRectMax().x;
@@ -422,7 +422,7 @@ namespace vin {
 		auto [w, h] = sdl::ImGuiWindow::getSize();
 		glViewport(0, 0, w, h);
 
-		auto hexImages = HexData::getInstance().loadHexImages();
+		auto hexImages = Configuration::getInstance().loadHexImages();
 		tileLexicon_.add(hexImages);
 		hexCanvas_.setTileLexicon(tileLexicon_);
 

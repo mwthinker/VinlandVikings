@@ -1,6 +1,6 @@
 #include "vinlandwindow.h"
 #include "logger.h"
-#include "hexdata.h"
+#include "configuration.h"
 
 #include <sdl/initsdl.h>
 #include <fmt/printf.h>
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 	spdlog::info("[Main] VinlandVikings Version:  {}", PROJECT_VERSION);
 	spdlog::info("[Main] VinlandVikings Git Hash:  {}", GIT_VERSION);
 
-	auto& hexData = vin::HexData::getInstance();
+	auto& hexData = vin::Configuration::getInstance();
 	hexData.load(config.filename);
 
 	try {
@@ -142,4 +142,5 @@ int main(int argc, char** argv) {
 		spdlog::error("[Main] Fatal error has occured: {}", ex.what());
 		return 1;
 	}
+	return 0;
 }

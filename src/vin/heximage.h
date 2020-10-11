@@ -14,10 +14,6 @@ namespace vin {
 	public:
 		HexImage() = default;
 
-		HexImage(const HexImage&) = default;
-
-		HexImage& operator=(const HexImage&) = default;
-
 		HexImage(const std::string& filename, const sdl::TextureView& sprite, const hex::Tile& hexSides, bool flat, int rotations = 0);
 
 		const std::string& getFilename() const;
