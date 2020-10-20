@@ -22,7 +22,7 @@ namespace vin::hex {
 
 	TileBoard::TileBoard(const std::vector<Hexi>& hexes) {
         for (const auto& hex : hexes) {
-			hexes_.insert({hex, HEXSIDES_NONE});
+			hexes_.insert({hex, HexSidesNone});
         }
     }
 
@@ -36,7 +36,7 @@ namespace vin::hex {
 			return false;
 		}
 
-		return it->second == HEXSIDES_NONE;
+		return it->second == HexSidesNone;
 	}
 
 	bool TileBoard::isAllowed(const Hexi& pos, const Tile& tile) const {
@@ -58,7 +58,7 @@ namespace vin::hex {
 
             int oppositeSide = (i + 3) % 6;
             HexSide neighborSide = neighbor[oppositeSide];
-            if (neighborSide == HexSide::NONE) {
+            if (neighborSide == HexSide::None) {
                 continue;
             }
 
@@ -72,7 +72,7 @@ namespace vin::hex {
 	Tile TileBoard::getTile(Hexi hex) const {
 		auto it = hexes_.find(hex);
 		if (it == hexes_.end()) {
-			return HEXSIDES_NONE;
+			return HexSidesNone;
 		}
 		return it->second;
 	}
@@ -80,10 +80,10 @@ namespace vin::hex {
     bool TileBoard::clear() {
 		bool dirty = false;
         for (auto& hexTile : hexes_) {
-			if (!dirty && hexTile.second != HEXSIDES_NONE) {
+			if (!dirty && hexTile.second != HexSidesNone) {
 				dirty = true;
 			}
-			hexTile.second = HEXSIDES_NONE;
+			hexTile.second = HexSidesNone;
         }
 		return dirty;
 	}
@@ -99,8 +99,8 @@ namespace vin::hex {
 
 	bool TileBoard::remove(const Hexi& pos) {
 		if (auto it = hexes_.find(pos); it != hexes_.end()) {
-			if (it->second != HEXSIDES_NONE) {
-				it->second = HEXSIDES_NONE;
+			if (it->second != HexSidesNone) {
+				it->second = HexSidesNone;
 				return true;
 			}
 			return false;

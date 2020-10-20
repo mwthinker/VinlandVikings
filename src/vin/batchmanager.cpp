@@ -27,11 +27,11 @@ namespace vin {
 			Vec2 texSize = Vec2{sprite.getWidth(), sprite.getHeight()} *0.5f;
 			Vec2 texPos = Vec2{sprite.getX(), sprite.getY()} +texSize;
 
-			sdl::Vertex centerVertex{center, texPos, WHITE};
+			sdl::Vertex centerVertex{center, texPos, White};
 			batchConfig.subBatch.pushBack(centerVertex);
 
 			for (int i = 0; i < 6; ++i) {
-				auto v = sdl::Vertex{hex::getHexCorner(center, radius, i), texPos + texSize * hex::getHexCorner(i, startAngle), WHITE};
+				auto v = sdl::Vertex{hex::getHexCorner(center, radius, i), texPos + texSize * hex::getHexCorner(i, startAngle), White};
 				batchConfig.subBatch.pushBack(v);
 			}
 			for (int i = 1; i <= 6; ++i) {
@@ -73,7 +73,7 @@ namespace vin {
 		batchConfig.subBatch.pushBack({center, {0.f, 0.f}, color});
 
 		for (int i = 0; i < iterations; ++i) {
-			auto rad = 2 * PI * i / iterations + startAngle;
+			auto rad = 2 * Pi * i / iterations + startAngle;
 			auto edge = center + glm::rotate(Vec2{radius, 0.f}, rad);
 
 			batchConfig.subBatch.pushBack({edge, {0.f, 0.f}, color});

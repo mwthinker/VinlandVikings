@@ -45,6 +45,8 @@ set(SOURCES
 	src/vin/batchmanager.h
 	src/vin/camera.cpp
 	src/vin/camera.h
+	src/vin/commandmanager.h
+	src/vin/deck.h
 	src/vin/graphic.cpp
 	src/vin/graphic.h
 	

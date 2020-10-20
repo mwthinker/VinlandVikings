@@ -17,6 +17,9 @@ namespace vin {
 
 	class TilesGraphic {
 	public:
+		using Map = std::map<hex::Hexi, SpriteTile, hex::HexComparator>;
+		//using Map = std::unordered_map<hex::Hexi, SpriteTile>;
+
 		TilesGraphic(const HexDimension& dimension, const Mat2& hexToWorld);
 
 		void setAngle(float angle);
@@ -46,22 +49,11 @@ namespace vin {
 
 		void setMatrix(const Mat4& mat);
 
-		const std::unordered_map<hex::Hexi, SpriteTile>& getMap() {
-			return hexImages_;
-		}
+		const Map& getMap() const;
 
-		SpriteTile getTile(const hex::Hexi& hex) const {
-			auto it = hexImages_.find(hex);
-			if (it != hexImages_.end()) {
-				return it->second;
-			}
-			return SpriteTile{};
-		}
+		void setMap(const Map& map);
 
-		void fill(const std::unordered_map<hex::Hexi, SpriteTile>& map) {
-			hexImages_ = map;
-			dirty_ = true;
-		}
+		SpriteTile getTile(const hex::Hexi& hex) const;
 
 	private:
 		void drawColor(const sdl::Shader& shader);
@@ -73,7 +65,7 @@ namespace vin {
 		hex::Hexi worldToHex(Vec2 pos) const;
 		Vec2 hexToWorld(hex::Hexi pos) const;
 
-		float angle_{PI / 3};
+		float angle_{Pi / 3};
 		bool dirty_{true};
 		bool grid_{true};
 		bool hexCoord_{false};
@@ -84,7 +76,7 @@ namespace vin {
 		Mat2 hexToWorld_{1};
 		Mat4 worldToScreen_{1};
 		Graphic graphic_;
-		std::unordered_map<hex::Hexi, SpriteTile> hexImages_;
+		Map hexImages_;
 	};
 	
 }

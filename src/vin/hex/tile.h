@@ -8,18 +8,18 @@
 namespace vin::hex {
 
 	enum class HexSide {
-		NONE,
-		MOUNTAIN,
-		GRASS,
-		WATER,
-		FOREST,
+		None,
+		Mountain,
+		Grass,
+		Water,
+		Forest,
 
 		// Only used to count elements.
-		COUNT_ELEMENTS
+		CountElements
 	};
 
 	constexpr int getNumberOfHexTypes() {
-		return static_cast<int>(HexSide::COUNT_ELEMENTS);
+		return static_cast<int>(HexSide::CountElements);
 	}
 	
 	class Tile {
@@ -36,11 +36,11 @@ namespace vin::hex {
 			return sides_[index];
 		}
 
-		iterator begin() noexcept {
+		constexpr iterator begin() noexcept {
 			return sides_.begin();
 		}
 
-		iterator end() noexcept {
+		constexpr iterator end() noexcept {
 			return sides_.end();
 		}
 
@@ -65,7 +65,7 @@ namespace vin::hex {
 	};
 
 	//using HexSides = std::array<HexSide, 6>;
-	constexpr Tile HEXSIDES_NONE;
+	constexpr Tile HexSidesNone;
 
 	inline void rotate(hex::Tile& hexSides, int rotations) {
 		std::rotate(hexSides.begin(), hexSides.begin() + 6 - rotations % 6, hexSides.end());
@@ -78,16 +78,16 @@ namespace vin::hex {
 
 	constexpr const char* toString(HexSide side) {
 		switch (side) {
-			case HexSide::NONE:
-				return "NONE";
-			case HexSide::MOUNTAIN:
-				return "MOUNTAIN";
-			case HexSide::GRASS:
-				return "GRASS";
-			case HexSide::WATER:
-				return "WATER";
-			case HexSide::FOREST:
-				return "FOREST";
+			case HexSide::None:
+				return "None";
+			case HexSide::Mountain:
+				return "Mountain";
+			case HexSide::Grass:
+				return "Grass";
+			case HexSide::Water:
+				return "Water";
+			case HexSide::Forest:
+				return "Forest";
 			default:
 				spdlog::error("Incorrect side type (toString): {}", (int)side);
 				std::exit(1);

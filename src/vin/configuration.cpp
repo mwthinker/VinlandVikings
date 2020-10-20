@@ -1,6 +1,5 @@
 #include "configuration.h"
 #include "hex/hexagon.h"
-#include "logger.h"
 
 #include <fstream>
 #include <sstream>
@@ -9,6 +8,8 @@
 #include <string>
 #include <filesystem>
 
+#include <spdlog/spdlog.h>
+
 using json = nlohmann::json;
 
 namespace vin {
@@ -16,11 +17,11 @@ namespace vin {
 	namespace {
 
 		NLOHMANN_JSON_SERIALIZE_ENUM(hex::HexSide, {
-			{hex::HexSide::FOREST, "WATER"},
-			{hex::HexSide::GRASS, "GRASS"},
-			{hex::HexSide::MOUNTAIN, "MOUNTAIN"},
-			{hex::HexSide::WATER, "WATER"},
-			{hex::HexSide::NONE, "NONE"}
+			{hex::HexSide::Forest, "WATER"},
+			{hex::HexSide::Grass, "GRASS"},
+			{hex::HexSide::Mountain, "MOUNTAIN"},
+			{hex::HexSide::Water, "WATER"},
+			{hex::HexSide::None, "NONE"}
 		})
 
 	}

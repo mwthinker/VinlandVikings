@@ -8,6 +8,8 @@ namespace vin::hex {
 	template <typename Type, typename = std::enable_if_t<std::is_arithmetic_v<Type>, Type>>
 	class Hex {
 	public:
+		using value_type = Type;
+
 		constexpr Hex() = default;
 
 		constexpr Hex(Type q, Type r)
@@ -66,6 +68,12 @@ namespace vin::hex {
 	constexpr Hexi HexiR{0, 1};
 
 	constexpr Hexi HexiS{-1, 1};
+
+	struct HexComparator {
+		constexpr bool operator()(const Hexi& a, const Hexi& b) const {
+			return (a.q() < b.q()) || (b.q() == a.q() && a.r() < b.r());
+		}
+	};
 
 }
 

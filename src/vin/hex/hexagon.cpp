@@ -3,12 +3,12 @@
 namespace vin::hex {
 
 	ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {
-		auto rad = PI / 3 * nbr;
+		auto rad = Pi / 3 * nbr;
 		return {center.x + size * std::cos(rad), center.y + size * std::sin(rad)};
 	}
 
 	Vec2 getHexCorner(int nbr, float startAngle) {
-		return glm::rotate(Vec2{1, 0.f}, PI / 3 * nbr + startAngle);
+		return glm::rotate(Vec2{1, 0.f}, Pi / 3 * nbr + startAngle);
 	}
 
 	Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle) {

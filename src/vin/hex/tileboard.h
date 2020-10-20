@@ -9,7 +9,8 @@
 
 #include <vector>
 
-#include <unordered_map>
+//#include <unordered_map>
+#include <map>
 
 namespace vin::hex {
 
@@ -18,7 +19,8 @@ namespace vin::hex {
 
 	class TileBoard {
 	public:
-		using Map = std::unordered_map<Hexi, Tile>;
+		//using Map = std::unordered_map<Hexi, Tile>;
+		using Map = std::map<Hexi, Tile, HexComparator>;
 		using const_iterator = Map::const_iterator;
 
 		TileBoard();
@@ -29,7 +31,7 @@ namespace vin::hex {
 		TileBoard(const iterator& begin, const iterator& end) {
 			for (auto it = begin; it != end; ++it) {
 				Hexi hex = *it;
-				hexes_[hex] = HEXSIDES_NONE;
+				hexes_[hex] = HexSidesNone;
 			}
 		}
 		

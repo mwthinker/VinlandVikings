@@ -1,16 +1,14 @@
 #include "camera.h"
-#include "logger.h"
 
 #include <glm/gtx/rotate_vector.hpp>
 #include <algorithm>
 
 namespace vin {
 		
-	constexpr Vec3 UP{0.0f, 1.0f, 0.0f};
+	constexpr Vec3 Up{0.0f, 1.0f, 0.0f};
 
 	Mat4 Camera::getView() const {
-		//spdlog::info("eye: {}", eye);
-		return glm::lookAt(getEye(), getCenter(), UP);
+		return glm::lookAt(getEye(), getCenter(), Up);
 	}
 
 	Vec3 Camera::getEye() const {
@@ -22,8 +20,8 @@ namespace vin {
 	}
 
 	void Camera::setAngle(float angle) {
-		angle_ = angle;			
-		angle_ = std::clamp(angle_, 0.f, PI / 2 - PI / 9);
+		angle_ = angle;
+		angle_ = std::clamp(angle_, 0.f, Pi / 2 - Pi / 9);
 	}
 
 	void Camera::setPosition(Vec2 pos) {
@@ -40,8 +38,7 @@ namespace vin {
 
 	void Camera::angleDelta(float delta) {
 		angle_ += delta;
-		angle_ = std::clamp(angle_, 0.f, PI / 2 - PI / 9);
-		spdlog::info("angle_: {}", angle_);
+		angle_ = std::clamp(angle_, 0.f, Pi / 2 - Pi / 9);
 	}
 
 }

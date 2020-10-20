@@ -23,18 +23,17 @@ namespace vin {
 	using Vec3 = glm::vec3;
 	using Vec4 = glm::vec4;
 
-	constexpr auto PI = glm::pi<float>();
+	constexpr auto Pi = glm::pi<float>();
 
 	using Color = sdl::Color;
 
-	static const Color WHITE = {1.f, 1.f, 1.f, 1.f};
-	static const Color BLACK = {0.f, 0.f, 0.f, 1.f};
-	static const Color RED = {1.f, 0.f, 0.f, 1.f};
-	static const Color GREEN = {0.f, 1.f, 0.f, 1.f};
-	static const Color BLUE = {0.f, 0.f, 1.f, 1.f};	
-	static const Color CYAN = {0.f, 1.f, 1.f, 1.f};
-	static const Color ORANGE = {1.f, 0.6471f, 0.f, 1.f};
-
+	static const Color White = {1.f, 1.f, 1.f, 1.f};
+	static const Color Blck = {0.f, 0.f, 0.f, 1.f};
+	static const Color Red = {1.f, 0.f, 0.f, 1.f};
+	static const Color Green = {0.f, 1.f, 0.f, 1.f};
+	static const Color Blue = {0.f, 0.f, 1.f, 1.f};
+	static const Color Cyan = {0.f, 1.f, 1.f, 1.f};
+	static const Color Orange = {1.f, 0.6471f, 0.f, 1.f};
 	
 	template <class T>
 	Vec2 castFloat(const T& t) {

@@ -12,16 +12,15 @@
 #include "tilesgraphic.h"
 #include "hex/mapgenerator.h"
 #include "tilelexicon.h"
-//#include "command.h"
+#include "commandmanager.h"
 #include "logger.h"
+#include "deck.h"
 
 #include <sdl/shader.h>
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 
 #include <unordered_set>
-#include <list>
-#include <queue>
 #include <stack>
 
 namespace vin {
@@ -31,11 +30,16 @@ namespace vin {
 		Vec2 size;
 	};
 
+	struct CanvasSnapshot {
+		hex::TileBoard tileBoard;
+		TilesGraphic::Map tileMap;
+	};
+
 	class HexCanvas {
 	public:
-		explicit HexCanvas(const sdl::Shader& shader);
+		HexCanvas();
 
-		void drawCanvas(const std::chrono::high_resolution_clock::duration& deltaTime);
+		void drawCanvas(const sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime);
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
@@ -54,6 +58,7 @@ namespace vin {
 			return currentTile_.sprite.sprite;
 		}
 
+		Deck getDeck() const;
 		void setDeck(const Deck& deck);
 
 		void setTileLexicon(const TileLexicon& tileLexicon);
@@ -78,9 +83,11 @@ namespace vin {
 		void redo();
 		void undo();
 
-	private:
-		using Command = std::function<bool()>;
+		CanvasSnapshot getSnapshot() const;
 
+		void setSnapshot(const CanvasSnapshot& snapshot);
+
+	private:
 		void addTileMapToGraphic();
 
 		hex::Hexi worldToHex(Vec2 pos) const;
@@ -93,11 +100,8 @@ namespace vin {
 		hex::Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
 		hex::Hexi getHexFromMouse() const;
 
-		void pushCommand(const Command& command);
-
 		void rotateCurrentTile(hex::Hexi hex);
 		
-		const sdl::Shader& shader_;
 		sdl::Texture whiteSquare_;
 		float zoom_{0.048f};
 		bool activateHexagon_;
@@ -121,15 +125,7 @@ namespace vin {
 		Mat4 projection_;
 		Deck deck_;
 
-		struct State {
-			hex::TileBoard tileBoard;
-			std::unordered_map<hex::Hexi, SpriteTile> tileMap;
-		};
-		State state_;
-		//CommandManager<State> commands_{state_};
-
-		std::stack<State> future_;
-		std::stack<State> history_;
+		CommandManager<HexCanvas, CanvasSnapshot> commandManager_;
 	};
 
 }

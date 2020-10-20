@@ -19,7 +19,7 @@ namespace vin {
 
 		inline ImVec2 getHexCorner(ImVec2 center, float sizeX, float sizeY, int nbr) {
 			auto angleDeg = 60 * nbr - 30;
-			auto angleRad = PI / 180 * angleDeg;
+			auto angleRad = Pi / 180 * angleDeg;
 			return {center.x + sizeX * std::cos(angleRad), center.y + sizeY * std::sin(angleRad)};
 		}
 
@@ -125,7 +125,7 @@ namespace vin {
 		auto v1 = createVertex(x, y, color);
 		auto v2 = createVertex(x + radius, y, color);
 		for (int i = 1; i <= iterations; ++i) {
-			auto v3 = createVertex(x + radius * std::cos(2 * PI * i / iterations), y + radius * std::sin(2 * PI * i / iterations), color);
+			auto v3 = createVertex(x + radius * std::cos(2 * Pi * i / iterations), y + radius * std::sin(2 * Pi * i / iterations), color);
 			addTriangle(v1, v2, v3);
 			v2 = v3;
 		}
@@ -135,8 +135,8 @@ namespace vin {
 		auto v1 = createVertex(x + innerRadius, y, color);
 		auto v4 = createVertex(x + outerRadius, y, color);
 		for (int i = 1; i <= iterations; ++i) {
-			auto v2 = createVertex(x + innerRadius * std::cos(2 * PI * i / iterations), y + innerRadius * std::sin(2 * PI * i / iterations), color);
-			auto v3 = createVertex(x + outerRadius * std::cos(2 * PI * i / iterations), y + outerRadius * std::sin(2 * PI * i / iterations), color);
+			auto v2 = createVertex(x + innerRadius * std::cos(2 * Pi * i / iterations), y + innerRadius * std::sin(2 * Pi * i / iterations), color);
+			auto v3 = createVertex(x + outerRadius * std::cos(2 * Pi * i / iterations), y + outerRadius * std::sin(2 * Pi * i / iterations), color);
 			addTriangle(v1, v3, v4);
 			addTriangle(v1, v2, v3);
 			v1 = v2;

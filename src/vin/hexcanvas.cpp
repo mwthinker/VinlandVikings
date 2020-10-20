@@ -35,7 +35,7 @@ namespace vin {
 		}
 
 		void glViewport(const ViewPort& viewPort) {
-			::glViewport((GLint) viewPort.pos.x, (GLint) viewPort.pos.y, (GLsizei) viewPort.size.x, (GLsizei) viewPort.size.y);
+			::glViewport(static_cast<GLint>(viewPort.pos.x), static_cast<GLint>(viewPort.pos.y), static_cast<GLint>(viewPort.size.x), static_cast<GLint>(viewPort.size.y));
 		}
 
 		Mat4 ortho(const ViewPort& viewPort, float zoom) {
@@ -46,35 +46,28 @@ namespace vin {
 			auto projection = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);
 			return glm::scale(projection, Vec3{zoom, zoom, 1});
 		}
-		
-		template <class T>
-		void popAll(std::stack<T>& stack) {
-			while (!stack.empty()) {
-				stack.pop();
-			}
-		}
 
-		constexpr HexDimension HEX_DIMENSION;
+		constexpr HexDimension Dimension;
 
-		constexpr float ZOOM_MIN = 0.02f;
-		constexpr float ZOOM_MAX = 3.0f;
+		constexpr float ZoomMin = 0.02f;
+		constexpr float ZoomMax = 3.0f;
 
-		const sdl::Color CLEAR_COLOR{0.6f, 0.6f, 0.6f, 0.6f};
+		const sdl::Color ClearColor{0.6f, 0.6f, 0.6f, 0.6f};
 		
 	}
 
-	HexCanvas::HexCanvas(const sdl::Shader& shader)
-		: shader_{shader}
-		, hexToWorldModel_{hex::createHexToCoordModel(HEX_DIMENSION.angle, HEX_DIMENSION.outerSize)}
-		, tilesGraphic_{HEX_DIMENSION, hexToWorldModel_} {
+	HexCanvas::HexCanvas()
+		: hexToWorldModel_{hex::createHexToCoordModel(Dimension.angle, Dimension.outerSize)}
+		, tilesGraphic_{Dimension, hexToWorldModel_}
+		, commandManager_{*this} {
 
 		auto hexes = hex::shape::createHex(10);
 		
 		tileBoard_ = hex::TileBoard(hexes.begin(), hexes.end());
 		for (const auto& [hex, tile] : tileBoard_) {
-			tilesGraphic_.fillGrid(hex, RED);
+			tilesGraphic_.fillGrid(hex, Red);
 		}
-		tilesGraphic_.fill(CLEAR_COLOR);
+		tilesGraphic_.fill(ClearColor);
 	}
 
 	void HexCanvas::updateCanvasSize(const Vec2& pos, const Vec2& size) {
@@ -136,19 +129,19 @@ namespace vin {
 		auto spriteTile = currentTile_;
 		for (int i = 0; i < 6; ++i) {
 			if (tileBoard_.isAllowed(hex, spriteTile.tile)) {
-				graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, currentTile_.sprite.sprite, rotation * PI / 3 + HEX_DIMENSION.angle);
+				graphic_.addHexagonImage(pos, Dimension.outerSize, currentTile_.sprite.sprite, rotation * Pi / 3 + Dimension.angle);
 				currentTile_ = spriteTile;
 				return;
 			}
 			spriteTile.rotateLeft();
 		}
-		graphic_.addHexagonImage(pos, HEX_DIMENSION.outerSize, currentTile_.sprite.sprite, rotation * PI / 3 + HEX_DIMENSION.angle);
+		graphic_.addHexagonImage(pos, Dimension.outerSize, currentTile_.sprite.sprite, rotation * Pi / 3 + Dimension.angle);
 		if (!tileBoard_.isAllowed(hex, currentTile_.tile)) {
-			graphic_.addFilledHexagon(pos, HEX_DIMENSION.outerSize, Color{1.f, 0, 0, 0.4f}, rotation * PI / 3 + HEX_DIMENSION.angle);
+			graphic_.addFilledHexagon(pos, Dimension.outerSize, Color{1.f, 0, 0, 0.4f}, rotation * Pi / 3 + Dimension.angle);
 		}
 	}
 
-	void HexCanvas::drawCanvas(const std::chrono::high_resolution_clock::duration& deltaTime) {
+	void HexCanvas::drawCanvas(const sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime) {
 		glEnable(GL_BLEND);
 		glBlendEquation(GL_FUNC_ADD);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -161,16 +154,19 @@ namespace vin {
 		addMouseHexToGraphic();
 		graphic_.pushMatrix(projection_);
 
-		tilesGraphic_.draw(shader_);
-		graphic_.draw(shader_);
+		tilesGraphic_.draw(shader);
+		graphic_.draw(shader);
 	}
 
-	void HexCanvas::setDeck(const std::vector<HexImage>& deck) {
+	Deck HexCanvas::getDeck() const {
+		return deck_;
+	}
+
+	void HexCanvas::setDeck(const Deck& deck) {
 		deck_ = deck;
 
 		spdlog::info("[HexCanvas] Remove all history and future commands");
-		popAll(future_);
-		popAll(history_);
+		commandManager_.clear();
 	}
 
 	void HexCanvas::setTileLexicon(const TileLexicon& tileLexicon) {
@@ -178,46 +174,46 @@ namespace vin {
 	}
 
 	void HexCanvas::clear() {
-		pushCommand([this]() {
-			tilesGraphic_.fill(CLEAR_COLOR);
+		commandManager_.pushCommand([this]() {
+			tilesGraphic_.fill(ClearColor);
 			return tileBoard_.clear();
 		});
 	}
 
 	void HexCanvas::zoomIn() {
-		pushCommand([this]() {
+		commandManager_.pushCommand([this]() {
 			zoom_ *= 1.25f;
-			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+			zoom_ = std::clamp(zoom_, ZoomMin, ZoomMax);
 			spdlog::info("[HexCanvas] Zoom value: {}", zoom_);
 			return false;
 		});
 	}
 
 	void HexCanvas::zoomOut() {
-		pushCommand([this]() {
+		commandManager_.pushCommand([this]() {
 			zoom_ *= 1 / 1.25f;
-			zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+			zoom_ = std::clamp(zoom_, ZoomMin, ZoomMax);
 			spdlog::info("[HexCanvas] Zoom value: {}", zoom_);
 			return false;
 		});
 	}
 
 	void HexCanvas::setHexCoords(bool activate) {
-		pushCommand([this, activate]() {
+		commandManager_.pushCommand([this, activate]() {
 			tilesGraphic_.setHexCoords(activate);
 			return false;
 		});
 	}
 
 	void HexCanvas::setXYCoords(bool activate) {
-		pushCommand([this, activate]() {
+		commandManager_.pushCommand([this, activate]() {
 			tilesGraphic_.setXYCoords(activate);
 			return false;
 		});
 	}
 
 	void HexCanvas::setGrid(bool activate) {
-		pushCommand([this, activate]() {
+		commandManager_.pushCommand([this, activate]() {
 			tilesGraphic_.setGrid(activate);
 			return false;
 		});
@@ -236,15 +232,16 @@ namespace vin {
 	}
 
 	void HexCanvas::clearAndGenerateMap() {
-		pushCommand([this]() {
+		commandManager_.pushCommand([this]() {
 			std::vector<hex::Tile> tiles;
-			if (tiles.empty()) {
-				for (const auto& hexImage : deck_) {
-					tiles.push_back(hexImage.getTile());
+			for (const auto& key : deck_) {
+				auto spriteTiles = tileLexicon_.getInvariantTiles(key);
+				for (const auto& spriteTile : spriteTiles) {
+					tiles.push_back(spriteTile.tile);
 				}
 			}
 			tileBoard_.clear();
-			tilesGraphic_.fill(CLEAR_COLOR);
+			tilesGraphic_.fill(ClearColor);
 			hexMapGenerator_.fill(tileBoard_, tiles, {0, 0});
 			addTileMapToGraphic();
 			return true;
@@ -252,35 +249,20 @@ namespace vin {
 	}
 
 	void HexCanvas::redo() {
-		if (!future_.empty()) {
-			spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
-			history_.push(State{tileBoard_, tilesGraphic_.getMap()});
-			auto& state = future_.top();
-			tileBoard_ = state.tileBoard;
-			tilesGraphic_.fill(state.tileMap);
-			future_.pop();
-		}
+		commandManager_.redo();
 	}
 
 	void HexCanvas::undo() {
-		if (!history_.empty()) {
-			spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
-			future_.emplace(State{tileBoard_, tilesGraphic_.getMap()});
-			auto& state = history_.top();
-			tileBoard_ = state.tileBoard;
-			tilesGraphic_.fill(state.tileMap);
-			history_.pop();
-		}
+		commandManager_.undo();
 	}
 
-	void HexCanvas::pushCommand(const Command& command) {
-		hex::TileBoard copy = tileBoard_;
-		auto map = tilesGraphic_.getMap();
-		if (command()) {
-			spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
-			popAll(future_);
-			history_.push(State{copy, map});
-		}
+	CanvasSnapshot HexCanvas::getSnapshot() const {
+		return CanvasSnapshot{tileBoard_, tilesGraphic_.getMap()};
+	}
+
+	void HexCanvas::setSnapshot(const CanvasSnapshot& snapshot) {
+		tileBoard_ = snapshot.tileBoard;
+		tilesGraphic_.setMap(snapshot.tileMap);
 	}
 
 	void HexCanvas::eventUpdate(const SDL_Event& windowEvent) {
@@ -291,14 +273,14 @@ namespace vin {
 				} else if (windowEvent.wheel.y < 0) { // scroll down
 					zoom_ *= 1 / 1.1f;
 				}
-				zoom_ = std::clamp(zoom_, ZOOM_MIN, ZOOM_MAX);
+				zoom_ = std::clamp(zoom_, ZoomMin, ZoomMax);
 				break;
 			case SDL_KEYDOWN:
 			{
 				constexpr float STEP = 10.f;
 				switch (windowEvent.key.keysym.sym) {
 					case SDLK_a:
-						spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
+						//spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
 						break;
 					case SDLK_LEFT:
 						camera_.move({-STEP,0});
@@ -337,8 +319,8 @@ namespace vin {
 					case SDL_BUTTON_LEFT:
 					{
 						if (activateHexagon_) {
-							//spdlog::info("(q, r, s): {}", hex);
-							pushCommand([this, hex]() {
+							spdlog::info("(q, r, s): {}", hex);
+							commandManager_.pushCommand([this, hex]() {
 								if (tileBoard_.put(hex, currentTile_.tile)) {
 									tilesGraphic_.fillTile(hex, currentTile_);
 									return true;
@@ -353,9 +335,9 @@ namespace vin {
 						break;
 					case SDL_BUTTON_RIGHT:
 					{
-						pushCommand([this, hex]() {
+						commandManager_.pushCommand([this, hex]() {
 							tilesGraphic_.clearTile(hex);
-							tilesGraphic_.fillTile(hex, CLEAR_COLOR);
+							tilesGraphic_.fillTile(hex, ClearColor);
 							return tileBoard_.remove(hex);
 						});
 						break;

@@ -1,11 +1,59 @@
 #include "vinlandwindow.h"
 #include "logger.h"
 #include "imguiextra.h"
+#include "hex/tileboard.h"
 
 #include <filesystem>
 #include <regex>
+#include <fstream>
 
 namespace fs = std::filesystem;
+
+using nlohmann::json;
+
+namespace vin::hex {
+
+	NLOHMANN_JSON_SERIALIZE_ENUM(hex::HexSide, {
+		{hex::HexSide::Forest, "WATER"},
+		{hex::HexSide::Grass, "GRASS"},
+		{hex::HexSide::Mountain, "MOUNTAIN"},
+		{hex::HexSide::Water, "WATER"},
+		{hex::HexSide::None, "NONE"}
+	})
+
+	void to_json(json& j, const Hexi& hex) {
+		j = json{{"q", hex.q()}, {"r", hex.r()}};
+	}
+
+	void from_json(const json& json, Hexi& hex) {
+		hex = Hexi{json["q"].get<Hexi::value_type>(), json["r"].get<Hexi::value_type>()};
+	}
+
+	void to_json(json& j, const Tile& tile) {
+		for (const auto& side : tile) {
+			j.push_back(side);
+		}
+	}
+
+	void from_json(const json& json, Tile& tile) {
+		for (int i = 0; i < 6; ++i) {
+			tile[i] = json[i].get<HexSide>();
+		}
+	}
+
+	void to_json(json& json, const TileBoard& tileBoard) {
+		for (const auto& [hex, tile] : tileBoard) {
+			json.push_back({{"hex", hex}, {"tile", tile}});
+		}
+	}
+
+	void from_json(const json& json, TileBoard& tileBoard) {
+		for (const auto& tileHex : json) {
+			tileBoard.put(tileHex["hex"].get<hex::Hexi>(), tileHex["tile"].get<hex::Tile>());
+		}
+	}
+
+}
 
 namespace vin {
 
@@ -27,7 +75,7 @@ namespace vin {
 
 		bool isFullWater(const hex::Tile& tile) {
 			for (const auto& side : tile) {
-				if (side != hex::HexSide::WATER) {
+				if (side != hex::HexSide::Water) {
 					return false;
 				}
 			}
@@ -59,24 +107,59 @@ namespace vin {
 			return listFiles(".*.([Pp][Nn][Gg]|[Jj][Pp][Ee]?[Gg]|[Bb][Mm][Pp])");
 		}
 
-		const std::string ICONFILE = "icon.ico";
+		const std::string IconFile = "icon.ico";
 
 		constexpr const char* POPUP_ADDHEXIMAGE = "Add Hex Image";
 		constexpr const char* POPUP_HELP = "Help";
 		constexpr const char* POPUP_ABOUT = "About";
 
+		void save(const std::string& file, const HexCanvas& hexCanvas) {
+			spdlog::info("[HexData] Current working directory {}", std::filesystem::current_path().string());
+
+
+			/*if (std::filesystem::exists("USE_APPLICATION_JSON")) {
+				jsonPath_ = jsonFile;
+			} else {
+				// Find default path to save/load file from.
+				jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + jsonFile;
+			}*/
+
+			const auto& snapshot = hexCanvas.getSnapshot();
+
+			json json;
+			json["tileboard"] = snapshot.tileBoard;
+
+			std::ofstream output{file};
+			output << json.dump(4);
+		}
+
+		hex::TileBoard load(const std::string& file) {
+			json json;
+			std::ifstream input{file};
+			input >> json;
+			return json.get<hex::TileBoard>();
+		}
+
 	}
 
-	VinlandWindow::VinlandWindow()
-		: hexCanvas_{getShader()} {
-		
-		setIcon(ICONFILE);
+	VinlandWindow::VinlandWindow() {
+		setIcon(IconFile);
 		
 		load_ = actionManager_.add(Action{SDLK_o, SDLK_LCTRL, "Load", [&]() {
 			spdlog::info("[VinlandWindow] Load");
+
+			auto tileBoard = load("TestBoardFile.txt");
+			TilesGraphic::Map tileMap;
+
+			auto deck = hexCanvas_.getDeck();
+
+			for (const auto& [hex, tile] : tileBoard) {
+				tileLexicon_.getTiles(hex::TileKey{tile});
+			}
 		}});
 		save_ = actionManager_.add(Action{SDLK_s, SDLK_LCTRL, "Save", [&]() {
 			spdlog::info("[VinlandWindow] Save");
+			save("TestBoardFile.txt", hexCanvas_);
 		}});
 		saveAs_ = actionManager_.add(Action{"Save as", [&]() {
 			spdlog::info("[VinlandWindow] Save as");
@@ -310,7 +393,9 @@ namespace vin {
 			ImGui::Text("Push MIDDLE - Rotate card");
 			ImGui::Text("Left - Place card");
 
-			if (ImGui::Button("OK", {120, 0})) { ImGui::CloseCurrentPopup(); }
+			if (ImGui::Button("OK", {120, 0})) {
+				ImGui::CloseCurrentPopup();
+			}
 			ImGui::SetItemDefaultFocus();
 		});
 		ImGui::PopStyleVar();
@@ -325,7 +410,9 @@ namespace vin {
 			ImGui::Text("Version: v%s", PROJECT_VERSION);
 			ImGui::Text("Git Hash: %s", GIT_VERSION);
 
-			if (ImGui::Button("OK", {120, 0})) { ImGui::CloseCurrentPopup(); }
+			if (ImGui::Button("OK", {120, 0})) {
+				ImGui::CloseCurrentPopup();
+			}
 			ImGui::SetItemDefaultFocus();
 		});
 		ImGui::PopStyleVar();
@@ -333,7 +420,7 @@ namespace vin {
 
 
 	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
-		hexCanvas_.drawCanvas(deltaTime);
+		hexCanvas_.drawCanvas(getShader(), deltaTime);
 	}
 
 	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {

@@ -6,6 +6,7 @@
 #include "hex/tilekey.h"
 #include "tilelexicon.h"
 #include "action.h"
+#include "commandmanager.h"
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
@@ -14,7 +15,7 @@
 #include <vector>
 #include <map>
 
-namespace vin {	
+namespace vin {
 
 	struct HexImageTypeVector {
 		int index_{0};
