@@ -420,7 +420,8 @@ namespace vin {
 
 
 	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
-		hexCanvas_.drawCanvas(getShader(), deltaTime);
+		shader_.useProgram();
+		hexCanvas_.drawCanvas(shader_, deltaTime);
 	}
 
 	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
@@ -526,6 +527,8 @@ namespace vin {
 		}
 
 		hexCanvas_.setDeck(deck);
+
+		shader_ = sdl::Shader::CreateShaderGlsl_330();
 	}
 
 }

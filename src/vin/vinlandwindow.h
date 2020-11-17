@@ -10,6 +10,7 @@
 
 #include <sdl/imguiwindow.h>
 #include <sdl/sprite.h>
+#include <sdl/shader.h>
 #include <sdl/textureatlas.h>
 
 #include <vector>
@@ -61,6 +62,7 @@ namespace vin {
 		TileLexicon tileLexicon_;
 		HexImagesMap hexTypes_;
 		sdl::TextureView hexImage_;
+		sdl::Shader shader_;
 
 		std::vector<std::string> jsonFiles_;
 		ActionManager actionManager_;
