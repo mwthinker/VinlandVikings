@@ -5,7 +5,7 @@ FetchContent_Declare(CppSdl2
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
 		#origin/CppSdl2
-		cc99b6c7bd783189f51e034c0d8ccc5acc0692f0
+		673645d9f03d0582229f6912178e7061bca663bf
 )
 FetchContent_MakeAvailable(CppSdl2)
 

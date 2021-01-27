@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-# 3.11 support for FetchContent
 # 3.14 support for Visual Studio 2019
 
 set(VCPKG_ROOT $ENV{VCPKG_ROOT})
@@ -97,6 +96,7 @@ include(ExternalFetchContent.cmake)
 
 set(ExternalDependencies
 	CppSdl2
+	ImGui
 )
 
 if (CppSdl2Test)
@@ -164,6 +164,11 @@ if (MSVC)
 			${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
 	)
 endif ()
+
+find_path(CLARA_INCLUDE_DIRS "clara.hpp")
+target_include_directories(VinlandVikings
+	PRIVATE
+		${CLARA_INCLUDE_DIRS})
 
 target_link_libraries(VinlandVikings
 	PRIVATE

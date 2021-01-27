@@ -1,0 +1,21 @@
+{
+	"name": "vinlandvikings",
+	"version-string": "0.1.0",
+	"port-version": 1,
+	"homepage": "https://github.com/mwthinker/VinlandVikings.git",
+	"description": "A editor for the board game Vinland Vikings.",
+	"license": "MIT",
+	"dependencies": [
+		"sdl2-image",
+		"sdl2-mixer",
+		"sdl2-ttf",
+		"sdl2",
+		"glad",
+		"spdlog",
+		"glm",
+		"catch2",
+		"fmt",
+		"nlohmann-json",
+		"clara"
+	]
+}
