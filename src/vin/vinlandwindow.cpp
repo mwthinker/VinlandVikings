@@ -198,11 +198,7 @@ namespace vin {
 	VinlandWindow::~VinlandWindow() {
 	}
 
-	void VinlandWindow::eventUpdate(const SDL_Event& windowEvent) {
-		sdl::ImGuiWindow::eventUpdate(windowEvent);
-
-		auto& io = ImGui::GetIO();
-
+	void VinlandWindow::imGuiEventUpdate(const SDL_Event& windowEvent) {
 		switch (windowEvent.type) {
 			case SDL_WINDOWEVENT:
 				switch (windowEvent.window.event) {
@@ -223,19 +219,13 @@ namespace vin {
 			case SDL_MOUSEBUTTONDOWN: [[fallthrough]];
 			case SDL_MOUSEMOTION: [[fallthrough]];
 			case SDL_MOUSEWHEEL:
-				if (!io.WantCaptureMouse) {
-					hexCanvas_.eventUpdate(windowEvent);
-				}
+				hexCanvas_.eventUpdate(windowEvent);
 				break;
 			case SDL_KEYUP:
-				if (!io.WantCaptureKeyboard) {
-					hexCanvas_.eventUpdate(windowEvent);
-				}
+				hexCanvas_.eventUpdate(windowEvent);
 				break;
 			case SDL_KEYDOWN:
-				if (!io.WantCaptureKeyboard) {
-					hexCanvas_.eventUpdate(windowEvent);
-				}
+				hexCanvas_.eventUpdate(windowEvent);
 				actionManager_.update(windowEvent.key.keysym.sym);
 				switch (windowEvent.key.keysym.sym) {
 					case SDLK_ESCAPE:
@@ -419,22 +409,22 @@ namespace vin {
 	}
 
 
-	void VinlandWindow::imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
+	void VinlandWindow::imGuiPreUpdate(const sdl::DeltaTime& deltaTime) {
 		shader_.useProgram();
+		auto& io = ImGui::GetIO();
+		glViewport(0, 0, getWidth(), getHeight() - 200);
 		hexCanvas_.drawCanvas(shader_, deltaTime);
 	}
 
-	void VinlandWindow::imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) {
-		//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
+	void VinlandWindow::imGuiUpdate(const sdl::DeltaTime& deltaTime) {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
-		//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
-		//ImGui::PushStyleColor(ImGuiCol_WindowBg, {1.f, 1.f, 1.f, 0.f});
 
-		ImGui::SetNextWindowPos({0.f, 0.f});
-		auto [width, height] = sdl::Window::getSize();
+		const auto& viewPort = *ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewPort.Pos);
+		ImGui::SetNextWindowSize(viewPort.Size);
 
 		float hexWindowHeight = 200.f;
-		ImGui::SetNextWindowSize({(float) width, hexWindowHeight});
+		ImGui::SetNextWindowSize({(float) viewPort.Size.x, hexWindowHeight});
 
 		ImGui::Window("Main", nullptr, ImGuiNoWindow, [&]() {
 			showMenuBar();
@@ -442,13 +432,12 @@ namespace vin {
 			drawHexTypesButtons();
 		});
 
-		if (auto canvasHeight = static_cast<float>(height) - hexWindowHeight;
+		if (auto canvasHeight = static_cast<float>(viewPort.Size.y) - hexWindowHeight;
 			canvasHeight > 0) {
 			
-			hexCanvas_.updateCanvasSize({0.f, 0.f}, {width, canvasHeight});
+			hexCanvas_.updateCanvasSize({0.f, 0.0f}, {viewPort.Size.x, canvasHeight});
 		}
 		
-		//ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
 	}
 

@@ -118,7 +118,7 @@ namespace vin {
 		bool lastAllowed_{};
 		TileLexicon tileLexicon_;
 
-		Vec2 sdlMousePos{};
+		Vec2 sdlMousePos_{};
 		Camera camera_;
 
 		ViewPort viewPort_{};

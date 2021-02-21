@@ -104,8 +104,7 @@ namespace vin {
 	}
 
 	hex::Hexi HexCanvas::getHexFromMouse() const {
-		ImVec2 pos = ImGui::GetMousePos();
-		auto result = deviceCoordToClipSpace(viewPort_, sdlMousePos);
+		auto result = deviceCoordToClipSpace(viewPort_, sdlMousePos_);
 		Vec4 result2 = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result, 0.1f, 1.f };
 		return worldToHex({result2.x, result2.y});
 	}
@@ -306,7 +305,7 @@ namespace vin {
 			break;
 			case SDL_MOUSEMOTION:
 			{
-				sdlMousePos = {windowEvent.motion.x, windowEvent.motion.y};
+				sdlMousePos_ = {windowEvent.motion.x, windowEvent.motion.y};
 				if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {
 					auto result = screenDeltaPosToWorld({windowEvent.motion.xrel, windowEvent.motion.yrel * viewPort_.size.x / viewPort_.size.y});
 					camera_.move(result);

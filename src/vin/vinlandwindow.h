@@ -37,10 +37,10 @@ namespace vin {
 
 		void initOpenGl() override;
 
-		void imGuiPreUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) override;
-		void imGuiUpdate(const std::chrono::high_resolution_clock::duration& deltaTime) override;
+		void imGuiPreUpdate(const sdl::DeltaTime& deltaTime) override;
+		void imGuiUpdate(const sdl::DeltaTime& deltaTime) override;
 
-		void eventUpdate(const SDL_Event& windowEvent) override;
+		void imGuiEventUpdate(const SDL_Event& windowEvent) override;
 
 		void drawHexTypesButtons();
 

@@ -77,7 +77,13 @@ set(SOURCES
 	src/vin/vinlandwindow.h
 
 	ExternalFetchContent.cmake
+	CPack.cmake
+	vcpkg.json
 )
+
+if (MSVC)
+	configure_file(properties.rc ${CMAKE_CURRENT_BINARY_DIR}/properties.rc)
+endif ()
 
 find_package(Threads REQUIRED)
 find_package(fmt CONFIG REQUIRED)
@@ -117,7 +123,17 @@ file(COPY ${VinlandVikingsData_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BIN
 file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_BINARY_DIR}/installer/icon.ico DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(VinlandVikings ${SOURCES})
+if (MSVC)
+	add_executable(VinlandVikings
+		${SOURCES}
+		${CMAKE_CURRENT_BINARY_DIR}/properties.rc
+		${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
+	)
+else ()
+	add_executable(VinlandVikings
+		${SOURCES}
+	)
+endif ()
 
 extract_git_hash()
 create_guid()
@@ -158,11 +174,6 @@ if (MSVC)
 	message(STATUS "Hide terminal: -DHideTerminal=1")
 	option(HideTerminal "Hide terminal" OFF)
 	set_target_properties(VinlandVikings PROPERTIES WIN32_EXECUTABLE ${HideTerminal})
-
-	target_sources(VinlandVikings
-		PRIVATE
-			${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
-	)
 endif ()
 
 find_path(CLARA_INCLUDE_DIRS "clara.hpp")
