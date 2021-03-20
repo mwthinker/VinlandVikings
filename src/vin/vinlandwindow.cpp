@@ -9,59 +9,13 @@
 
 namespace fs = std::filesystem;
 
-using nlohmann::json;
-
-namespace vin::hex {
-
-	NLOHMANN_JSON_SERIALIZE_ENUM(hex::HexSide, {
-		{hex::HexSide::Forest, "WATER"},
-		{hex::HexSide::Grass, "GRASS"},
-		{hex::HexSide::Mountain, "MOUNTAIN"},
-		{hex::HexSide::Water, "WATER"},
-		{hex::HexSide::None, "NONE"}
-	})
-
-	void to_json(json& j, const Hexi& hex) {
-		j = json{{"q", hex.q()}, {"r", hex.r()}};
-	}
-
-	void from_json(const json& json, Hexi& hex) {
-		hex = Hexi{json["q"].get<Hexi::value_type>(), json["r"].get<Hexi::value_type>()};
-	}
-
-	void to_json(json& j, const Tile& tile) {
-		for (const auto& side : tile) {
-			j.push_back(side);
-		}
-	}
-
-	void from_json(const json& json, Tile& tile) {
-		for (int i = 0; i < 6; ++i) {
-			tile[i] = json[i].get<HexSide>();
-		}
-	}
-
-	void to_json(json& json, const TileBoard& tileBoard) {
-		for (const auto& [hex, tile] : tileBoard) {
-			json.push_back({{"hex", hex}, {"tile", tile}});
-		}
-	}
-
-	void from_json(const json& json, TileBoard& tileBoard) {
-		for (const auto& tileHex : json) {
-			tileBoard.put(tileHex["hex"].get<hex::Hexi>(), tileHex["tile"].get<hex::Tile>());
-		}
-	}
-
-}
-
 namespace vin {
 
 	namespace {
 
 		const ImGuiWindowFlags ImGuiNoWindow = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoMove;
 
-		constexpr std::string_view IMAGE_TILES_FOLDER = "imageTiles";
+		constexpr std::string_view ImageTilesFolder = "imageTiles";
 
 		void HelpMarker(const std::string& text) {
 			if (ImGui::IsItemHovered()) {
@@ -86,7 +40,7 @@ namespace vin {
 			std::vector<std::string> files;
 			try {
 				std::regex jsonRegex{regexStr};
-				for (auto p : fs::recursive_directory_iterator(IMAGE_TILES_FOLDER)) {
+				for (auto p : fs::recursive_directory_iterator(ImageTilesFolder)) {
 					auto pathStr = p.path().string();
 					if (std::regex_match(pathStr, jsonRegex)) {
 						std::replace(pathStr.begin(), pathStr.end(), '\\', '/');
@@ -109,36 +63,9 @@ namespace vin {
 
 		const std::string IconFile = "icon.ico";
 
-		constexpr const char* POPUP_ADDHEXIMAGE = "Add Hex Image";
-		constexpr const char* POPUP_HELP = "Help";
-		constexpr const char* POPUP_ABOUT = "About";
-
-		void save(const std::string& file, const HexCanvas& hexCanvas) {
-			spdlog::info("[HexData] Current working directory {}", std::filesystem::current_path().string());
-
-
-			/*if (std::filesystem::exists("USE_APPLICATION_JSON")) {
-				jsonPath_ = jsonFile;
-			} else {
-				// Find default path to save/load file from.
-				jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + jsonFile;
-			}*/
-
-			const auto& snapshot = hexCanvas.getSnapshot();
-
-			json json;
-			json["tileboard"] = snapshot.tileBoard;
-
-			std::ofstream output{file};
-			output << json.dump(4);
-		}
-
-		hex::TileBoard load(const std::string& file) {
-			json json;
-			std::ifstream input{file};
-			input >> json;
-			return json.get<hex::TileBoard>();
-		}
+		constexpr const char* PopUpAddHexImage = "Add Hex Image";
+		constexpr const char* PopUpHelp = "Help";
+		constexpr const char* PopUpAbout = "About";
 
 	}
 
@@ -279,7 +206,7 @@ namespace vin {
 		});
 
 		if (popup) {
-			ImGui::OpenPopup(POPUP_ADDHEXIMAGE);
+			ImGui::OpenPopup(PopUpAddHexImage);
 		}
 	}
 
@@ -323,10 +250,10 @@ namespace vin {
 		});
 
 		if (popupHelp) {
-			ImGui::OpenPopup(POPUP_HELP);
+			ImGui::OpenPopup(PopUpHelp);
 		}
 		if (popupAbout) {
-			ImGui::OpenPopup(POPUP_ABOUT);
+			ImGui::OpenPopup(PopUpAbout);
 		}
 	}
 
@@ -346,7 +273,7 @@ namespace vin {
 
 	void VinlandWindow::showAddHexImagePopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
-		ImGui::PopupModal(POPUP_ADDHEXIMAGE, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
+		ImGui::PopupModal(PopUpAddHexImage, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n");
 			ImGui::Separator();
 
@@ -372,7 +299,7 @@ namespace vin {
 
 	void VinlandWindow::showHelpPopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
-		ImGui::PopupModal(POPUP_HELP, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
+		ImGui::PopupModal(PopUpHelp, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("KEYS:");
 			ImGui::Text("ARROWS - Move window");
 			ImGui::Text("PAGE_DOWN/UP - Tilt camera");
@@ -393,7 +320,7 @@ namespace vin {
 	
 	void VinlandWindow::showAboutPopup() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{10, 10});
-		ImGui::PopupModal(POPUP_ABOUT, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
+		ImGui::PopupModal(PopUpAbout, nullptr, ImGuiWindowFlags_AlwaysAutoResize, [&]() {
 			ImGui::Text("Vinland Vikings");
 			ImGui::NewLine();
 						

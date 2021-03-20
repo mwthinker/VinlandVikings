@@ -10,35 +10,72 @@
 
 #include <spdlog/spdlog.h>
 
+#include <nlohmann/json.hpp>
+
 using json = nlohmann::json;
+
+namespace vin::hex {
+
+	NLOHMANN_JSON_SERIALIZE_ENUM(hex::HexSide, {
+		{hex::HexSide::None, "NONE"},
+		{hex::HexSide::Mountain, "MOUNTAIN"},
+		{hex::HexSide::Grass, "GRASS"},
+		{hex::HexSide::Water, "WATER"},
+		{hex::HexSide::Forest, "FOREST"}
+	})
+
+	void to_json(json& j, const Hexi& hex) {
+		j = json{{"q", hex.q()}, {"r", hex.r()}};
+	}
+
+	void from_json(const json& json, Hexi& hex) {
+		hex = Hexi{json["q"].get<Hexi::value_type>(), json["r"].get<Hexi::value_type>()};
+	}
+
+	void to_json(json& j, const Tile& tile) {
+		for (const auto& side : tile) {
+			j.push_back(side);
+		}
+	}
+
+	void from_json(const json& json, Tile& tile) {
+		for (int i = 0; i < 6; ++i) {
+			tile[i] = json[i].get<HexSide>();
+		}
+	}
+
+	void to_json(json& json, const TileBoard& tileBoard) {
+		for (const auto& [hex, tile] : tileBoard) {
+			json.push_back({{"hex", hex}, {"tile", tile}});
+		}
+	}
+
+	void from_json(const json& json, TileBoard& tileBoard) {
+		for (const auto& tileHex : json) {
+			tileBoard.put(tileHex["hex"].get<hex::Hexi>(), tileHex["tile"].get<hex::Tile>());
+		}
+	}
+
+}
 
 namespace vin {
 
 	namespace {
 
-		NLOHMANN_JSON_SERIALIZE_ENUM(hex::HexSide, {
-			{hex::HexSide::Forest, "WATER"},
-			{hex::HexSide::Grass, "GRASS"},
-			{hex::HexSide::Mountain, "MOUNTAIN"},
-			{hex::HexSide::Water, "WATER"},
-			{hex::HexSide::None, "NONE"}
-		})
+		struct Image {
+			sdl::Texture texture;
+			float x;
+			float y;
+			float dx;
+			float dy;
+		};
 
 	}
 
-	Configuration& Configuration::getInstance() {
-		static Configuration configuration;
-		return configuration;
-	}
-
-	Configuration::Configuration() {
-	}
-
-	void Configuration::load(const std::string& jsonFile) {
-		clear();
-
+	void save(const std::string& file, const HexCanvas& hexCanvas) {
 		spdlog::info("[HexData] Current working directory {}", std::filesystem::current_path().string());
-		jsonPath_ = jsonFile;
+
+
 		/*if (std::filesystem::exists("USE_APPLICATION_JSON")) {
 			jsonPath_ = jsonFile;
 		} else {
@@ -46,34 +83,79 @@ namespace vin {
 			jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + jsonFile;
 		}*/
 
-		std::ifstream input{jsonPath_, std::ios::in | std::ios::binary};
+		const auto& snapshot = hexCanvas.getSnapshot();
+
+		json json;
+		json["tileboard"] = snapshot.tileBoard;
+
+		std::ofstream output{file};
+		output << json.dump(4);
+	}
+
+	hex::TileBoard load(const std::string& file) {
+		json json;
+		std::ifstream input{file};
+		input >> json;
+		return json.get<hex::TileBoard>();
+	}
+
+	struct Configuration::Impl {
+		std::string jsonPath;
+		std::map<std::string, sdl::Sound> sounds;
+		std::map<std::string, sdl::Font> fonts;
+		std::map<std::string, Image> images;
+		nlohmann::ordered_json config;
+	};
+
+	Configuration& Configuration::getInstance() {
+		static Configuration configuration;
+		return configuration;
+	}
+
+	Configuration::Configuration()
+		: impl_{std::make_unique<Impl>()} {
+	}
+
+	void Configuration::load(const std::string& jsonFile) {
+		clear();
+
+		spdlog::info("[HexData] Current working directory {}", std::filesystem::current_path().string());
+		impl_->jsonPath = jsonFile;
+		/*if (std::filesystem::exists("USE_APPLICATION_JSON")) {
+			jsonPath_ = jsonFile;
+		} else {
+			// Find default path to save/load file from.
+			jsonPath_ = SDL_GetPrefPath("mwthinker", "VinlandVikings") + jsonFile;
+		}*/
+
+		std::ifstream input{impl_->jsonPath, std::ios::in | std::ios::binary};
 		if (!input.is_open()) {
 			// Assume that the file does not exist, load file from application folder.
-			input = std::ifstream{jsonPath_, std::ios::in | std::ios::binary};
+			input = std::ifstream{impl_->jsonPath, std::ios::in | std::ios::binary};
 		}
 
-		input >> config_;
+		input >> impl_->config;
 	}
 
 	void Configuration::save() {
 	}
 
 	const sdl::Font& Configuration::loadFont(const std::string& file, int fontSize) {
-		auto size = fonts_.size();
+		auto size = impl_->fonts.size();
 		std::string key = file;
 		key += fontSize;
-		sdl::Font& font = fonts_[key];
-		if (fonts_.size() > size) {
+		sdl::Font& font = impl_->fonts[key];
+		if (impl_->fonts.size() > size) {
 			font = sdl::Font{file, fontSize};
 		}
 		return font;
 	}
 
 	sdl::TextureView Configuration::loadSprite(const std::string& file) {
-		size_t size = images_.size();
-		auto& image = images_[file];
+		size_t size = impl_->images.size();
+		auto& image = impl_->images[file];
 		
-		if (images_.size() > size) {
+		if (impl_->images.size() > size) {
 			sdl::Surface surface{file};
 			image.texture.generate();
 			image.texture.texImage(sdl::Surface{file});
@@ -85,13 +167,13 @@ namespace vin {
 
 	std::vector<HexImage> Configuration::loadHexImages() {
 		std::vector<HexImage> hexImages;
-		auto hexTiles = config_["hex_image_tiles"];
+		auto hexTiles = impl_->config["hex_image_tiles"];
 
 		for (const auto& tile : hexTiles) {
 			auto filename = fmt::format("imageTiles/{}", tile["image"].get<std::string>());
 			loadSprite(filename);
 
-			const auto& image = images_[filename];
+			const auto& image = impl_->images[filename];
 			float size = tile["size"].get<float>();
 			bool flat = tile["flat"].get<bool>();
 
@@ -102,7 +184,7 @@ namespace vin {
 			
 			hex::Tile hexTile;
 			for (int i = 0; i < 6; ++i) {
-				hexTile[i] = tile["sides"][i].get<hex::HexSide>();
+				hexTile[i] = static_cast<hex::HexSide>(tile["sides"][i].get<int>());
 			}
 
 			float width = size;
@@ -117,18 +199,19 @@ namespace vin {
 	}
 
 	const sdl::Font& Configuration::getDefaultFont(int size) {
-		return {};
+		static sdl::Font font;
+		return font;
 	}
 
 	const std::string& Configuration::getLoadedFilename() const {
-		return jsonPath_;
+		return impl_->jsonPath;
 	}
 
 	void Configuration::clear() {
-		jsonPath_ = "";
-		sounds_.clear();
-		fonts_.clear();
-		images_.clear();
+		impl_->jsonPath = "";
+		impl_->sounds.clear();
+		impl_->fonts.clear();
+		impl_->images.clear();
 	}
 
 }
