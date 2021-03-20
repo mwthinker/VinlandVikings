@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 # 3.14 support for Visual Studio 2019
 
 set(VCPKG_ROOT $ENV{VCPKG_ROOT})
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+if (DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 	set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 		CACHE STRING ""
 	)
@@ -21,10 +21,6 @@ project(VinlandVikings
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-if (MSVC)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4275") # non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
-endif ()
 
 set(SOURCES
 	src/vin/hex/hash.h
@@ -160,6 +156,7 @@ endif ()
 if (MSVC)
 	target_compile_definitions(VinlandVikings
 		PUBLIC
+			NOMINMAX
 			_CRT_SECURE_NO_WARNINGS
 	)
 

@@ -69,12 +69,12 @@ namespace vin {
 		dirty_ = true;
 	}
 
-	void TilesGraphic::fillTile(hex::Hexi hex, const Color& color) {
+	void TilesGraphic::fillTile(hex::Hexi hex, Color color) {
 		hexImages_[hex] = SpriteTile{HexImage{"", {}, {}, true}};
 		dirty_ = true;
 	}
 
-	void TilesGraphic::fill(const Color& color) {
+	void TilesGraphic::fill(Color color) {
 		color_ = color;
 		for (auto& [hex, hexImage] : hexImages_) {
 			hexImage = SpriteTile{HexImage{"", {}, {}, true}};
@@ -89,7 +89,7 @@ namespace vin {
 		dirty_ = true;
 	}
 
-	void TilesGraphic::fillGrid(hex::Hexi hex, const Color& color) {
+	void TilesGraphic::fillGrid(hex::Hexi hex, Color color) {
 		hexImages_[hex] = SpriteTile{HexImage{"", {}, {}, true}};
 		dirty_ = true;
 	}

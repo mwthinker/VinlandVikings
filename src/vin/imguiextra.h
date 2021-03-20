@@ -17,11 +17,8 @@ namespace ImGui {
 
 	bool MenuItem(vin::Action& action);
 
-	bool ManButton(const char* idStr, int& nbr, int max, const sdl::TextureView& noMan, const sdl::TextureView& man,
-		const vin::Vec2& size = {64.f, 64.f}, const sdl::Color& color = sdl::White);
-
-	void LoadingBar(const sdl::Color& color1 = {0.8f, 0.8f, 0.8f, 1.f},
-		const sdl::Color& color2 = {0.5f, 0.5f, 0.5f, 1.f},
+	void LoadingBar(vin::Color color1 = vin::Color{0.8f, 0.8f, 0.8f, 1.f},
+		vin::Color color2 = vin::Color{0.5f, 0.5f, 0.5f, 1.f},
 		const vin::Vec2& size = {150.f, 25.f});
 
 }

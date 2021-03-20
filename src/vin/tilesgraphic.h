@@ -35,11 +35,11 @@ namespace vin {
 		bool isXYCoords() const;
 
 		void fillTile(hex::Hexi hex, const SpriteTile& tile);
-		void fillTile(hex::Hexi hex, const Color& color);
+		void fillTile(hex::Hexi hex, Color color);
 
-		void fill(const Color& color);
+		void fill(Color color);
 		void fill(const SpriteTile& tile);
-		void fillGrid(hex::Hexi hex, const Color& color);
+		void fillGrid(hex::Hexi hex, Color color);
 
 		void clearTile(hex::Hexi hex);
 

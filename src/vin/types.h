@@ -27,13 +27,13 @@ namespace vin {
 
 	using Color = sdl::Color;
 
-	static const Color White = {1.f, 1.f, 1.f, 1.f};
-	static const Color Blck = {0.f, 0.f, 0.f, 1.f};
-	static const Color Red = {1.f, 0.f, 0.f, 1.f};
-	static const Color Green = {0.f, 1.f, 0.f, 1.f};
-	static const Color Blue = {0.f, 0.f, 1.f, 1.f};
-	static const Color Cyan = {0.f, 1.f, 1.f, 1.f};
-	static const Color Orange = {1.f, 0.6471f, 0.f, 1.f};
+	static constexpr Color White = sdl::color::html::White;
+	static constexpr Color Black = sdl::color::html::Black;
+	static constexpr Color Red = sdl::color::Red;
+	static constexpr Color Green = sdl::color::Green;
+	static constexpr Color Blue = sdl::color::Blue;
+	static constexpr Color Cyan = sdl::color::html::Cyan;
+	static constexpr Color Orange = sdl::color::html::Orange;
 	
 	template <class T>
 	Vec2 castFloat(const T& t) {
