@@ -140,21 +140,18 @@ namespace vin {
 		}
 	}
 
-	void HexCanvas::drawCanvas(const sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime) {
+	void HexCanvas::drawCanvas(sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime) {
 		glEnable(GL_BLEND);
 		glBlendEquation(GL_FUNC_ADD);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		Mat4 model{1};
-		graphic_.clearDraw();
-		graphic_.pushMatrix(projection_ * camera_.getView() * model);
-
-		tilesGraphic_.setMatrix(projection_ * camera_.getView() * model);
-		addMouseHexToGraphic();
-		graphic_.pushMatrix(projection_);
-
+		tilesGraphic_.setMatrix(projection_ * camera_.getView());
 		tilesGraphic_.draw(shader);
-		graphic_.draw(shader);
+
+		graphic_.clear();
+		graphic_.setMatrix(projection_* camera_.getView());
+		addMouseHexToGraphic();
+		graphic_.upload(shader);
 	}
 
 	Deck HexCanvas::getDeck() const {

@@ -1,7 +1,7 @@
 #ifndef VINLANDVIKINGS_VIN_TILESGRAPHIC_H
 #define VINLANDVIKINGS_VIN_TILESGRAPHIC_H
 
-#include "graphic.h"
+
 #include "heximage.h"
 #include "hex/hex.h"
 #include "types.h"
@@ -10,6 +10,7 @@
 #include "tilelexicon.h"
 
 #include <sdl/color.h>
+#include <sdl/graphic.h>
 
 #include <unordered_map>
 
@@ -17,8 +18,8 @@ namespace vin {
 
 	class TilesGraphic {
 	public:
-		using Map = std::map<hex::Hexi, SpriteTile, hex::HexComparator>;
-		//using Map = std::unordered_map<hex::Hexi, SpriteTile>;
+		//using Map = std::map<hex::Hexi, SpriteTile, hex::HexComparator>;
+		using Map = std::unordered_map<hex::Hexi, SpriteTile>;
 
 		TilesGraphic(const HexDimension& dimension, const Mat2& hexToWorld);
 
@@ -45,7 +46,7 @@ namespace vin {
 
 		void clear();
 
-		void draw(const sdl::Shader& shader);
+		void draw(sdl::Shader& shader);
 
 		void setMatrix(const Mat4& mat);
 
@@ -66,7 +67,6 @@ namespace vin {
 		Vec2 hexToWorld(hex::Hexi pos) const;
 
 		float angle_{Pi / 3};
-		bool dirty_{true};
 		bool grid_{true};
 		bool hexCoord_{false};
 		bool xyCoord_{false};
@@ -75,7 +75,7 @@ namespace vin {
 		HexDimension hexDimension_;
 		Mat2 hexToWorld_{1};
 		Mat4 worldToScreen_{1};
-		Graphic graphic_;
+		sdl::Graphic graphic_;
 		Map hexImages_;
 	};
 	

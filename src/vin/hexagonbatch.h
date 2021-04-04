@@ -18,9 +18,9 @@ namespace vin {
 
 		virtual ~HexagonBatch() = default;
 
-		void init(const sdl::Shader& shader);
+		void init(sdl::Shader& shader);
 
-		void draw(const sdl::Shader& shader) const;
+		void draw(sdl::Shader& shader);
 
 		void uploadToGraphicCard();
 

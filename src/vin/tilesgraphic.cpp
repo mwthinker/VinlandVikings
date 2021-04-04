@@ -5,19 +5,6 @@
 
 namespace vin {
 
-	namespace {
-
-		template <class T>
-		bool updateValue(T& value, T newValue) {
-			if (value != newValue) {
-				value = newValue;
-				return true;
-			}
-			return false;
-		}
-
-	}
-
 	TilesGraphic::TilesGraphic(const HexDimension& dimension, const Mat2& hexToWorld)
 		: hexDimension_{dimension}
 		, hexToWorld_{hexToWorld} {
@@ -33,7 +20,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setAngle(float angle) {
-		dirty_ |= updateValue(angle_, angle);
+		angle_ = angle;
 	}
 
 	float TilesGraphic::getAngle() const {
@@ -41,7 +28,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setGrid(bool grid) {
-		dirty_ |= updateValue(grid_, grid);
+		grid_ = grid;
 	}
 
 	bool TilesGraphic::isGrid() const {
@@ -49,7 +36,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setHexCoords(bool hexCoord) {
-		dirty_ |= updateValue(hexCoord_, hexCoord);
+		hexCoord_ = hexCoord;
 	}
 
 	bool TilesGraphic::isHexCoords() const {
@@ -57,7 +44,7 @@ namespace vin {
 	}
 
 	void TilesGraphic::setXYCoords(bool xyCoord) {
-		dirty_ |= updateValue(xyCoord_, xyCoord);
+		xyCoord_ = xyCoord;
 	}
 
 	bool TilesGraphic::isXYCoords() const {
@@ -66,12 +53,10 @@ namespace vin {
 
 	void TilesGraphic::fillTile(hex::Hexi hex, const SpriteTile& tile) {
 		hexImages_[hex] = tile;
-		dirty_ = true;
 	}
 
 	void TilesGraphic::fillTile(hex::Hexi hex, Color color) {
 		hexImages_[hex] = SpriteTile{HexImage{"", {}, {}, true}};
-		dirty_ = true;
 	}
 
 	void TilesGraphic::fill(Color color) {
@@ -79,52 +64,38 @@ namespace vin {
 		for (auto& [hex, hexImage] : hexImages_) {
 			hexImage = SpriteTile{HexImage{"", {}, {}, true}};
 		}
-		dirty_ = true;
 	}
 
 	void TilesGraphic::fill(const SpriteTile& tile) {
 		for (auto& [hex, mapTile] : hexImages_) {
 			mapTile = tile;
 		}
-		dirty_ = true;
 	}
 
 	void TilesGraphic::fillGrid(hex::Hexi hex, Color color) {
 		hexImages_[hex] = SpriteTile{HexImage{"", {}, {}, true}};
-		dirty_ = true;
 	}
 
 	void TilesGraphic::clearTile(hex::Hexi hex) {
-		auto size = hexImages_.size();
-		if (size != hexImages_.erase(hex)) {
-			dirty_ = true;
-		}
+		hexImages_.erase(hex);
 	}
 
 	void TilesGraphic::clear() {
 		hexImages_.clear();
-		graphic_.clearDraw();
-		dirty_ = true;
+		graphic_.clear();
 	}
 
-	void TilesGraphic::draw(const sdl::Shader& shader) {
-		if (dirty_) {
-			spdlog::debug("[TilesGraphic] State dirty");
-			graphic_.clearDraw();
-			graphic_.setMatrix(worldToScreen_);
+	void TilesGraphic::draw(sdl::Shader& shader) {
+		graphic_.clear();
+		graphic_.setMatrix(worldToScreen_);
 			
-			drawColor(shader);
-			drawGrid(shader);
-			drawWorld(shader);
-			drawHexCoord(shader);
-			drawXYCoord(shader);
-
-			dirty_ = false;
-		} else {
-			graphic_.setMatrix(worldToScreen_);
-		}
+		drawColor(shader);
+		drawGrid(shader);
+		drawWorld(shader);
+		drawHexCoord(shader);
+		drawXYCoord(shader);
 		
-		graphic_.draw(shader);
+		graphic_.upload(shader);
 	}
 
 	void TilesGraphic::drawColor(const sdl::Shader& shader) {
@@ -178,7 +149,6 @@ namespace vin {
 
 	void TilesGraphic::setMap(const Map& map) {
 		hexImages_ = map;
-		dirty_ = true;
 	}
 
 	SpriteTile TilesGraphic::getTile(const hex::Hexi& hex) const {

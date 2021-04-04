@@ -7,7 +7,6 @@
 #include "hex/hexagon.h"
 #include "hex/tileboard.h"
 #include "heximage.h"
-#include "graphic.h"
 #include "camera.h"
 #include "tilesgraphic.h"
 #include "hex/mapgenerator.h"
@@ -16,7 +15,7 @@
 #include "logger.h"
 #include "deck.h"
 
-#include <sdl/shader.h>
+#include <sdl/graphic.h>
 #include <sdl/sprite.h>
 #include <sdl/vertexarrayobject.h>
 
@@ -39,7 +38,7 @@ namespace vin {
 	public:
 		HexCanvas();
 
-		void drawCanvas(const sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime);
+		void drawCanvas(sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime);
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
@@ -107,7 +106,7 @@ namespace vin {
 		bool activateHexagon_;
 		hex::TileBoard tileBoard_;
 		HexagonBatch hexagonBatch_;
-		Graphic graphic_;
+		sdl::Graphic graphic_;
 		Mat2 hexToWorldModel_;
 
 		SpriteTile currentTile_;

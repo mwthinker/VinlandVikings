@@ -42,8 +42,6 @@ set(SOURCES
 	src/vin/camera.h
 	src/vin/commandmanager.h
 	src/vin/deck.h
-	src/vin/graphic.cpp
-	src/vin/graphic.h
 	
 	src/vin/action.cpp
 	src/vin/action.h

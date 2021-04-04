@@ -1,15 +1,8 @@
 #include "batchmanager.h"
 
-#include "graphic.h"
 #include "hex/hexagon.h"
 
-namespace vin {	
-
-	namespace {
-
-
-
-	}
+namespace vin {
 	
 	BatchManager::BatchManager() {
 	}
