@@ -39,8 +39,6 @@ namespace vin {
 		}
 
 		Mat4 ortho(const ViewPort& viewPort, float zoom) {
-			const auto& x = viewPort.pos.x;
-			const auto& y = viewPort.pos.y;
 			const auto& w = viewPort.size.x;
 			const auto& h = viewPort.size.y;
 			auto projection = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);

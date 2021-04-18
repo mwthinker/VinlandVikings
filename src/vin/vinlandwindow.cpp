@@ -338,7 +338,6 @@ namespace vin {
 
 	void VinlandWindow::imGuiPreUpdate(const sdl::DeltaTime& deltaTime) {
 		shader_.useProgram();
-		auto& io = ImGui::GetIO();
 		glViewport(0, 0, getWidth(), getHeight() - 200);
 		hexCanvas_.drawCanvas(shader_, deltaTime);
 	}

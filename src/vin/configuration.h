@@ -47,7 +47,7 @@ namespace vin {
 
 		void clear();
 
-		class Impl;
+		struct Impl;
 		std::unique_ptr<Impl> impl_;
 	};
 

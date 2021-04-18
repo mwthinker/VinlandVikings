@@ -36,8 +36,8 @@ namespace vin {
 		: callback_{callback}
 		, key_{key}
 		, menuName_{menuName}
-		, shortcut_{shortcut(key)}
-		, checkboxMenuName_{addKey(menuName, key)} {
+		, checkboxMenuName_{addKey(menuName, key)}
+		, shortcut_{shortcut(key)} {
 	}
 
 	Action::Action(SDL_Keycode key1, SDL_Keycode key2, const std::string& menuName, const Callback& callback)
@@ -45,8 +45,8 @@ namespace vin {
 		, key_{key1}
 		, key2_{key2}
 		, menuName_{menuName}
-		, shortcut_{shortcut(key1, key2)}
-		, checkboxMenuName_{addKey(menuName, key1, key2)} {
+		, checkboxMenuName_{addKey(menuName, key1, key2)}
+		, shortcut_{shortcut(key1, key2)} {
 	}
 
 	void Action::update(const SDL_Keycode& key) {

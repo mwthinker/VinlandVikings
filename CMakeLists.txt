@@ -36,8 +36,6 @@ set(SOURCES
 	src/vin/hex/shape.cpp
 	src/vin/hex/shape.h
 
-	src/vin/batchmanager.cpp
-	src/vin/batchmanager.h
 	src/vin/camera.cpp
 	src/vin/camera.h
 	src/vin/commandmanager.h
@@ -158,17 +156,21 @@ if (MSVC)
 			_CRT_SECURE_NO_WARNINGS
 	)
 
-	if (MSVC)
-		target_compile_options(VinlandVikings
-			PUBLIC
-				"/permissive-"
-				"/MP"
-		)
-	endif (MSVC)
+
+	target_compile_options(VinlandVikings
+		PUBLIC
+			/W3 /WX /permissive-
+			/MP
+	)
 	
 	message(STATUS "Hide terminal: -DHideTerminal=1")
 	option(HideTerminal "Hide terminal" OFF)
 	set_target_properties(VinlandVikings PROPERTIES WIN32_EXECUTABLE ${HideTerminal})
+else ()
+	target_compile_options(VinlandVikings
+		PRIVATE
+			-Wall -pedantic -Wcast-align -Woverloaded-virtual -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
+	)
 endif ()
 
 find_path(CLARA_INCLUDE_DIRS "clara.hpp")
