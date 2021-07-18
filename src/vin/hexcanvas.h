@@ -24,9 +24,12 @@
 
 namespace vin {
 
-	struct ViewPort {
-		Vec2 pos;
-		Vec2 size;
+	// In OpenGL coordinates, i.e. lower left screen is Origo and y is positive upwards on the screen.
+	struct Viewport {
+		int x;
+		int y;
+		int w;
+		int h;
 	};
 
 	struct CanvasSnapshot {
@@ -39,6 +42,12 @@ namespace vin {
 		HexCanvas();
 
 		void drawCanvas(sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime);
+
+		void zoom(float scale);
+
+		void move(float x, float y);
+
+		void tilt(float angle);
 
 		void eventUpdate(const SDL_Event& windowEvent);
 
@@ -77,7 +86,7 @@ namespace vin {
 		bool isGrid() const;
 
 		void clearAndGenerateMap();
-		void updateCanvasSize(const Vec2& pos, const Vec2& size);
+		void setSize(int width, int height, const Viewport& viewport);
 
 		void redo();
 		void undo();
@@ -87,6 +96,15 @@ namespace vin {
 		void setSnapshot(const CanvasSnapshot& snapshot);
 
 	private:
+		enum class Space {
+			World,
+			Camera,
+			Clip,
+			Screen
+		};
+
+		glm::mat4 getMatrix(Space from, Space to) const;
+
 		void addTileMapToGraphic();
 
 		hex::Hexi worldToHex(Vec2 pos) const;
@@ -94,9 +112,7 @@ namespace vin {
 
 		void addMouseHexToGraphic();
 
-		Vec2 screenDeltaPosToWorld(Vec2 pos);
-
-		hex::Hexi getHexFromMouse(Uint32 windowsId, int x, int y) const;
+		hex::Hexi getHexFromScreen(float x, float y) const;
 		hex::Hexi getHexFromMouse() const;
 
 		void rotateCurrentTile(hex::Hexi hex);
@@ -107,7 +123,7 @@ namespace vin {
 		hex::TileBoard tileBoard_;
 		HexagonBatch hexagonBatch_;
 		sdl::Graphic graphic_;
-		Mat2 hexToWorldModel_;
+		Mat2 hexToWorld_;
 
 		SpriteTile currentTile_;
 
@@ -117,10 +133,13 @@ namespace vin {
 		bool lastAllowed_{};
 		TileLexicon tileLexicon_;
 
-		Vec2 sdlMousePos_{};
-		Camera camera_;
+		Vec2 mousePos_{};
+		
+		Viewport viewport_{};
+		glm::mat4 screenToClip_;
+		glm::mat4 worldToCamera_;
+		glm::mat4 cameraToClip_;
 
-		ViewPort viewPort_{};
 		Mat4 projection_;
 		Deck deck_;
 

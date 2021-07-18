@@ -43,7 +43,7 @@ namespace vin {
 		void imGuiEventUpdate(const SDL_Event& windowEvent) override;
 
 		void drawHexTypesButtons();
-
+		
 		void showMenuBar();
 
 		void showAddHexImagePopup();

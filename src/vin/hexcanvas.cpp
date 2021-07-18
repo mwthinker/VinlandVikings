@@ -9,70 +9,51 @@ namespace vin {
 
 	namespace {
 
-		constexpr float normalizedDeviceCoordsToWindowCoords(float pos, float size, float normalizedPos) {
-			return (pos + 1.f) * size / 2.f + normalizedPos;;
-		}
-
-		Vec2 normalizedDeviceCoordsToWindowCoords(ViewPort viewPort, Vec2 normalizedDeviceCoord) {
-			float x = normalizedDeviceCoordsToWindowCoords(viewPort.pos.x, viewPort.size.x, normalizedDeviceCoord.x);
-			float y = normalizedDeviceCoordsToWindowCoords(viewPort.pos.y, viewPort.size.y, normalizedDeviceCoord.y);
-			return {x, y};
-		}
-
-		Vec2 viewPortCoordToClipSpace(const ViewPort& viewPort, Vec2 pos) {
-			return {(pos.x / viewPort.size.x - 0.5f) * 2.f, (pos.y / viewPort.size.y - 0.5f) * 2.f};
-		}
-
-		Vec2 sdlCoordToViewPortCoord(const ViewPort& viewPort, Vec2 pos) {
-			auto size = ImGui::GetIO().DisplaySize;
-			float x = viewPort.pos.x + pos.x;
-			float y = size.y - viewPort.pos.y - pos.y - 1;
-			return {x, y};
-		}
-
-		Vec2 deviceCoordToClipSpace(const ViewPort& viewPort, Vec2 pos) {
-			return viewPortCoordToClipSpace(viewPort, sdlCoordToViewPortCoord(viewPort, pos));
-		}
-
-		void glViewport(const ViewPort& viewPort) {
-			::glViewport(static_cast<GLint>(viewPort.pos.x), static_cast<GLint>(viewPort.pos.y), static_cast<GLint>(viewPort.size.x), static_cast<GLint>(viewPort.size.y));
-		}
-
-		Mat4 ortho(const ViewPort& viewPort, float zoom) {
-			const auto& w = viewPort.size.x;
-			const auto& h = viewPort.size.y;
-			auto projection = glm::ortho(-1.f, 1.f, -1.f * h / w, 1.f * h / w, -100.f, 100.f);
-			return glm::scale(projection, Vec3{zoom, zoom, 1});
-		}
-
 		constexpr HexDimension Dimension;
 
 		constexpr float ZoomMin = 0.02f;
 		constexpr float ZoomMax = 3.0f;
 
-		const sdl::Color ClearColor{0.6f, 0.6f, 0.6f, 0.6f};
+		constexpr auto ClearColor = sdl::color::html::DimGray;
+
+		constexpr auto InvalidHexColor = Color{1.f, 0, 0, 0.4f};
+
+		bool isMouseMiddleButtonDown() {
+			return SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+		}
 		
 	}
 
 	HexCanvas::HexCanvas()
-		: hexToWorldModel_{hex::createHexToCoordModel(Dimension.angle, Dimension.outerSize)}
-		, tilesGraphic_{Dimension, hexToWorldModel_}
+		: hexToWorld_{hex::createHexToCoordModel(Dimension.angle, Dimension.outerSize)}
+		, tilesGraphic_{Dimension, hexToWorld_}
 		, commandManager_{*this} {
 
 		auto hexes = hex::shape::createHex(10);
-		
+
 		tileBoard_ = hex::TileBoard(hexes.begin(), hexes.end());
 		for (const auto& [hex, tile] : tileBoard_) {
 			tilesGraphic_.fillGrid(hex, Red);
 		}
 		tilesGraphic_.fill(ClearColor);
+
+		worldToCamera_ = glm::mat4{1};
+		cameraToClip_ = glm::mat4{1};
 	}
 
-	void HexCanvas::updateCanvasSize(const Vec2& pos, const Vec2& size) {
-		viewPort_ = {pos, size};
+	void HexCanvas::setSize(int width, int height, const Viewport& viewport) {
+		viewport_ = viewport;
+		const float x = static_cast<float>(viewport.x);
+		const float y = static_cast<float>(viewport.y);
+		const float w = static_cast<float>(viewport.w);
+		const float h = static_cast<float>(viewport.h);
+		const float H = static_cast<float>(height);
+		const float aspect = w / h;
 
-		glViewport(viewPort_);
-		projection_ = ortho(viewPort_, zoom_);
+		screenToClip_ = glm::ortho(x, x + w, H - y, H - y - h);
+
+		const float delta = 30.f;
+		cameraToClip_ = glm::ortho(-delta * aspect, delta * aspect, -delta, delta, -100.f, 100.f);
 	}
 
 	void HexCanvas::addTileMapToGraphic() {
@@ -93,29 +74,24 @@ namespace vin {
 	}
 
 	hex::Hexi HexCanvas::worldToHex(Vec2 pos) const {
-		auto hex = glm::inverse<>(hexToWorldModel_) * pos;
+		auto hex = glm::inverse(hexToWorld_) * pos;
 		return hex::hexRound({hex.x, hex.y});
 	}
 
 	Vec2 HexCanvas::hexToWorld(hex::Hexi pos) const {
-		return hexToWorldModel_ * Vec2{pos.q(), pos.r()};
+		return hexToWorld_ * Vec2{pos.q(), pos.r()};
 	}
 
 	hex::Hexi HexCanvas::getHexFromMouse() const {
-		auto result = deviceCoordToClipSpace(viewPort_, sdlMousePos_);
-		Vec4 result2 = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result, 0.1f, 1.f };
-		return worldToHex({result2.x, result2.y});
+		return getHexFromScreen(mousePos_.x, mousePos_.y);
 	}
 
-	hex::Hexi HexCanvas::getHexFromMouse(Uint32 windowsId, int x, int y) const {
-		auto result = deviceCoordToClipSpace(viewPort_, {x, y});
-		Vec4 result2 = glm::inverse<>(projection_ * camera_.getView()) * Vec4 { result, 0.1f, 1.f };
-		return worldToHex({result2.x, result2.y});
-	}
-
-	Vec2 HexCanvas::screenDeltaPosToWorld(Vec2 pos) {
-		Vec4 rel{pos.x / -4.f / 100, pos.y / 4.f / 100, 0.f, 1.f};
-		return glm::inverse<>(projection_) * rel;
+	hex::Hexi HexCanvas::getHexFromScreen(float x, float y) const {
+		auto pos = getMatrix(Space::Screen, Space::Clip) * Vec4{x, y, 0, 1.f};
+		pos = getMatrix(Space::Clip, Space::World) * Vec4{pos.x, pos.y, 0.f, 1.f};
+		//auto pos = getMatrix(Space::Screen, Space::World) * Vec4{x, y, 0, 1.f};
+		//spdlog::warn("[getHexFromScreen] {},   {}", pos, getMatrix(Space::World, Space::Screen)* Vec4{pos.x, pos.y, 0, 1});
+		return worldToHex({pos.x, pos.y});
 	}
 
 	void HexCanvas::addMouseHexToGraphic() {
@@ -134,20 +110,23 @@ namespace vin {
 		}
 		graphic_.addHexagonImage(pos, Dimension.outerSize, currentTile_.sprite.sprite, rotation * Pi / 3 + Dimension.angle);
 		if (!tileBoard_.isAllowed(hex, currentTile_.tile)) {
-			graphic_.addFilledHexagon(pos, Dimension.outerSize, Color{1.f, 0, 0, 0.4f}, rotation * Pi / 3 + Dimension.angle);
+			graphic_.addFilledHexagon(pos, Dimension.outerSize, InvalidHexColor, rotation * Pi / 3 + Dimension.angle);
 		}
 	}
 
 	void HexCanvas::drawCanvas(sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime) {
+		glViewport(viewport_.x, viewport_.y, viewport_.w, viewport_.h);
+
 		glEnable(GL_BLEND);
 		glBlendEquation(GL_FUNC_ADD);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		tilesGraphic_.setMatrix(projection_ * camera_.getView());
+		auto matrix = getMatrix(Space::World, Space::Clip);
+		tilesGraphic_.setWorldToClip(matrix);
 		tilesGraphic_.draw(shader);
 
 		graphic_.clear();
-		graphic_.setMatrix(projection_* camera_.getView());
+		graphic_.setMatrix(matrix);
 		addMouseHexToGraphic();
 		graphic_.upload(shader);
 	}
@@ -176,18 +155,16 @@ namespace vin {
 
 	void HexCanvas::zoomIn() {
 		commandManager_.pushCommand([this]() {
-			zoom_ *= 1.25f;
-			zoom_ = std::clamp(zoom_, ZoomMin, ZoomMax);
-			spdlog::info("[HexCanvas] Zoom value: {}", zoom_);
+			zoom(1.25f);
+			spdlog::info("[HexCanvas] Zoom value");
 			return false;
 		});
 	}
 
 	void HexCanvas::zoomOut() {
 		commandManager_.pushCommand([this]() {
-			zoom_ *= 1 / 1.25f;
-			zoom_ = std::clamp(zoom_, ZoomMin, ZoomMax);
-			spdlog::info("[HexCanvas] Zoom value: {}", zoom_);
+			zoom(1.f / 1.25f);
+			spdlog::info("[HexCanvas] Zoom");
 			return false;
 		});
 	}
@@ -259,59 +236,123 @@ namespace vin {
 		tilesGraphic_.setMap(snapshot.tileMap);
 	}
 
+	glm::mat4 HexCanvas::getMatrix(Space from, Space to) const {
+		switch (from) {
+			case Space::World:
+				switch (to) {
+					case Space::Camera:
+						return worldToCamera_;
+					case Space::Clip:
+						return cameraToClip_ * worldToCamera_;
+					case Space::World:
+						return glm::mat4{1};
+					case Space::Screen:
+						return glm::inverse(screenToClip_) * cameraToClip_ * worldToCamera_;
+				}
+			case Space::Camera:
+				switch (to) {
+					case Space::Camera:
+						return glm::mat4{1};
+					case Space::Clip:
+						return cameraToClip_;
+					case Space::World:
+						return glm::inverse(worldToCamera_);
+					case Space::Screen:
+						return glm::inverse(screenToClip_) * cameraToClip_;
+				}
+			case Space::Clip:
+				switch (to) {
+					case Space::Camera:
+						return glm::inverse(cameraToClip_);
+					case Space::Clip:
+						return glm::mat4{1};
+					case Space::World:
+						return glm::inverse(worldToCamera_) * glm::inverse(cameraToClip_);
+					case Space::Screen:
+						return glm::inverse(screenToClip_);
+				}
+			case Space::Screen:
+				switch (to) {
+					case Space::Camera:
+						return glm::inverse(cameraToClip_) * screenToClip_;
+					case Space::Clip:
+						return screenToClip_;
+					case Space::World:
+						return glm::inverse(worldToCamera_) * glm::inverse(cameraToClip_) * screenToClip_;
+					case Space::Screen:
+						return glm::mat4{1};
+				}
+		}
+		return glm::mat4{1};
+	}
+
+	void HexCanvas::zoom(float scale) {
+		worldToCamera_ = glm::scale(worldToCamera_, Vec3{scale, scale, 1});
+	}
+
+	void HexCanvas::move(float x, float y) {
+		worldToCamera_ = glm::translate(worldToCamera_, Vec3{x, y, 0.f});
+	}
+
+	void HexCanvas::tilt(float angle) {
+		worldToCamera_ *= glm::rotate(angle, Vec3{1, 0, 0});
+	}
+
 	void HexCanvas::eventUpdate(const SDL_Event& windowEvent) {
 		switch (windowEvent.type) {
 			case SDL_MOUSEWHEEL:
-				if (windowEvent.wheel.y > 0) { // scroll up
-					zoom_ *= 1.1f;
-				} else if (windowEvent.wheel.y < 0) { // scroll down
-					zoom_ *= 1 / 1.1f;
+				if (windowEvent.wheel.y > 0) {
+					zoom(1.1f);
 				}
-				zoom_ = std::clamp(zoom_, ZoomMin, ZoomMax);
+				if (windowEvent.wheel.y < 0) {
+					zoom(0.9f);
+				}
 				break;
-			case SDL_KEYDOWN:
-			{
-				constexpr float STEP = 10.f;
+			case SDL_KEYDOWN: {
+				constexpr float Step = 10.f;
 				switch (windowEvent.key.keysym.sym) {
 					case SDLK_a:
 						//spdlog::debug("[HexCanvas] Future size: {}, History size: {}", future_.size(), history_.size());
 						break;
 					case SDLK_LEFT:
-						camera_.move({-STEP,0});
+						move(-Step, 0.f);
 						break;
 					case SDLK_RIGHT:
-						camera_.move({STEP,0});
+						move(Step, 0.f);
 						break;
 					case SDLK_UP:
-						camera_.move({0,STEP});
+						move(0, Step);
 						break;
 					case SDLK_DOWN:
-						camera_.move({0,-STEP});
+						move(0, -Step);
 						break;
 					case SDLK_PAGEUP:
-						camera_.angleDelta(-0.1f);
+						tilt(-0.1f);
 						break;
 					case SDLK_PAGEDOWN:
-						camera_.angleDelta(0.1f);
+						tilt(0.1f);
 						break;
 					break;
 				}
+				break;
 			}
-			break;
-			case SDL_MOUSEMOTION:
-			{
-				sdlMousePos_ = {windowEvent.motion.x, windowEvent.motion.y};
-				if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {
-					auto result = screenDeltaPosToWorld({windowEvent.motion.xrel, windowEvent.motion.yrel * viewPort_.size.x / viewPort_.size.y});
-					camera_.move(result);
+			case SDL_MOUSEMOTION: {
+				mousePos_ = Vec2{windowEvent.motion.x, windowEvent.motion.y};
+				if (isMouseMiddleButtonDown()) {
+					auto delta = getMatrix(Space::Screen, Space::World) * glm::vec4{windowEvent.motion.xrel, windowEvent.motion.yrel, 0.f, 0.f};
+					move(delta.x, delta.y);
 				}
+				break;
 			}
-			break;
 			case SDL_MOUSEBUTTONUP:
-				hex::Hexi hex = getHexFromMouse(windowEvent.button.windowID, windowEvent.button.x, windowEvent.button.y);
+				auto hex = getHexFromScreen(static_cast<float>(windowEvent.button.x), static_cast<float>(windowEvent.button.y));
 				switch (windowEvent.button.button) {
 					case SDL_BUTTON_LEFT:
-					{
+						//spdlog::info("{} {}", screenToClip_, glm::inverse(screenToClip_));
+						spdlog::info("delta {}: ", getMatrix(Space::Screen, Space::World) * glm::vec4{windowEvent.button.x, windowEvent.button.y, 0.f, 1.f});
+						spdlog::info("delta2 {}\n: ", getMatrix(Space::Screen, Space::World) * glm::vec4{windowEvent.button.x, windowEvent.button.y, 1.f, 1.f});
+						spdlog::info("delta3 {}: ", getMatrix(Space::World, Space::Screen) * glm::vec4{10.f, 10.f, 0.f, 1.f});
+						spdlog::info("delta4 {}\n: ", getMatrix(Space::World, Space::Screen) * glm::vec4{5.f, 50.f, 0.f, 1.f});
 						if (activateHexagon_) {
 							spdlog::info("(q, r, s): {}", hex);
 							commandManager_.pushCommand([this, hex]() {
@@ -323,19 +364,19 @@ namespace vin {
 							});
 						}
 						break;
-					}
 					case SDL_BUTTON_MIDDLE:
 						rotateCurrentTile(hex);
 						break;
 					case SDL_BUTTON_RIGHT:
-					{
 						commandManager_.pushCommand([this, hex]() {
-							tilesGraphic_.clearTile(hex);
-							tilesGraphic_.fillTile(hex, ClearColor);
-							return tileBoard_.remove(hex);
+							if (tileBoard_.remove(hex)) {
+								tilesGraphic_.clearTile(hex);
+								tilesGraphic_.fillTile(hex, ClearColor);
+								return true;
+							}
+							return false;
 						});
 						break;
-					}
 				}
 				break;
 		}

@@ -133,6 +133,7 @@ namespace vin {
 						break;
 					case SDL_WINDOWEVENT_CLOSE:
 						sdl::Window::quit();
+						break;
 				}
 				break;
 			case SDL_DROPFILE: { // In case if dropped file
@@ -335,10 +336,9 @@ namespace vin {
 		ImGui::PopStyleVar();
 	}
 
-
 	void VinlandWindow::imGuiPreUpdate(const sdl::DeltaTime& deltaTime) {
 		shader_.useProgram();
-		glViewport(0, 0, getWidth(), getHeight() - 200);
+
 		hexCanvas_.drawCanvas(shader_, deltaTime);
 	}
 
@@ -360,8 +360,9 @@ namespace vin {
 
 		if (auto canvasHeight = static_cast<float>(viewPort.Size.y) - hexWindowHeight;
 			canvasHeight > 0) {
-			
-			hexCanvas_.updateCanvasSize({0.f, 0.0f}, {viewPort.Size.x, canvasHeight});
+			hexCanvas_.setSize(getWidth(), getHeight(),
+				Viewport{0, 0, static_cast<int>(viewPort.Size.x), static_cast<int>(canvasHeight)}
+			);
 		}
 		
 		ImGui::PopStyleVar();

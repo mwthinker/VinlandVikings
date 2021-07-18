@@ -139,7 +139,7 @@ namespace vin {
 		}
 	}
 
-	void TilesGraphic::setMatrix(const Mat4& mat) {
+	void TilesGraphic::setWorldToClip(const Mat4& mat) {
 		worldToScreen_ = mat;
 	}
 

@@ -48,7 +48,7 @@ namespace vin {
 
 		void draw(sdl::Shader& shader);
 
-		void setMatrix(const Mat4& mat);
+		void setWorldToClip(const Mat4& mat);
 
 		const Map& getMap() const;
 
@@ -66,10 +66,10 @@ namespace vin {
 		hex::Hexi worldToHex(Vec2 pos) const;
 		Vec2 hexToWorld(hex::Hexi pos) const;
 
-		float angle_{Pi / 3};
-		bool grid_{true};
-		bool hexCoord_{false};
-		bool xyCoord_{false};
+		float angle_ = Pi / 3.f;
+		bool grid_ = true;
+		bool hexCoord_ = false;
+		bool xyCoord_ = false;
 		Color color_;
 
 		HexDimension hexDimension_;

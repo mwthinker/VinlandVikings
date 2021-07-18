@@ -27,13 +27,13 @@ namespace vin {
 
 	using Color = sdl::Color;
 
-	static constexpr Color White = sdl::color::html::White;
-	static constexpr Color Black = sdl::color::html::Black;
-	static constexpr Color Red = sdl::color::Red;
-	static constexpr Color Green = sdl::color::Green;
-	static constexpr Color Blue = sdl::color::Blue;
-	static constexpr Color Cyan = sdl::color::html::Cyan;
-	static constexpr Color Orange = sdl::color::html::Orange;
+	constexpr Color White = sdl::color::html::White;
+	constexpr Color Black = sdl::color::html::Black;
+	constexpr Color Red = sdl::color::Red;
+	constexpr Color Green = sdl::color::Green;
+	constexpr Color Blue = sdl::color::Blue;
+	constexpr Color Cyan = sdl::color::html::Cyan;
+	constexpr Color Orange = sdl::color::html::Orange;
 	
 	template <class T>
 	Vec2 castFloat(const T& t) {
@@ -93,7 +93,7 @@ struct fmt::formatter<vin::Vec4> {
 
 	template <typename FormatContext>
 	auto format(const vin::Vec4& p, FormatContext& ctx) {
-		return format_to(ctx.out(), "({:.{}f},{:.{}f}, {:.{}f}, {:.{}f})", p.x, 3, p.y, 3, p.z, 3, p.w, 3);
+		return format_to(ctx.out(), "({:.{}f}, {:.{}f}, {:.{}f}, {:.{}f})", p.x, 3, p.y, 3, p.z, 3, p.w, 3);
 	}
 };
 
