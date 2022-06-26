@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "imguiextra.h"
 #include "hex/tileboard.h"
+#include "hex/tilekey.h"
 
 #include <filesystem>
 #include <regex>
@@ -73,23 +74,20 @@ namespace vin {
 		setIcon(IconFile);
 		
 		load_ = actionManager_.add(Action{SDLK_o, SDLK_LCTRL, "Load", [&]() {
-			spdlog::info("[VinlandWindow] Load");
-
 			auto tileBoard = load("TestBoardFile.txt");
 			TilesGraphic::Map tileMap;
 
 			auto deck = hexCanvas_.getDeck();
-
+			
 			for (const auto& [hex, tile] : tileBoard) {
-				tileLexicon_.getTiles(hex::TileKey{tile});
+				tileLexicon_.getTiles(hex::TileKey(tile));
 			}
 		}});
+
 		save_ = actionManager_.add(Action{SDLK_s, SDLK_LCTRL, "Save", [&]() {
-			spdlog::info("[VinlandWindow] Save");
 			save("TestBoardFile.txt", hexCanvas_);
 		}});
 		saveAs_ = actionManager_.add(Action{"Save as", [&]() {
-			spdlog::info("[VinlandWindow] Save as");
 		}});
 		zoomIn_ = actionManager_.add(Action{SDLK_KP_PLUS, "Zoom in", [&]() {
 			hexCanvas_.zoomIn();
@@ -98,11 +96,9 @@ namespace vin {
 			hexCanvas_.zoomOut();
 		}});
 		undo_ = actionManager_.add(Action{SDLK_z, SDLK_LCTRL, "Undo", [&]() {
-			spdlog::info("[VinlandWindow] Undo");
 			hexCanvas_.undo();
 		}});
 		redo_ = actionManager_.add(Action{SDLK_y, SDLK_LCTRL, "Redo", [&]() {
-			spdlog::info("[VinlandWindow] Redo");
 			hexCanvas_.redo();
 		}});
 		gridAction_ = actionManager_.add(Action{SDLK_g, "Grid", [&]() {

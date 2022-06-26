@@ -1,5 +1,5 @@
-#ifndef VINLANDVIKINGS_VIN_HEX_HEXTILEMAP_H
-#define VINLANDVIKINGS_VIN_HEX_HEXTILEMAP_H
+#ifndef VINLANDVIKINGS_VIN_HEX_TILEBOARD_H
+#define VINLANDVIKINGS_VIN_HEX_TILEBOARD_H
 
 #include "hexagon.h"
 #include "../types.h"
@@ -8,6 +8,7 @@
 #include "hash.h"
 
 #include <vector>
+#include <concepts>
 
 //#include <unordered_map>
 #include <map>
@@ -26,9 +27,8 @@ namespace vin::hex {
 		TileBoard();
 
 		TileBoard(const std::vector<Hexi>& hexes);
-
-		template <class iterator>
-		TileBoard(const iterator& begin, const iterator& end) {
+		
+		TileBoard(std::input_iterator auto begin, std::input_iterator auto end) {
 			for (auto it = begin; it != end; ++it) {
 				Hexi hex = *it;
 				hexes_[hex] = HexSidesNone;

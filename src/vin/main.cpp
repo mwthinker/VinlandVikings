@@ -6,7 +6,16 @@
 #include <fmt/printf.h>
 #include <clara.hpp>
 
-#include <iostream>
+#include <fmt/ostream.h>
+
+#ifdef WIN32
+
+#pragma warning(push)
+#pragma warning( disable: 4005 )
+#include <Windows.h>
+#pragma warning(pop)
+
+#endif
 
 struct TerminalConfig {
 	int width = 400;
@@ -19,7 +28,7 @@ struct TerminalConfig {
 
 namespace {
 
-#if WIN32
+#ifdef WIN32
 
 	std::string getLastError() {
 		LPSTR lpMsgBuf;

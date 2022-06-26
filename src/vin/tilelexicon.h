@@ -4,6 +4,7 @@
 #include "tilelexicon.h"
 #include "spritetile.h"
 #include "hex/hash.h"
+#include "hex/tilekey.h"
 
 #include <vector>
 #include <unordered_map>

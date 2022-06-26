@@ -64,7 +64,6 @@ namespace vin::hex {
 		std::array<HexSide, 6> sides_{};
 	};
 
-	//using HexSides = std::array<HexSide, 6>;
 	constexpr Tile HexSidesNone;
 
 	inline void rotate(hex::Tile& hexSides, int rotations) {

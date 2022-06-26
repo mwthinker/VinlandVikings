@@ -1,13 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
-# 3.14 support for Visual Studio 2019
-
-set(VCPKG_ROOT $ENV{VCPKG_ROOT})
-if (DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-	set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-		CACHE STRING ""
-	)
-	message(STATUS "Uses VCPKG CMAKE_TOOLCHAIN_FILE")
-endif()
+cmake_minimum_required(VERSION 3.21)
 
 project(VinlandVikings
 	DESCRIPTION
@@ -18,7 +9,7 @@ project(VinlandVikings
 		CXX
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -77,6 +68,8 @@ if (MSVC)
 	configure_file(properties.rc ${CMAKE_CURRENT_BINARY_DIR}/properties.rc)
 endif ()
 
+set(nlohmann-json_IMPLICIT_CONVERSIONS OFF)
+
 find_package(Threads REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
@@ -110,17 +103,26 @@ set_target_properties(
 )
 
 # Copy data to build folder.
-file(COPY ${VinlandVikingsData_SOURCE_DIR}/imageTiles DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${VinlandVikingsData_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_BINARY_DIR}/installer/icon.ico DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+if (VinlandVikingsData)
+	file(COPY ${VinlandVikingsData_SOURCE_DIR}/imageTiles DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+	file(COPY ${VinlandVikingsData_SOURCE_DIR}/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+	file(COPY ${VinlandVikingsData_SOURCE_DIR}/installer DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+	file(COPY ${CMAKE_CURRENT_BINARY_DIR}/installer/icon.ico DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endif ()
 
 if (MSVC)
-	add_executable(VinlandVikings
-		${SOURCES}
-		${CMAKE_CURRENT_BINARY_DIR}/properties.rc
-		${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
-	)
+	if (VinlandVikingsData)
+		add_executable(VinlandVikings
+			${SOURCES}
+			${CMAKE_CURRENT_BINARY_DIR}/properties.rc
+			${CMAKE_CURRENT_SOURCE_DIR}/icon.rc
+		)
+	else ()
+		add_executable(VinlandVikings
+			${SOURCES}
+			${CMAKE_CURRENT_BINARY_DIR}/properties.rc
+		)
+	endif ()
 else ()
 	add_executable(VinlandVikings
 		${SOURCES}
@@ -156,10 +158,10 @@ if (MSVC)
 			_CRT_SECURE_NO_WARNINGS
 	)
 
-
+	#  /permissive-
 	target_compile_options(VinlandVikings
 		PUBLIC
-			/W3 /WX /permissive-
+			/W3 /WX
 			/MP
 	)
 	
@@ -170,6 +172,7 @@ else ()
 	target_compile_options(VinlandVikings
 		PRIVATE
 			-Wall -pedantic -Wcast-align -Woverloaded-virtual -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
+			 -fconcepts-diagnostics-depth=2
 	)
 endif ()
 
@@ -184,6 +187,7 @@ target_link_libraries(VinlandVikings
 		${ExternalDependencies}
 		nlohmann_json
 		nlohmann_json::nlohmann_json
+		fmt::fmt
 )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CPack.cmake)

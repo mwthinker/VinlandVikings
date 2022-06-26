@@ -3,8 +3,15 @@
 
 #include <functional>
 #include <vector>
+#include <concepts>
 
 namespace vin {
+
+	template <typename Originator, typename Snapshot> // 2
+	concept CommandOriginator = requires (Originator& o, const Originator & o2, const Snapshot& s) {
+		{ o2.getSnapshot() } ->std::convertible_to<Snapshot>;
+		{ o.setSnapshot(s) };
+	} && std::is_copy_assignable_v<Snapshot>;
 	
 	template <typename Originator, typename Snapshot>
 	class CommandManager {
@@ -25,7 +32,7 @@ namespace vin {
 
 		void undo() {
 			if (!history_.empty()) {
-				future_.emplace_back(originator_.getSnapshot());
+				future_.push_back(originator_.getSnapshot());
 				originator_.setSnapshot(history_.back());
 				history_.pop_back();
 			}
