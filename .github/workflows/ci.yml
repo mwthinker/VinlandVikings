@@ -36,18 +36,3 @@ jobs:
       - name: Compile binaries
         shell: bash
         run: cmake --build build --config Release
-
-      - name: Run cpack
-        shell: bash
-        run: cd build && cpack
-
-      - name: Extract msi output
-        shell: bash
-        run: echo "msi_output=$(ls -1 build | grep '.msi$')" >> $GITHUB_ENV
-        if: runner.os == 'Windows'
-
-      - uses: actions/upload-artifact@v3
-        if: runner.os == 'Windows' && env.msi_output != ''
-        with:
-          name: installer
-          path: build/${{ env.msi_output }}

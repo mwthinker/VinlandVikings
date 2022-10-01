@@ -1,4 +1,4 @@
-# VinlandVikings
+# vin::VinlandVikings [![CI build](https://github.com/mwthinker/VinlandVikings/actions/workflows/ci.yml/badge.svg)](https://github.com/mwthinker/VinlandVikings/actions/workflows/ci.yml)
 A editor for the board game Vinland Vikings
 
 * All water by default

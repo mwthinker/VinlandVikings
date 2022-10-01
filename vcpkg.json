@@ -19,7 +19,6 @@
 		},
 		"spdlog",
 		"glm",
-		"catch2",
 		"fmt",
 		"nlohmann-json",
 		"bfgroup-lyra",
