@@ -4,6 +4,7 @@
 #include <sdl/initsdl.h>
 
 #include <functional>
+#include <string>
 
 namespace vin {
 	

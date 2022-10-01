@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.24)
 
 project(VinlandVikings
 	DESCRIPTION
@@ -70,9 +70,13 @@ endif ()
 
 set(nlohmann-json_IMPLICIT_CONVERSIONS OFF)
 
+include(ExternalFetchContent.cmake)
+
 find_package(Threads REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(lyra CONFIG REQUIRED)
+find_package(CppSdl2 REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On) 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VinlandVikings)
@@ -82,8 +86,6 @@ source_group(TREE
 	FILES
 		${SOURCES}
 )
-
-include(ExternalFetchContent.cmake)
 
 set(ExternalDependencies
 	CppSdl2
@@ -176,11 +178,6 @@ else ()
 	)
 endif ()
 
-find_path(CLARA_INCLUDE_DIRS "clara.hpp")
-target_include_directories(VinlandVikings
-	PRIVATE
-		${CLARA_INCLUDE_DIRS})
-
 target_link_libraries(VinlandVikings
 	PRIVATE
 		Threads::Threads
@@ -188,6 +185,8 @@ target_link_libraries(VinlandVikings
 		nlohmann_json
 		nlohmann_json::nlohmann_json
 		fmt::fmt
+		bfg::lyra
+		CppSdl2
 )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CPack.cmake)

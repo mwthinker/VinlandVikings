@@ -22,7 +22,7 @@
 		"catch2",
 		"fmt",
 		"nlohmann-json",
-		"clara",
+		"bfgroup-lyra",
 		"freetype"
 	]
 }

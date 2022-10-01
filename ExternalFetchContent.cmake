@@ -1,13 +1,12 @@
 include(FetchContent)
 # Load external github projects
 FetchContent_Declare(CppSdl2
-	GIT_SHALLOW 1
 	GIT_REPOSITORY
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
-		9bae1c86e168ecf05fd896b152b35e15bc709466
+		4163cf621b642dfdfb524eb22cf0ced496e897db
+	OVERRIDE_FIND_PACKAGE
 )
-FetchContent_MakeAvailable(CppSdl2)
 
 Fetchcontent_Declare(CmakeAuxiliary
 	GIT_SHALLOW 1
@@ -35,7 +34,6 @@ if (VinlandVikingsData_PrivateRepo_SSH OR VinlandVikingsData_PrivateRepo_HTTPS)
 	endif ()
 	# Load data.
 	FetchContent_Declare(VinlandVikingsData
-		GIT_SHALLOW 1
 		GIT_REPOSITORY
 			${VinlandVikingsData_PrivateRepo_URL}
 		GIT_TAG

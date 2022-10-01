@@ -4,7 +4,7 @@
 
 #include <sdl/initsdl.h>
 #include <fmt/printf.h>
-#include <clara.hpp>
+#include <lyra/lyra.hpp>
 
 #include <fmt/ostream.h>
 
@@ -93,32 +93,34 @@ namespace {
 
 }
 
+template <> struct fmt::formatter<lyra::cli> : ostream_formatter {};
+
 int main(int argc, char** argv) {
 	TerminalConfig config;
 	config.logPath = SDL_GetPrefPath("mwthinker", "VinlandVikings");
 
 	try {
 		auto cli
-			= clara::Opt(config.filename, "filename")
+			= lyra::opt(config.filename, "filename")
 			["-f"]["--filename"]
 			("config filename") |
-			clara::Opt(config.width, "width")
+			lyra::opt(config.width, "width")
 			["-W"]["--width"]
 			("window width") |
-			clara::Opt(config.width, "height")
+			lyra::opt(config.width, "height")
 			["-H"]["--height"]
 			("window height") |
-			clara::Opt(config.logLevel, "trace|debug|info|warning|err|critical|off")
+			lyra::opt(config.logLevel, "trace|debug|info|warning|err|critical|off")
 			["-L"]["--log_level"]
 			("log level") |
-			clara::Opt(config.logPath, "log path")
+			lyra::opt(config.logPath, "log path")
 			["-P"]["--log_path"]
 			("path to log folder") |
-			clara::Help(config.showHelp);
+			lyra::help(config.showHelp);
 
-		auto result = cli.parse(clara::Args(argc, argv));
+		auto result = cli.parse(lyra::args(argc, argv));
 		if (!result) {
-			fmt::print(std::cerr, "Error in command line: {}\n", result.errorMessage());
+			fmt::print(std::cerr, "Error in command line: {}\n", result.message());
 			return 1;
 		}
 
