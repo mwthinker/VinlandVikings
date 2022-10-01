@@ -1,0 +1,53 @@
+name: CI
+on: [push, workflow_dispatch]
+
+jobs:
+  job:
+    name: ${{ matrix.os }}-${{ github.workflow }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            vcpkgCommitId: '927006b24c3a28dfd8aa0ec5f8ce43098480a7f1'
+            preset: 'windows'
+          - os: ubuntu-22.04
+            vcpkgCommitId: '927006b24c3a28dfd8aa0ec5f8ce43098480a7f1'
+            preset: 'unix'
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - uses: friendlyanon/setup-vcpkg@v1
+        with:
+          committish: ${{ matrix.vcpkgCommitId }}
+
+      - name: GCC version on Linux
+        shell: bash
+        run: g++ --version
+        if: runner.os == 'Linux'
+
+      - name: Run CMake with manifest mode vcpkg
+        shell: bash
+        run: cmake --preset=${{ matrix.preset }} -B build -DUSE_WIX_GENERATOR=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=1
+
+      - name: Compile binaries
+        shell: bash
+        run: cmake --build build --config Release
+
+      - name: Run cpack
+        shell: bash
+        run: cd build && cpack
+
+      - name: Extract msi output
+        shell: bash
+        run: echo "msi_output=$(ls -1 build | grep '.msi$')" >> $GITHUB_ENV
+        if: runner.os == 'Windows'
+
+      - uses: actions/upload-artifact@v3
+        if: runner.os == 'Windows' && env.msi_output != ''
+        with:
+          name: installer
+          path: build/${{ env.msi_output }}
