@@ -62,6 +62,7 @@ set(SOURCES
 	ExternalFetchContent.cmake
 	CPack.cmake
 	vcpkg.json
+	CMakePresets.json
 )
 
 if (MSVC)
