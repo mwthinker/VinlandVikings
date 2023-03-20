@@ -115,11 +115,11 @@ namespace vin {
 	}
 
 	void HexCanvas::drawCanvas(sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime) {
-		glViewport(viewport_.x, viewport_.y, viewport_.w, viewport_.h);
+		gl::glViewport(viewport_.x, viewport_.y, viewport_.w, viewport_.h);
 
-		glEnable(GL_BLEND);
-		glBlendEquation(GL_FUNC_ADD);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		gl::glEnable(gl::GL_BLEND);
+		gl::glBlendEquation(gl::GL_FUNC_ADD);
+		gl::glBlendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
 
 		auto matrix = getMatrix(Space::World, Space::Clip);
 		tilesGraphic_.setWorldToClip(matrix);

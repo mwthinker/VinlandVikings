@@ -11,11 +11,11 @@ namespace vin::hex {
 		return glm::rotate(Vec2{1, 0.f}, Pi / 3 * nbr + startAngle);
 	}
 
-	Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle) {
+	Vec2 getHexCorner(Vec2 center, gl::GLfloat size, int nbr, float startAngle) {
 		return center + size * getHexCorner(nbr, startAngle);
 	}
 
-	std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius, float startAngle) {
+	std::array<Vec2, 6> getHexCorners(Vec2 center, gl::GLfloat radius, float startAngle) {
 		std::array<Vec2, 6> corners;
 		for (int i = 0; i < 6; ++i) {
 			corners[i] = getHexCorner(center, radius, i, startAngle);

@@ -11,12 +11,7 @@
 		"sdl2-mixer",
 		"sdl2-ttf",
 		"sdl2",
-		{
-			"name": "glad",
-			"features": [
-				"gl-api-33"
-			]
-		},
+		"glbinding",
 		"spdlog",
 		"glm",
 		"fmt",

@@ -4,7 +4,7 @@ FetchContent_Declare(CppSdl2
 	GIT_REPOSITORY
 		https://github.com/mwthinker/CppSdl2.git
 	GIT_TAG
-		e08e3c2a990b196af190c2d7df6ebcfa1642708d
+		98264c946491401b44a1076ab24458bf5900e8b5
 	OVERRIDE_FIND_PACKAGE
 )
 
@@ -20,8 +20,8 @@ FetchContent_GetProperties(CmakeAuxiliary
 )
 include(${CmakeAuxiliary_SOURCE_DIR}/auxiliary.cmake)
 
-message(STATUS "Download private data repository is available to add: -DZombieData_PrivateRepo_SSH=1")
-message(STATUS "Download private data repository is available to add: -DZombieData_PrivateRepo_HTTPS=1")
+message(STATUS "Download private data repository is available to add: -DVinlandVikingsData_PrivateRepo_SSH=1")
+message(STATUS "Download private data repository is available to add: -DVinlandVikingsData_PrivateRepo_HTTPS=1")
 option(VinlandVikingsData_PrivateRepo_SSH "Add VinlandVikingsData_PrivateRepo_SSH to project." OFF)
 option(VinlandVikingsData_PrivateRepo_HTTPS "Add VinlandVikingsData_PrivateRepo_HTTPS to project." OFF)
 

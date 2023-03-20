@@ -401,7 +401,7 @@ namespace vin {
 
 	void VinlandWindow::initPreLoop() {
 		//glEnable(GL_DEPTH_TEST);
-		glEnable(GL_MULTISAMPLE);
+		glEnable(gl::GL_MULTISAMPLE);
 
         sdl::ImGuiWindow::initPreLoop();
 #if IMGUI_DEMO_WINDOW
@@ -420,7 +420,7 @@ namespace vin {
 		hexCanvas_.clear();
 
 		auto [w, h] = sdl::ImGuiWindow::getSize();
-		glViewport(0, 0, w, h);
+		gl::glViewport(0, 0, w, h);
 
 		auto hexImages = Configuration::getInstance().loadHexImages();
 		tileLexicon_.add(hexImages);

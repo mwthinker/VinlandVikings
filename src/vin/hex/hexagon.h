@@ -26,9 +26,9 @@ namespace vin::hex {
 
 	Vec2 getHexCorner(int nbr, float startAngle = 0);
 
-	Vec2 getHexCorner(Vec2 center, GLfloat size, int nbr, float startAngle = 0);
+	Vec2 getHexCorner(Vec2 center, gl::GLfloat size, int nbr, float startAngle = 0);
 
-	std::array<Vec2, 6> getHexCorners(Vec2 center, GLfloat radius, float startAngle = 0);
+	std::array<Vec2, 6> getHexCorners(Vec2 center, gl::GLfloat radius, float startAngle = 0);
 
 	ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr);
 
