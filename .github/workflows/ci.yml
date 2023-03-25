@@ -1,5 +1,9 @@
 name: CI
-on: [push, workflow_dispatch]
+on: 
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: 55 19 * * 3 # 19:55 every wednesday
 
 jobs:
   job:
@@ -10,25 +14,29 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            vcpkgCommitId: '3776224fd28bd7e0c78617d73696753219e8d272'
             preset: 'windows'
-          - os: ubuntu-22.04
-            vcpkgCommitId: '3776224fd28bd7e0c78617d73696753219e8d272'
+          - os: ubuntu-latest
             preset: 'unix'
 
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
 
-      - uses: friendlyanon/setup-vcpkg@v1
-        with:
-          committish: ${{ matrix.vcpkgCommitId }}
-
       - name: GCC version on Linux
         shell: bash
         run: g++ --version
         if: runner.os == 'Linux'
 
+# Debug build
+      - name: Run CMake with manifest mode vcpkg
+        shell: bash
+        run: cmake --preset=${{ matrix.preset }} -B build -DUSE_WIX_GENERATOR=0 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_VERBOSE_MAKEFILE=1
+
+      - name: Compile binaries
+        shell: bash
+        run: cmake --build build --config Debug
+
+# Release build
       - name: Run CMake with manifest mode vcpkg
         shell: bash
         run: cmake --preset=${{ matrix.preset }} -B build -DUSE_WIX_GENERATOR=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=1
@@ -36,3 +44,4 @@ jobs:
       - name: Compile binaries
         shell: bash
         run: cmake --build build --config Release
+
