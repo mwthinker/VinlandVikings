@@ -32,20 +32,19 @@ jobs:
         run: echo VCPKG_ROOT="$VCPKG_INSTALLATION_ROOT" >> "$GITHUB_ENV"; cat "$GITHUB_ENV"
 
 # Debug build
-      - name: Run CMake with manifest mode vcpkg
+      - name: Run CMake Debug with manifest mode vcpkg
         shell: bash
-        run: cmake --preset=${{ matrix.preset }} -B build -DUSE_WIX_GENERATOR=0 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_VERBOSE_MAKEFILE=1
+        run: cmake --preset=${{ matrix.preset }} -B build_debug -DUSE_WIX_GENERATOR=0 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_VERBOSE_MAKEFILE=1
 
-      - name: Compile binaries
+      - name: Compile Debug binaries
         shell: bash
-        run: cmake --build build --config Debug
+        run: cmake --build build_debug --config Debug
 
 # Release build
-      - name: Run CMake with manifest mode vcpkg
+      - name: Run CMake Release with manifest mode vcpkg
         shell: bash
-        run: cmake --preset=${{ matrix.preset }} -B build -DUSE_WIX_GENERATOR=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=1
+        run: cmake --preset=${{ matrix.preset }} -B build_release -DUSE_WIX_GENERATOR=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=1
 
-      - name: Compile binaries
+      - name: Compile Release binaries
         shell: bash
-        run: cmake --build build --config Release
-
+        run: cmake --build build_release --config Release
