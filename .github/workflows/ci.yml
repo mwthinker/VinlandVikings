@@ -27,6 +27,10 @@ jobs:
         run: g++ --version
         if: runner.os == 'Linux'
 
+      - name: Set C++ VCPKG_ROOT
+        shell: bash
+        run: echo VCPKG_ROOT="$VCPKG_INSTALLATION_ROOT" >> "$GITHUB_ENV"; cat "$GITHUB_ENV"
+
 # Debug build
       - name: Run CMake with manifest mode vcpkg
         shell: bash
