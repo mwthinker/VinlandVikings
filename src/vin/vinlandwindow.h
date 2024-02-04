@@ -19,7 +19,7 @@
 namespace vin {
 
 	struct HexImageTypeVector {
-		int index_{0};
+		int index_ = 0;
 		std::vector<HexImage> hexImages_;
 	};
 
