@@ -368,7 +368,7 @@ namespace vin {
 		auto& style = ImGui::GetStyle();
 		
 		const int buttonsCount = static_cast<int>(hexTypes_.size());
-		const float windowVisible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+		const float windowVisible_x2 = ImGui::GetCursorScreenPos().x + ImGui::GetContentRegionAvail().x;
 		
 		int n = 0;
 		for (auto& [key, hexImageType] : hexTypes_) {
