@@ -339,6 +339,8 @@ namespace vin {
 	}
 
 	void VinlandWindow::imGuiUpdate(const sdl::DeltaTime& deltaTime) {
+		redo_.setActive(hexCanvas_.canRedo());
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
 
 		const auto& viewPort = *ImGui::GetMainViewport();
@@ -374,7 +376,7 @@ namespace vin {
 		for (auto& [key, hexImageType] : hexTypes_) {
 			auto& index = hexImageType.index_;
 			auto& hexImages = hexImageType.hexImages_;
-			const ImVec2 buttonSize{50.f, 50.f};
+			const Vec2 buttonSize{50.f, 50.f};
 			if (ImGui::ImageButton(hexImages[index].getFilename().c_str(), hexImages[index].getImage(), buttonSize)) {
 				if (hexImages[index].getImage() == hexCanvas_.currentHexSprite()) {
 					index = (index + 1) % static_cast<int>(hexImages.size());
