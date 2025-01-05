@@ -30,7 +30,16 @@ namespace vin {
 
 		std::pair<SDL_Keycode, SDL_Keycode> getKeyPair() const;
 
+		bool isActive() const {
+			return active_;
+		}
+
+		void setActive(bool active) {
+			active_ = active;
+		}
+
 	private:
+		bool active_ = true;
 		Callback callback_;
 		SDL_Keycode key_{};
 		SDL_Keycode key2_{};

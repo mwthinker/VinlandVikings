@@ -87,7 +87,8 @@ namespace vin {
 
 		void clearAndGenerateMap();
 		void setSize(int width, int height, const Viewport& viewport);
-
+		
+		bool canRedo() const;
 		void redo();
 		void undo();
 

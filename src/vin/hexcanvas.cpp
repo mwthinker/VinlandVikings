@@ -88,7 +88,10 @@ namespace vin {
 
 	hex::Hexi HexCanvas::getHexFromScreen(float x, float y) const {
 		auto pos = getMatrix(Space::Screen, Space::Clip) * Vec4{x, y, 0, 1.f};
-		pos = getMatrix(Space::Clip, Space::World) * Vec4{pos.x, pos.y, 0.f, 1.f};
+		pos = getMatrix(Space::Clip, Space::World) * pos;
+
+		auto pos2 = getMatrix(Space::Screen, Space::World) * Vec4 { x, y, 0, 1.f };
+
 		//auto pos = getMatrix(Space::Screen, Space::World) * Vec4{x, y, 0, 1.f};
 		//spdlog::warn("[getHexFromScreen] {},   {}", pos, getMatrix(Space::World, Space::Screen)* Vec4{pos.x, pos.y, 0, 1});
 		return worldToHex({pos.x, pos.y});
@@ -219,6 +222,10 @@ namespace vin {
 		});
 	}
 
+	bool HexCanvas::canRedo() const {
+		return commandManager_.canRedo();
+	}
+
 	void HexCanvas::redo() {
 		commandManager_.redo();
 	}
@@ -249,6 +256,7 @@ namespace vin {
 					case Space::Screen:
 						return glm::inverse(screenToClip_) * cameraToClip_ * worldToCamera_;
 				}
+				break;
 			case Space::Camera:
 				switch (to) {
 					case Space::Camera:
@@ -260,6 +268,7 @@ namespace vin {
 					case Space::Screen:
 						return glm::inverse(screenToClip_) * cameraToClip_;
 				}
+				break;
 			case Space::Clip:
 				switch (to) {
 					case Space::Camera:
@@ -271,6 +280,7 @@ namespace vin {
 					case Space::Screen:
 						return glm::inverse(screenToClip_);
 				}
+				break;
 			case Space::Screen:
 				switch (to) {
 					case Space::Camera:
@@ -282,6 +292,7 @@ namespace vin {
 					case Space::Screen:
 						return glm::mat4{1};
 				}
+				break;
 		}
 		return glm::mat4{1};
 	}

@@ -30,10 +30,20 @@ namespace ImGui {
 	}
 
 	bool MenuItem(vin::Action& action) {
+		bool disabled = !action.isActive();
+		if (disabled) {
+			ImGui::BeginDisabled();
+		}
+
 		if (MenuItem(action.getMenuName(), action.getShortcut())) {
 			action();
 			return true;
 		}
+
+		if (disabled) {
+			ImGui::EndDisabled();
+		}
+
 		return false;
 	}
 

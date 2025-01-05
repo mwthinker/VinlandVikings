@@ -398,14 +398,14 @@ namespace vin {
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        sdl::ImGuiWindow::initOpenGl();
+		sdl::ImGuiWindow::initOpenGl();
 	}
 
 	void VinlandWindow::initPreLoop() {
 		//glEnable(GL_DEPTH_TEST);
 		glEnable(gl::GL_MULTISAMPLE);
 
-        sdl::ImGuiWindow::initPreLoop();
+		sdl::ImGuiWindow::initPreLoop();
 #if IMGUI_DEMO_WINDOW
 		setShowDemoWindow(true);
 #endif

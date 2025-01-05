@@ -22,6 +22,10 @@ namespace vin {
 			: originator_{originator} {
 		}
 
+		bool canRedo() const {
+			return !future_.empty();
+		}
+
 		void redo() {
 			if (!future_.empty()) {
 				history_.push_back(originator_.getSnapshot());
