@@ -1,6 +1,6 @@
-#include "vinlandwindow.h"
-#include "logger.h"
-#include "configuration.h"
+#include <vin/vinlandwindow.h>
+#include <vin/logger.h>
+#include <vin/configuration.h>
 
 #include <sdl/initsdl.h>
 #include <fmt/printf.h>

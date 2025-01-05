@@ -17,6 +17,7 @@
 		"fmt",
 		"nlohmann-json",
 		"bfgroup-lyra",
-		"freetype"
+		"freetype",
+		"gtest"
 	]
 }

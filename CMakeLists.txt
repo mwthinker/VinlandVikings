@@ -1,63 +1,15 @@
 cmake_minimum_required(VERSION 3.24)
-
 project(VinlandVikings
 	DESCRIPTION
 		"A editor for the board game Vinland Vikings"
 	VERSION
-		0.2.0
+		0.2.1
 	LANGUAGES
 		CXX
 )
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 set(SOURCES
-	src/vin/hex/hash.h
-	src/vin/hex/hex.h
-	src/vin/hex/hexagon.cpp
-	src/vin/hex/hexagon.h
-	src/vin/hex/tile.h
-	src/vin/hex/tilekey.h
-	src/vin/hex/tileboard.cpp
-	src/vin/hex/tileboard.h
-	src/vin/hex/mapgenerator.cpp
-	src/vin/hex/mapgenerator.h
-	src/vin/hex/shape.cpp
-	src/vin/hex/shape.h
-
-	src/vin/camera.cpp
-	src/vin/camera.h
-	src/vin/commandmanager.h
-	src/vin/deck.h
-	
-	src/vin/action.cpp
-	src/vin/action.h
-	src/vin/configuration.cpp
-	src/vin/configuration.h
-	src/vin/hexagonbatch.cpp
-	src/vin/hexagonbatch.h
-	src/vin/hexdimension.h
-	src/vin/heximage.cpp
-	src/vin/heximage.h
-	src/vin/imguiextra.cpp
-	src/vin/imguiextra.h
-	src/vin/hexcanvas.cpp
-	src/vin/hexcanvas.h
-	src/vin/logger.cpp
-	src/vin/logger.h
-	src/vin/main.cpp
-	src/vin/tilelexicon.cpp
-	src/vin/tilelexicon.h
-	src/vin/random.h
-	src/vin/tilesgraphic.cpp
-	src/vin/tilesgraphic.h
-	src/vin/spritetile.h
-	src/vin/spritetile.cpp
-	src/vin/types.h
-	src/vin/vinlandwindow.cpp
-	src/vin/vinlandwindow.h
+	src/main.cpp
 
 	ExternalFetchContent.cmake
 	CPack.cmake
@@ -93,13 +45,9 @@ set(ExternalDependencies
 	ImGui
 )
 
-if (CppSdl2Test)
-	set(ExternalDependencieTests "CppSdl2Test")
-endif ()
-
 set_target_properties(
-	${ExternalDependencies}
-	${ExternalDependencieTests}
+	CppSdl2
+	ImGui
 	
 	PROPERTIES FOLDER
 		ExternalDependencies
@@ -139,55 +87,19 @@ message(STATUS "GIT_HASH: ${GIT_HASH}")
 message(STATUS "PROJECT_VERSION: ${PROJECT_VERSION}")
 message(STATUS "GUID: ${GUID}")
 
-target_compile_definitions(VinlandVikings
-	PUBLIC
-		GIT_VERSION="${GIT_HASH}"
-		PROJECT_VERSION="${PROJECT_VERSION}"
-)
-
-option(ImGuiDemoWindow "Add ImGui Demo Window" OFF)
-if (ImGuiDemoWindow)
-	message(STATUS "ImGui Demo Window: Activated")
-	target_compile_definitions(VinlandVikings
-		PUBLIC
-			IMGUI_DEMO_WINDOW
-	)
-endif ()
-
-if (MSVC)
-	target_compile_definitions(VinlandVikings
-		PUBLIC
-			NOMINMAX
-			_CRT_SECURE_NO_WARNINGS
-	)
-
-	#  /permissive-
-	target_compile_options(VinlandVikings
-		PUBLIC
-			/W3 /WX
-			/MP
-	)
-	
-	message(STATUS "Hide terminal: -DHideTerminal=1")
-	option(HideTerminal "Hide terminal" OFF)
-	set_target_properties(VinlandVikings PROPERTIES WIN32_EXECUTABLE ${HideTerminal})
-else ()
-	target_compile_options(VinlandVikings
-		PRIVATE
-			-Wall -pedantic -Wcast-align -Woverloaded-virtual -Wno-unused-parameter -Wno-sign-compare -Wno-unused-function
-			 -fconcepts-diagnostics-depth=2
-	)
-endif ()
+add_subdirectory(VinlandVikings_Lib)
+add_subdirectory(VinlandVikings_Test)
 
 target_link_libraries(VinlandVikings
 	PRIVATE
-		Threads::Threads
-		${ExternalDependencies}
-		nlohmann_json
-		nlohmann_json::nlohmann_json
-		fmt::fmt
-		bfg::lyra
-		CppSdl2
+		VinlandVikings::VinlandVikings_Lib
+)
+
+set_target_properties(VinlandVikings
+	PROPERTIES
+		CXX_STANDARD 23
+		CXX_STANDARD_REQUIRED YES
+		CXX_EXTENSIONS NO
 )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/CPack.cmake)
