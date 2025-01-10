@@ -28,6 +28,8 @@ set(SOURCES_LIB
 	src/vin/action.h
 	src/vin/configuration.cpp
 	src/vin/configuration.h
+	src/vin/coordinatesystem.cpp
+	src/vin/coordinatesystem.h
 	src/vin/hexagonbatch.cpp
 	src/vin/hexagonbatch.h
 	src/vin/hexdimension.h
@@ -67,7 +69,7 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT V
 source_group(TREE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	FILES
-		${SOURCES}
+		${SOURCES_LIB}
 )
 
 target_include_directories(VinlandVikings_Lib

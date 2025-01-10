@@ -7,15 +7,15 @@
 
 namespace vin {
 
-    namespace {
+	namespace {
 
 		inline ImDrawVert createVertex(float x, float y, float xTex, float yTex, ImU32 color) {
 			return  {{x, y}, ImVec2(xTex, yTex), color};
 		}
 
-        inline ImDrawVert createVertex(float x, float y, ImU32 color) {
-           return  {{x, y}, ImVec2(0.f, 0.f), color};
-        }
+		inline ImDrawVert createVertex(float x, float y, ImU32 color) {
+			return  {{x, y}, ImVec2(0.f, 0.f), color};
+		}
 
 		inline ImVec2 getHexCorner(ImVec2 center, float sizeX, float sizeY, int nbr) {
 			auto angleDeg = 60 * nbr - 30;
@@ -23,20 +23,20 @@ namespace vin {
 			return {center.x + sizeX * std::cos(angleRad), center.y + sizeY * std::sin(angleRad)};
 		}
 
-        inline ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {            
-            return getHexCorner(center, size, size, nbr);
-        }
+		inline ImVec2 getHexCorner(ImVec2 center, float size, int nbr) {            
+			return getHexCorner(center, size, size, nbr);
+		}
 
-        inline ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
-            return  {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
-        }
+		inline ImDrawVert createHexCornerVertex(const ImDrawVert& vertex, float size, int nbr) {
+			return  {getHexCorner(vertex.pos, size, nbr), vertex.uv, vertex.col};
+		}
 
 		inline ImDrawVert createHexCornerVertexTexture(const ImDrawVert& vertex, float size, float xTexSize, float yTexSize, int nbr) {
 			auto hexCorner = getHexCorner(vertex.pos, size, nbr);
 			auto texCorner = getHexCorner({vertex.uv.x, vertex.uv.y}, xTexSize * 0.5f, yTexSize * 0.5f, nbr);
 			return  {hexCorner, texCorner, vertex.col};
 		}
-    }
+	}
 
 	HexagonBatch::HexagonBatch()
 		: batch_{gl::GL_DYNAMIC_DRAW} {
@@ -96,15 +96,15 @@ namespace vin {
 		}
 	}
 
-    void HexagonBatch::addHexagon(float x, float y, float size, ImU32 color) {
-        auto center = createVertex(x, y, color);
+	void HexagonBatch::addHexagon(float x, float y, float size, ImU32 color) {
+		auto center = createVertex(x, y, color);
 
-        for (int i = 0; i < 6; ++i) {
-            batch_.pushBack(center);
-            batch_.pushBack(createHexCornerVertex(center, size, i));
-            batch_.pushBack(createHexCornerVertex(center, size, (i + 1) % 6));
-        }
-    }
+		for (int i = 0; i < 6; ++i) {
+			batch_.pushBack(center);
+			batch_.pushBack(createHexCornerVertex(center, size, i));
+			batch_.pushBack(createHexCornerVertex(center, size, (i + 1) % 6));
+		}
+	}
 
 	void HexagonBatch::addHexagon(float x, float y, float innerSize, float outerSize, ImU32 color) {
 		auto center = createVertex(x, y, color);

@@ -40,6 +40,11 @@ jobs:
         shell: bash
         run: cmake --build build_debug --config Debug
 
+      - name: Run Debug tests
+        shell: bash
+        run: |
+          ctest --rerun-failed --output-on-failure --test-dir build_debug/VinlandVikings_Test
+
 # Release build
       - name: Run CMake Release with manifest mode vcpkg
         shell: bash
@@ -48,3 +53,8 @@ jobs:
       - name: Compile Release binaries
         shell: bash
         run: cmake --build build_release --config Release
+
+      - name: Run Release tests
+        shell: bash
+        run: |
+          ctest --rerun-failed --output-on-failure --test-dir build_release/VinlandVikings_Test

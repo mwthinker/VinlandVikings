@@ -8,11 +8,9 @@ namespace vin {
 	struct HexDimension {
 		float innerSize = 0.95f;
 		float outerSize = 1.f;
-		float angle = 0;// PI / 3;
+		float angle = 0;// Pi / 3;
 	};
 
 }
 
-
 #endif
-

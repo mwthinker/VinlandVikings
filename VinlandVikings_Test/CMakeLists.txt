@@ -9,8 +9,9 @@ find_package(GTest CONFIG REQUIRED)
 enable_testing()
 
 set(SOURCES_TEST
-	src/vinlandvikings.cpp
+	src/coordinatesystemtest.cpp
 	src/main.cpp
+	src/print.h
 
 	CMakeLists.txt
 )

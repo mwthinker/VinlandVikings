@@ -25,8 +25,8 @@ namespace vin {
 	}
 
 	HexCanvas::HexCanvas()
-		: hexToWorld_{hex::createHexToCoordModel(Dimension.angle, Dimension.outerSize)}
-		, tilesGraphic_{Dimension, hexToWorld_}
+		: coordinateSystem_{Dimension}
+		, tilesGraphic_{Dimension, coordinateSystem_.getHexToWorld()}
 		, commandManager_{*this} {
 
 		auto hexes = hex::shape::createHex(10);
@@ -36,24 +36,10 @@ namespace vin {
 			tilesGraphic_.fillGrid(hex, Red);
 		}
 		tilesGraphic_.fill(ClearColor);
-
-		worldToCamera_ = glm::mat4{1};
-		cameraToClip_ = glm::mat4{1};
 	}
 
 	void HexCanvas::setSize(int width, int height, const Viewport& viewport) {
-		viewport_ = viewport;
-		const float x = static_cast<float>(viewport.x);
-		const float y = static_cast<float>(viewport.y);
-		const float w = static_cast<float>(viewport.w);
-		const float h = static_cast<float>(viewport.h);
-		const float H = static_cast<float>(height);
-		const float aspect = w / h;
-
-		screenToClip_ = glm::ortho(x, x + w, H - y, H - y - h);
-
-		const float delta = 30.f;
-		cameraToClip_ = glm::ortho(-delta * aspect, delta * aspect, -delta, delta, -100.f, 100.f);
+		coordinateSystem_.setViewport(width, height, viewport);
 	}
 
 	void HexCanvas::addTileMapToGraphic() {
@@ -73,34 +59,14 @@ namespace vin {
 		}
 	}
 
-	hex::Hexi HexCanvas::worldToHex(Vec2 pos) const {
-		auto hex = glm::inverse(hexToWorld_) * pos;
-		return hex::hexRound({hex.x, hex.y});
-	}
-
-	Vec2 HexCanvas::hexToWorld(hex::Hexi pos) const {
-		return hexToWorld_ * Vec2{pos.q(), pos.r()};
-	}
-
 	hex::Hexi HexCanvas::getHexFromMouse() const {
-		return getHexFromScreen(mousePos_.x, mousePos_.y);
-	}
-
-	hex::Hexi HexCanvas::getHexFromScreen(float x, float y) const {
-		auto pos = getMatrix(Space::Screen, Space::Clip) * Vec4{x, y, 0, 1.f};
-		pos = getMatrix(Space::Clip, Space::World) * pos;
-
-		auto pos2 = getMatrix(Space::Screen, Space::World) * Vec4 { x, y, 0, 1.f };
-
-		//auto pos = getMatrix(Space::Screen, Space::World) * Vec4{x, y, 0, 1.f};
-		//spdlog::warn("[getHexFromScreen] {},   {}", pos, getMatrix(Space::World, Space::Screen)* Vec4{pos.x, pos.y, 0, 1});
-		return worldToHex({pos.x, pos.y});
+		return coordinateSystem_.getHexFromScreen(mousePos_.x, mousePos_.y);
 	}
 
 	void HexCanvas::addMouseHexToGraphic() {
 		hex::Hexi hex = getHexFromMouse();
 
-		auto pos = hexToWorld(hex);
+		auto pos = coordinateSystem_.hexToWorld(hex);
 		int rotation = currentTile_.sprite.rotations;
 		auto spriteTile = currentTile_;
 		for (int i = 0; i < 6; ++i) {
@@ -118,13 +84,14 @@ namespace vin {
 	}
 
 	void HexCanvas::drawCanvas(sdl::Shader& shader, const std::chrono::high_resolution_clock::duration& deltaTime) {
-		gl::glViewport(viewport_.x, viewport_.y, viewport_.w, viewport_.h);
+		const auto& viewport = coordinateSystem_.getViewport();
+		gl::glViewport(viewport.x, viewport.y, viewport.w, viewport.h);
 
 		gl::glEnable(gl::GL_BLEND);
 		gl::glBlendEquation(gl::GL_FUNC_ADD);
 		gl::glBlendFunc(gl::GL_SRC_ALPHA, gl::GL_ONE_MINUS_SRC_ALPHA);
 
-		auto matrix = getMatrix(Space::World, Space::Clip);
+		auto matrix = coordinateSystem_.getMatrix(CoordinateSystem::Space::World, CoordinateSystem::Space::Clip);
 		tilesGraphic_.setWorldToClip(matrix);
 		tilesGraphic_.draw(shader);
 
@@ -243,70 +210,16 @@ namespace vin {
 		tilesGraphic_.setMap(snapshot.tileMap);
 	}
 
-	glm::mat4 HexCanvas::getMatrix(Space from, Space to) const {
-		switch (from) {
-			case Space::World:
-				switch (to) {
-					case Space::Camera:
-						return worldToCamera_;
-					case Space::Clip:
-						return cameraToClip_ * worldToCamera_;
-					case Space::World:
-						return glm::mat4{1};
-					case Space::Screen:
-						return glm::inverse(screenToClip_) * cameraToClip_ * worldToCamera_;
-				}
-				break;
-			case Space::Camera:
-				switch (to) {
-					case Space::Camera:
-						return glm::mat4{1};
-					case Space::Clip:
-						return cameraToClip_;
-					case Space::World:
-						return glm::inverse(worldToCamera_);
-					case Space::Screen:
-						return glm::inverse(screenToClip_) * cameraToClip_;
-				}
-				break;
-			case Space::Clip:
-				switch (to) {
-					case Space::Camera:
-						return glm::inverse(cameraToClip_);
-					case Space::Clip:
-						return glm::mat4{1};
-					case Space::World:
-						return glm::inverse(worldToCamera_) * glm::inverse(cameraToClip_);
-					case Space::Screen:
-						return glm::inverse(screenToClip_);
-				}
-				break;
-			case Space::Screen:
-				switch (to) {
-					case Space::Camera:
-						return glm::inverse(cameraToClip_) * screenToClip_;
-					case Space::Clip:
-						return screenToClip_;
-					case Space::World:
-						return glm::inverse(worldToCamera_) * glm::inverse(cameraToClip_) * screenToClip_;
-					case Space::Screen:
-						return glm::mat4{1};
-				}
-				break;
-		}
-		return glm::mat4{1};
-	}
-
 	void HexCanvas::zoom(float scale) {
-		worldToCamera_ = glm::scale(worldToCamera_, Vec3{scale, scale, 1});
+		coordinateSystem_.zoom(scale);
 	}
 
 	void HexCanvas::move(float x, float y) {
-		worldToCamera_ = glm::translate(worldToCamera_, Vec3{x, y, 0.f});
+		coordinateSystem_.move(x, y);
 	}
 
 	void HexCanvas::tilt(float angle) {
-		worldToCamera_ *= glm::rotate(angle, Vec3{1, 0, 0});
+		coordinateSystem_.tilt(angle);
 	}
 
 	void HexCanvas::eventUpdate(const SDL_Event& windowEvent) {
@@ -350,20 +263,21 @@ namespace vin {
 			case SDL_MOUSEMOTION: {
 				mousePos_ = Vec2{windowEvent.motion.x, windowEvent.motion.y};
 				if (isMouseMiddleButtonDown()) {
-					auto delta = getMatrix(Space::Screen, Space::World) * glm::vec4{windowEvent.motion.xrel, windowEvent.motion.yrel, 0.f, 0.f};
+					auto delta = coordinateSystem_.getMatrix(CoordinateSystem::Space::Screen, CoordinateSystem::Space::World) * glm::vec4{windowEvent.motion.xrel, windowEvent.motion.yrel, 0.f, 0.f};
 					move(delta.x, delta.y);
 				}
 				break;
 			}
 			case SDL_MOUSEBUTTONUP:
-				auto hex = getHexFromScreen(static_cast<float>(windowEvent.button.x), static_cast<float>(windowEvent.button.y));
+				auto hex = coordinateSystem_.getHexFromScreen(static_cast<float>(windowEvent.button.x), static_cast<float>(windowEvent.button.y));
+				spdlog::info("Hex: {}", hex);
 				switch (windowEvent.button.button) {
 					case SDL_BUTTON_LEFT:
 						//spdlog::info("{} {}", screenToClip_, glm::inverse(screenToClip_));
-						spdlog::info("delta {}: ", getMatrix(Space::Screen, Space::World) * glm::vec4{windowEvent.button.x, windowEvent.button.y, 0.f, 1.f});
-						spdlog::info("delta2 {}\n: ", getMatrix(Space::Screen, Space::World) * glm::vec4{windowEvent.button.x, windowEvent.button.y, 1.f, 1.f});
-						spdlog::info("delta3 {}: ", getMatrix(Space::World, Space::Screen) * glm::vec4{10.f, 10.f, 0.f, 1.f});
-						spdlog::info("delta4 {}\n: ", getMatrix(Space::World, Space::Screen) * glm::vec4{5.f, 50.f, 0.f, 1.f});
+						spdlog::info("delta {}: ", coordinateSystem_.getMatrix(CoordinateSystem::Space::Screen, CoordinateSystem::Space::World) * glm::vec4{windowEvent.button.x, windowEvent.button.y, 0.f, 1.f});
+						spdlog::info("delta2 {}\n: ", coordinateSystem_.getMatrix(CoordinateSystem::Space::Screen, CoordinateSystem::Space::World) * glm::vec4{windowEvent.button.x, windowEvent.button.y, 1.f, 1.f});
+						spdlog::info("delta3 {}: ", coordinateSystem_.getMatrix(CoordinateSystem::Space::World, CoordinateSystem::Space::Screen) * glm::vec4{10.f, 10.f, 0.f, 1.f});
+						spdlog::info("delta4 {}\n: ", coordinateSystem_.getMatrix(CoordinateSystem::Space::World, CoordinateSystem::Space::Screen) * glm::vec4{5.f, 50.f, 0.f, 1.f});
 						if (activateHexagon_) {
 							spdlog::info("(q, r, s): {}", hex);
 							commandManager_.pushCommand([this, hex]() {

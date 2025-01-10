@@ -14,6 +14,7 @@
 #include "commandmanager.h"
 #include "logger.h"
 #include "deck.h"
+#include "coordinatesystem.h"
 
 #include <sdl/graphic.h>
 #include <sdl/sprite.h>
@@ -23,14 +24,6 @@
 #include <stack>
 
 namespace vin {
-
-	// In OpenGL coordinates, i.e. lower left screen is Origo and y is positive upwards on the screen.
-	struct Viewport {
-		int x;
-		int y;
-		int w;
-		int h;
-	};
 
 	struct CanvasSnapshot {
 		hex::TileBoard tileBoard;
@@ -104,27 +97,21 @@ namespace vin {
 			Screen
 		};
 
-		glm::mat4 getMatrix(Space from, Space to) const;
-
 		void addTileMapToGraphic();
 
-		hex::Hexi worldToHex(Vec2 pos) const;
-		Vec2 hexToWorld(hex::Hexi pos) const;
+		hex::Hexi getHexFromMouse() const;
 
 		void addMouseHexToGraphic();
 
-		hex::Hexi getHexFromScreen(float x, float y) const;
-		hex::Hexi getHexFromMouse() const;
-
 		void rotateCurrentTile(hex::Hexi hex);
 		
+		CoordinateSystem coordinateSystem_;
 		sdl::Texture whiteSquare_;
 		float zoom_{0.048f};
 		bool activateHexagon_;
 		hex::TileBoard tileBoard_;
 		HexagonBatch hexagonBatch_;
 		sdl::Graphic graphic_;
-		Mat2 hexToWorld_;
 
 		SpriteTile currentTile_;
 
@@ -135,13 +122,7 @@ namespace vin {
 		TileLexicon tileLexicon_;
 
 		Vec2 mousePos_{};
-		
-		Viewport viewport_{};
-		glm::mat4 screenToClip_;
-		glm::mat4 worldToCamera_;
-		glm::mat4 cameraToClip_;
 
-		Mat4 projection_;
 		Deck deck_;
 
 		CommandManager<HexCanvas, CanvasSnapshot> commandManager_;
