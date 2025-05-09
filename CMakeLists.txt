@@ -29,7 +29,7 @@ find_package(Threads REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(lyra CONFIG REQUIRED)
-find_package(CppSdl2 REQUIRED)
+find_package(CppSdl2 CONFIG REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On) 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VinlandVikings)
@@ -38,19 +38,6 @@ source_group(TREE
 	${CMAKE_CURRENT_SOURCE_DIR}
 	FILES
 		${SOURCES}
-)
-
-set(ExternalDependencies
-	CppSdl2
-	ImGui
-)
-
-set_target_properties(
-	CppSdl2
-	ImGui
-	
-	PROPERTIES FOLDER
-		ExternalDependencies
 )
 
 # Copy data to build folder.

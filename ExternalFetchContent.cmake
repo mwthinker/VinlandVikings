@@ -1,12 +1,5 @@
 include(FetchContent)
 # Load external github projects
-FetchContent_Declare(CppSdl2
-	GIT_REPOSITORY
-		https://github.com/mwthinker/CppSdl2.git
-	GIT_TAG
-		4fe016d31ee5b83f15ac261c8938038b0b57c5cd
-	OVERRIDE_FIND_PACKAGE
-)
 
 Fetchcontent_Declare(CmakeAuxiliary
 	GIT_SHALLOW 1

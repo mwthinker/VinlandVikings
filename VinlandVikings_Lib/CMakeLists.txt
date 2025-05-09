@@ -61,7 +61,7 @@ find_package(Threads REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(lyra CONFIG REQUIRED)
-find_package(CppSdl2 REQUIRED)
+find_package(CppSdl2 CONFIG REQUIRED)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS On) 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VinlandVikings_Lib)
@@ -124,7 +124,6 @@ target_link_libraries(VinlandVikings_Lib
 		nlohmann_json::nlohmann_json
 		fmt::fmt
 		bfg::lyra
-		CppSdl2
 )
 
 set_target_properties(VinlandVikings_Lib
